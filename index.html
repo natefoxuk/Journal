@@ -1,0 +1,4535 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#F9DCE7">
+<link rel="icon" type="image/png" href="./icons/icon-192.png">
+<style>
+* {
+ box-sizing: border-box;
+}
+
+body {
+ margin: 0;
+ min-height: 100vh;
+ font-family: "Segoe UI", sans-serif;
+ color: #795767;
+ background:
+  radial-gradient(ellipse at 8% 12%, #fff5df, transparent 45%),
+  radial-gradient(ellipse at 90% 85%, #f6c9dc, transparent 50%),
+  linear-gradient(145deg, #fff0e7, #fbe1e9, #f9e7f1);
+ background-attachment: fixed;
+}
+
+button, input, select, textarea {
+ font-family: inherit;
+}
+
+button {
+ cursor: pointer;
+}
+
+.page {
+ display: none;
+ max-width: 440px;
+ margin: auto;
+ padding: 40px 24px;
+ min-height: 100vh;
+}
+
+.page.active {
+ display: block;
+}
+
+#home {
+ text-align: center;
+ align-content: center;
+}
+
+h1 {
+ font: italic 62px Georgia, serif;
+ color: #a56e88;
+ margin: 0;
+}
+
+.subtitle {
+ font-size: 13px;
+ letter-spacing: 1.5px;
+ color: #9a7888;
+ margin: 14px 0 38px;
+}
+
+.sparkle {
+ color: #d6a4b8;
+ font-size: 19px;
+ margin: 18px 0 25px;
+}
+
+.flowers {
+ font-size: 28px;
+ letter-spacing: 12px;
+ margin-bottom: 14px;
+}
+
+.menu {
+ display: grid;
+ gap: 14px;
+ max-width: 350px;
+ margin: auto;
+}
+
+.menu button {
+ display: flex;
+ align-items: center;
+ gap: 20px;
+ min-height: 78px;
+ padding: 17px 25px;
+ border: 1px solid white;
+ border-radius: 23px;
+ background: #ffffffaa;
+ box-shadow: 0 7px 24px #b1718b1a;
+ color: #795767;
+ font-size: 16px;
+ text-align: left;
+}
+
+.menu button:hover {
+ background: white;
+}
+
+.symbol {
+ display: grid;
+ place-items: center;
+ width: 46px;
+ height: 46px;
+ flex-shrink: 0;
+ border-radius: 16px;
+ background: #fce8ef;
+ font-size: 26px;
+}
+
+.menu button:nth-child(2) .symbol {
+ background: #ffe7e5;
+}
+
+.menu button:nth-child(3) .symbol {
+ background: #f2e9db;
+}
+
+.menu button:nth-child(4) .symbol {
+ background: #f5e6f3;
+}
+
+.footer {
+ margin-top: 40px;
+ font: italic 13px Georgia, serif;
+ color: #ad8799;
+}
+
+.copyright {
+ text-align: center;
+ margin-top: 24px;
+ font-size: 11px;
+ color: #ad8799;
+}
+
+.entry-navigation {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 10px;
+ margin-bottom: 30px;
+}
+
+.back-button {
+ border: 0;
+ border-radius: 14px;
+ padding: 12px;
+ background: #ffffffaa;
+ color: #956b80;
+}
+
+.entry-label {
+ font-size: 12px;
+ letter-spacing: 1.5px;
+ text-transform: uppercase;
+ color: #a98093;
+}
+
+.section {
+ background: #ffffff94;
+ border: 1px solid #ffffffdd;
+ border-radius: 23px;
+ padding: 22px;
+ margin-bottom: 18px;
+ box-shadow: 0 7px 24px #b1718b12;
+ min-width: 0;
+}
+
+.section-title {
+ font-size: 15px;
+ font-weight: 600;
+ margin: 0 0 15px;
+}
+
+.hidden {
+ display: none !important;
+}
+
+input[type=date],
+input[type=text],
+select,
+textarea {
+ width: 100%;
+ padding: 13px;
+ border: 1px solid #ebd4dd;
+ border-radius: 13px;
+ background: #ffffffdd;
+ color: #795767;
+ font-size: 14px;
+ min-width: 0;
+}
+
+textarea {
+ min-height: 210px;
+ resize: vertical;
+ line-height: 1.7;
+}
+
+.page-title {
+ text-align: center;
+ margin: 10px 0 28px;
+}
+
+.page-title h1 {
+ font-size: 40px;
+}
+
+.page-title p {
+ font-size: 12px;
+ color: #a98093;
+}
+
+.page-title .sparkle {
+ margin-bottom: 0;
+}
+
+/* NEW ENTRY */
+
+.entry-header {
+ text-align: center;
+ margin-bottom: 32px;
+}
+
+.date-display {
+ width: 100%;
+ border: 0;
+ background: none;
+}
+
+.day-heading {
+ font: italic 52px Georgia, serif;
+ color: #a56e88;
+}
+
+.date-heading {
+ font-size: 17px;
+ color: #9a7888;
+ margin-top: 10px;
+}
+
+.entry-divider {
+ color: #d6a4b8;
+ font-size: 19px;
+ margin-top: 22px;
+}
+
+#dateSection {
+ display: none;
+}
+
+#dateSection.visible {
+ display: block;
+}
+
+.date-help {
+ font-size: 12px;
+ color: #a98093;
+ line-height: 1.6;
+}
+
+.mood-grid {
+ display: grid;
+ grid-template-columns: repeat(3, minmax(0, 1fr));
+ gap: 9px;
+}
+
+.mood {
+ border: 1px solid #f0dce5;
+ background: #ffffffb3;
+ border-radius: 15px;
+ padding: 12px 4px;
+ color: #795767;
+}
+
+.mood-emoji {
+ display: block;
+ font-size: 27px;
+ margin-bottom: 7px;
+}
+
+.mood-name {
+ display: block;
+ font-size: 11px;
+}
+
+.mood-grid.has-selection {
+ display: block;
+}
+
+.mood-grid.has-selection .mood {
+ display: none;
+}
+
+.mood-grid.has-selection .mood.selected {
+ display: flex;
+ width: 100%;
+ min-height: 175px;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ background: linear-gradient(145deg, #fff4d9, #ffe9ee);
+ border-radius: 20px;
+}
+
+.mood-grid.has-selection .mood.selected .mood-emoji {
+ font-size: 66px;
+}
+
+.mood-grid.has-selection .mood.selected .mood-name {
+ font: italic 26px Georgia, serif;
+ color: #a56e88;
+}
+
+.mood-hint {
+ display: none;
+}
+
+.mood-grid.has-selection .mood.selected .mood-hint {
+ display: block;
+ margin-top: 12px;
+ font-size: 11px;
+ color: #a98093;
+}
+
+.activity-scene {
+ display: none;
+ width: 100%;
+ min-height: 175px;
+ border: 1px solid #e8d6b5;
+ border-radius: 20px;
+ background: linear-gradient(145deg, #fff7e3, #f4eddf);
+ color: #795767;
+ padding: 22px;
+}
+
+.activity-scene.visible {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+}
+
+.activity-emojis {
+ font-size: clamp(32px, 9vw, 46px);
+ white-space: nowrap;
+}
+
+.activity-name {
+ font: italic 26px Georgia, serif;
+ color: #a56e88;
+ margin-top: 10px;
+ overflow-wrap: anywhere;
+}
+
+.activity-hint {
+ font-size: 11px;
+ color: #a98093;
+ margin-top: 12px;
+}
+
+.photo-button {
+ display: inline-block;
+ background: #f7e0e9;
+ border-radius: 14px;
+ padding: 13px 18px;
+ cursor: pointer;
+ font-size: 14px;
+}
+
+.photo-preview {
+ display: grid;
+ grid-template-columns: repeat(2, 1fr);
+ gap: 10px;
+ margin-top: 16px;
+}
+
+.photo-item {
+ position: relative;
+}
+
+.photo-item img {
+ width: 100%;
+ height: 125px;
+ object-fit: cover;
+ border-radius: 13px;
+}
+
+.remove-photo {
+ position: absolute;
+ right: 5px;
+ top: 5px;
+ border: 0;
+ border-radius: 50%;
+ width: 27px;
+ height: 27px;
+ background: white;
+}
+
+.writing-heading {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ margin-bottom: 15px;
+}
+
+.writing-heading .section-title {
+ margin: 0;
+}
+
+.star-button {
+ width: 42px;
+ height: 42px;
+ border: 1px solid #ecd9ba;
+ border-radius: 13px;
+ background: #fffaeb;
+ color: #b79a68;
+ font-size: 30px;
+}
+
+.star-button.active {
+ color: #e8a92e;
+ background: #fff0bf;
+ border-color: #eac66f;
+}
+
+.special-day-box {
+ display: none;
+ margin-top: 15px;
+ padding: 16px;
+ border: 1px solid #efd9a4;
+ border-radius: 16px;
+ background: linear-gradient(145deg, #fff9e9, #fff0cd);
+}
+
+.special-day-box.visible {
+ display: block;
+}
+
+.special-day-title {
+ font: italic 18px Georgia, serif;
+ color: #a56e88;
+ margin: 0 0 10px;
+}
+
+.special-day-box textarea {
+ min-height: 85px;
+}
+
+.special-day-help {
+ font-size: 11px;
+ color: #a98093;
+}
+
+.save-button {
+ width: 100%;
+ border: 1px solid #f1dca2;
+ border-radius: 20px;
+ padding: 19px;
+ background: linear-gradient(135deg, #fff5d9, #ffe9b8);
+ color: #a56e88;
+ font: italic 23px Georgia, serif;
+}
+
+.save-button:disabled {
+ opacity: .6;
+}
+
+.status {
+ text-align: center;
+ font-size: 13px;
+ min-height: 20px;
+ margin: 12px;
+}
+
+/* PREVIOUS ENTRIES */
+
+.calendar-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 18px;
+}
+
+.calendar-header strong {
+ font: 19px Georgia, serif;
+ color: #a56e88;
+}
+
+.month-arrow {
+ width: 36px;
+ height: 36px;
+ border: 0;
+ border-radius: 12px;
+ background: #fff6f8;
+ color: #a56e88;
+ font-size: 20px;
+}
+
+.calendar-grid {
+ display: grid;
+ grid-template-columns: repeat(7, minmax(0, 1fr));
+ gap: 5px;
+}
+
+.weekday {
+ text-align: center;
+ font-size: 11px;
+ color: #ac8b9b;
+ padding: 5px 0;
+}
+
+.calendar-day {
+ min-width: 0;
+ min-height: 43px;
+ border: 1px solid transparent;
+ border-radius: 11px;
+ background: #ffffff70;
+ color: #795767;
+ font-size: 13px;
+}
+
+.calendar-day.selected {
+ background: #fff0ce;
+ border-color: #efdbad;
+ font-weight: bold;
+}
+
+.calendar-day.today {
+ outline: 1px solid #d8b7c5;
+}
+
+.calendar-mark {
+ display: block;
+ height: 13px;
+ font-size: 11px;
+ color: #d5a04b;
+}
+
+.calendar-mark.dot {
+ color: #d5a2b8;
+ font-size: 17px;
+}
+
+.calendar-key {
+ display: flex;
+ justify-content: center;
+ gap: 14px;
+ margin-top: 16px;
+ font-size: 11px;
+ color: #a98093;
+}
+
+.gold {
+ color: #d5a04b;
+}
+
+.pink {
+ color: #d5a2b8;
+}
+
+.selected-date-title {
+ margin: 25px 3px 12px;
+ font: italic 19px Georgia, serif;
+ color: #a56e88;
+}
+
+/* SAVED ENTRY PREVIEWS */
+
+.preview-entry {
+ margin-bottom: 18px;
+}
+
+.preview-cards {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 10px;
+}
+
+.preview-card {
+ min-height: 125px;
+ border-radius: 18px;
+ padding: 14px 8px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ gap: 7px;
+ text-align: center;
+}
+
+.preview-card.emotion {
+ background: #ffe7edcc;
+}
+
+.preview-card.exercise {
+ background: #fff5dbdd;
+}
+
+.preview-icon {
+ font-size: 36px;
+}
+
+.preview-icon.activity-icon {
+ font-size: 25px;
+ white-space: nowrap;
+}
+
+.preview-card strong {
+ font: italic 17px Georgia, serif;
+ color: #a56e88;
+ overflow-wrap: anywhere;
+}
+
+.preview-card small {
+ font-size: 11px;
+ color: #a98093;
+}
+
+.preview-summary,
+.preview-photo-section {
+ background: #ffffffb3;
+ border-radius: 18px;
+ padding: 16px;
+ margin-top: 10px;
+}
+
+.preview-summary h3,
+.preview-photo-header h3 {
+ font-size: 13px;
+ margin: 0 0 10px;
+}
+
+.preview-summary p {
+ font-size: 13px;
+ line-height: 1.6;
+ color: #8c7080;
+ white-space: pre-wrap;
+ overflow-wrap: anywhere;
+}
+
+.preview-star {
+ border-top: 1px solid #f0e1e7;
+ margin-top: 12px;
+ padding-top: 10px;
+}
+
+.preview-star strong {
+ font-size: 12px;
+ color: #bf913c;
+}
+
+.preview-star p {
+ font-size: 12px;
+ margin: 6px 0 0;
+}
+
+.preview-photo-header {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 8px;
+}
+
+.preview-photo-header h3 {
+ margin: 0;
+}
+
+.open-entry-link {
+ border: 0;
+ background: none;
+ color: #a56e88;
+ font-size: 12px;
+ white-space: nowrap;
+}
+
+.thumbnail-strip {
+ display: flex;
+ gap: 8px;
+ overflow-x: auto;
+ padding: 11px 0 3px;
+ scroll-snap-type: x proximity;
+}
+
+.thumbnail-strip img {
+ width: 75px;
+ height: 65px;
+ flex-shrink: 0;
+ object-fit: cover;
+ border-radius: 10px;
+ scroll-snap-align: start;
+}
+
+.no-photos,
+.empty-day,
+.entry-counter {
+ font-size: 12px;
+ color: #a98093;
+}
+
+.empty-day {
+ text-align: center;
+ padding: 28px 12px;
+}
+
+/* EMOTIONS AND EXERCISE */
+
+.period-selector {
+ display: flex;
+ gap: 7px;
+ padding: 5px;
+ margin-bottom: 18px;
+ border-radius: 17px;
+ background: #ffffff80;
+}
+
+.period-button {
+ flex: 1;
+ border: 0;
+ border-radius: 13px;
+ padding: 12px 5px;
+ background: transparent;
+ color: #a98093;
+ font-size: 13px;
+}
+
+.period-button.active {
+ background: #ffe8ef;
+ color: #a56e88;
+ font-weight: 600;
+ box-shadow: 0 2px 8px #b1718b12;
+}
+
+.custom-range {
+ display: none;
+ background: #ffffffa8;
+ border: 1px solid white;
+ border-radius: 20px;
+ padding: 18px;
+ margin-bottom: 18px;
+}
+
+.custom-range.visible {
+ display: block;
+}
+
+.custom-range h2 {
+ font: italic 19px Georgia, serif;
+ color: #a56e88;
+ margin: 0 0 15px;
+}
+
+.date-range-grid {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 10px;
+}
+
+.date-range-field label {
+ display: block;
+ font-size: 12px;
+ color: #a98093;
+ margin-bottom: 7px;
+}
+
+.date-range-field input {
+ padding: 10px 7px;
+ font-size: 12px;
+}
+
+.apply-range {
+ width: 100%;
+ margin-top: 14px;
+ padding: 13px;
+ border: 1px solid #efd9a4;
+ border-radius: 13px;
+ background: #fff1d2;
+ color: #a56e88;
+ font-size: 13px;
+ font-weight: 600;
+}
+
+.range-message {
+ margin: 10px 0 0;
+ font-size: 12px;
+ color: #a98093;
+ line-height: 1.6;
+}
+
+.chart-title {
+ font-size: 15px;
+ font-weight: 600;
+ margin: 0 0 7px;
+}
+
+.chart-description {
+ font-size: 12px;
+ color: #a98093;
+ margin: 0 0 12px;
+}
+
+.chart-range-label {
+ text-align: center;
+ font-size: 12px;
+ color: #a56e88;
+ margin: 0 0 12px;
+}
+
+/*
+ FIXED CHART LAYOUT
+
+ The chart can shrink within its parent.
+ The Y-axis stays visible.
+ The date area scrolls independently.
+*/
+
+.chart-layout {
+ display: flex;
+ align-items: flex-start;
+ width: 100%;
+ min-width: 0;
+ max-width: 100%;
+ overflow: hidden;
+ background: transparent;
+}
+
+.chart-axis {
+ position: relative;
+ flex: 0 0 auto;
+ z-index: 2;
+ background: transparent;
+ box-shadow: none;
+ border: none;
+ overflow: visible;
+}
+
+.chart-axis svg {
+ display: block;
+ width: 100%;
+ height: auto;
+ overflow: visible;
+}
+
+.chart-scroll {
+ display: block;
+ flex: 1 1 0%;
+ width: 0;
+ min-width: 0;
+ max-width: 100%;
+ overflow-x: auto;
+ overflow-y: hidden;
+ overscroll-behavior-x: contain;
+ background: transparent;
+ padding-bottom: 6px;
+ scrollbar-width: thin;
+ scrollbar-color: #d6afc2 transparent;
+}
+
+.chart-scroll::-webkit-scrollbar {
+ height: 6px;
+}
+
+.chart-scroll::-webkit-scrollbar-track {
+ background: transparent;
+}
+
+.chart-scroll::-webkit-scrollbar-thumb {
+ background: #d6afc2;
+ border-radius: 20px;
+}
+
+.chart-svg {
+ display: block;
+ background: transparent;
+ max-width: none;
+ flex-shrink: 0;
+}
+
+.chart-note {
+ text-align: center;
+ font-size: 11px;
+ line-height: 1.7;
+ color: #a98093;
+ margin: 14px 0 0;
+}
+
+.timeline-selection {
+ margin: 20px 0;
+}
+
+.timeline-selection-heading {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ gap: 10px;
+ margin-bottom: 13px;
+}
+
+.timeline-selection-heading h2 {
+ font: italic 19px Georgia, serif;
+ color: #a56e88;
+ margin: 0;
+}
+
+.close-selection {
+ width: 30px;
+ height: 30px;
+ border: 0;
+ border-radius: 10px;
+ background: #ffffffa8;
+ color: #a56e88;
+ font-size: 20px;
+}
+
+.group-explanation {
+ font-size: 12px;
+ color: #a98093;
+ line-height: 1.6;
+ margin: 0 0 15px;
+}
+
+.group-day-heading {
+ font: italic 16px Georgia, serif;
+ color: #a56e88;
+ margin: 18px 0 10px;
+}
+
+.summary-grid {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 10px;
+ margin-bottom: 18px;
+}
+
+.summary-card {
+ min-height: 145px;
+ border-radius: 21px;
+ padding: 17px 10px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ gap: 11px;
+ text-align: center;
+}
+
+.summary-card.pink-card {
+ background: #ffe7ed;
+}
+
+.summary-card.yellow-card {
+ background: #fff5db;
+}
+
+.summary-big {
+ font-size: 31px;
+ color: #795767;
+}
+
+.summary-heading {
+ font-size: 15px;
+ font-weight: 600;
+ color: #a56e88;
+}
+
+.summary-caption {
+ font-size: 12px;
+ color: #8c7080;
+ line-height: 1.5;
+}
+
+.glance-section {
+ background: #ffffffb3;
+ border-radius: 21px;
+ padding: 20px;
+ margin-bottom: 18px;
+}
+
+.glance-section h2 {
+ font-size: 15px;
+ margin: 0 0 20px;
+}
+
+.glance-row {
+ margin-bottom: 19px;
+}
+
+.glance-row:last-child {
+ margin-bottom: 0;
+}
+
+.glance-labels {
+ display: flex;
+ justify-content: space-between;
+ gap: 10px;
+ font-size: 13px;
+ margin-bottom: 10px;
+}
+
+.glance-count {
+ color: #9a7888;
+ white-space: nowrap;
+}
+
+.glance-track {
+ width: 100%;
+ height: 9px;
+ background: #f4e9ee;
+ border-radius: 20px;
+ overflow: hidden;
+}
+
+.glance-fill {
+ height: 100%;
+ border-radius: 20px;
+}
+
+.glance-empty {
+ text-align: center;
+ font-size: 12px;
+ color: #a98093;
+ padding: 12px 0;
+}
+
+.timeline-explanation {
+ text-align: center;
+ font-size: 11px;
+ line-height: 1.7;
+ color: #a98093;
+ margin: 10px 8px 20px;
+}
+
+.activity-totals {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 10px;
+ margin-bottom: 18px;
+}
+
+.activity-total {
+ text-align: center;
+ background: #ffffffb3;
+ padding: 17px 8px;
+ border-radius: 18px;
+}
+
+.activity-total strong {
+ display: block;
+ font: italic 27px Georgia, serif;
+ color: #a56e88;
+ margin-bottom: 7px;
+}
+
+.activity-total span {
+ font-size: 12px;
+ color: #8c7080;
+}
+
+@media (max-width: 480px) {
+ .page {
+  padding: 30px 20px;
+ }
+
+ #home h1 {
+  font-size: 55px;
+ }
+
+ .day-heading {
+  font-size: 44px;
+ }
+
+ .page-title h1 {
+  font-size: 36px;
+ }
+
+ .section {
+  padding: 19px;
+ }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HOME -->
+
+<main id="home" class="page active">
+
+ <div class="flowers">🌸</div>
+
+ <h1>Journal</h1>
+
+ <p class="subtitle">
+  A little space just for me
+ </p>
+
+ <div class="sparkle">✧ ♡ ✧</div>
+
+ <nav class="menu">
+
+  <button onclick="openEntry()">
+   <span class="symbol">✍️</span>
+   New Entry
+  </button>
+
+  <button onclick="openTimeline('emotions')">
+   <span class="symbol">💗</span>
+   Emotions
+  </button>
+
+  <button onclick="openTimeline('exercise')">
+   <span class="symbol">🌿</span>
+   Exercise
+  </button>
+
+  <button onclick="openHistory()">
+   <span class="symbol">📖</span>
+   Previous Entries
+  </button>
+
+ </nav>
+
+ <p class="footer">
+  Every page is part of my journey
+ </p>
+
+ <p>🌸</p>
+
+ <p class="copyright">
+  &copy; 2026 Nate Fox. All Rights Reserved.
+ </p>
+
+</main>
+
+<!-- EMOTIONS -->
+
+<main id="emotions" class="page">
+
+ <div class="entry-navigation">
+
+  <button class="back-button"
+   onclick="showPage('home')">
+   ← Back to Journal
+  </button>
+
+  <span class="entry-label">
+   Emotions
+  </span>
+
+ </div>
+
+ <header class="page-title">
+
+  <h1>My Emotions</h1>
+
+  <p>
+   A gentle look at how I've been feeling
+  </p>
+
+  <div class="sparkle">✧ ♡ ✧</div>
+
+ </header>
+
+ <div class="period-selector">
+
+  <button id="emotions7"
+   class="period-button active"
+   onclick="changeTimelinePeriod('emotions','7')">
+   7 Days
+  </button>
+
+  <button id="emotions30"
+   class="period-button"
+   onclick="changeTimelinePeriod('emotions','30')">
+   30 Days
+  </button>
+
+  <button id="emotionsCustom"
+   class="period-button"
+   onclick="changeTimelinePeriod('emotions','custom')">
+   Custom
+  </button>
+
+ </div>
+
+ <section id="emotionsRange" class="custom-range">
+
+  <h2>🌸 Choose your dates</h2>
+
+  <div class="date-range-grid">
+
+   <div class="date-range-field">
+    <label for="emotionsFrom">From</label>
+    <input id="emotionsFrom" type="date">
+   </div>
+
+   <div class="date-range-field">
+    <label for="emotionsTo">To</label>
+    <input id="emotionsTo" type="date">
+   </div>
+
+  </div>
+
+  <button class="apply-range"
+   onclick="applyTimelineRange('emotions')">
+   View My Emotional Journey
+  </button>
+
+  <p id="emotionsMessage" class="range-message">
+   Choose any period, from a few days to several years.
+  </p>
+
+ </section>
+
+ <section class="section">
+
+  <h2 class="chart-title">
+   💛 My Emotional Journey
+  </h2>
+
+  <p id="emotionsDescription"
+   class="chart-description"></p>
+
+  <p id="emotionsRangeLabel"
+   class="chart-range-label"></p>
+
+  <div class="chart-layout">
+
+   <div class="chart-axis" aria-hidden="true">
+    <svg id="emotionsAxis"
+     xmlns="http://www.w3.org/2000/svg"></svg>
+   </div>
+
+   <div id="emotionsScroll" class="chart-scroll">
+
+    <svg id="emotionsChart"
+     class="chart-svg"
+     xmlns="http://www.w3.org/2000/svg"
+     role="group"
+     aria-label="Emotional journey chart"></svg>
+
+   </div>
+
+  </div>
+
+  <p id="emotionsNote" class="chart-note"></p>
+
+ </section>
+
+ <section id="emotionsSelected"></section>
+
+ <div class="summary-grid">
+
+  <div class="summary-card pink-card">
+
+   <div id="emotionsFrequentIcon"
+    class="summary-big">💗</div>
+
+   <div id="emotionsFrequentName"
+    class="summary-heading">
+    No emotion yet
+   </div>
+
+   <div class="summary-caption">
+    Most frequent emotion
+   </div>
+
+  </div>
+
+  <div class="summary-card yellow-card">
+
+   <div id="emotionsDays"
+    class="summary-big">0 of 7</div>
+
+   <div class="summary-heading">
+    Days recorded
+   </div>
+
+   <div class="summary-caption">
+    Your journal activity
+   </div>
+
+  </div>
+
+ </div>
+
+ <section class="glance-section">
+
+  <h2>🌸 Your emotions at a glance</h2>
+
+  <div id="emotionsGlance"></div>
+
+ </section>
+
+ <p class="timeline-explanation">
+  Every emotion is part of your journey.
+  The chart shows the emotions you've recorded,
+  not a ranking of good or bad feelings.
+ </p>
+
+ <p class="copyright">
+  &copy; 2026 Nate Fox. All Rights Reserved.
+ </p>
+
+</main>
+
+<!-- EXERCISE -->
+
+<main id="exercise" class="page">
+
+ <div class="entry-navigation">
+
+  <button class="back-button"
+   onclick="showPage('home')">
+   ← Back to Journal
+  </button>
+
+  <span class="entry-label">
+   Exercise
+  </span>
+
+ </div>
+
+ <header class="page-title">
+
+  <h1>My Exercise</h1>
+
+  <p>
+   A gentle look at how I've been moving
+  </p>
+
+  <div class="sparkle">✧ ♡ ✧</div>
+
+ </header>
+
+ <div class="period-selector">
+
+  <button id="exercise7"
+   class="period-button active"
+   onclick="changeTimelinePeriod('exercise','7')">
+   7 Days
+  </button>
+
+  <button id="exercise30"
+   class="period-button"
+   onclick="changeTimelinePeriod('exercise','30')">
+   30 Days
+  </button>
+
+  <button id="exerciseCustom"
+   class="period-button"
+   onclick="changeTimelinePeriod('exercise','custom')">
+   Custom
+  </button>
+
+ </div>
+
+ <section id="exerciseRange" class="custom-range">
+
+  <h2>🌸 Choose your dates</h2>
+
+  <div class="date-range-grid">
+
+   <div class="date-range-field">
+    <label for="exerciseFrom">From</label>
+    <input id="exerciseFrom" type="date">
+   </div>
+
+   <div class="date-range-field">
+    <label for="exerciseTo">To</label>
+    <input id="exerciseTo" type="date">
+   </div>
+
+  </div>
+
+  <button class="apply-range"
+   onclick="applyTimelineRange('exercise')">
+   View My Activity Journey
+  </button>
+
+  <p id="exerciseMessage" class="range-message">
+   Choose any period, from a few days to several years.
+  </p>
+
+ </section>
+
+ <section class="section">
+
+  <h2 class="chart-title">
+   🌿 My Activity Journey
+  </h2>
+
+  <p id="exerciseDescription"
+   class="chart-description"></p>
+
+  <p id="exerciseRangeLabel"
+   class="chart-range-label"></p>
+
+  <div class="chart-layout">
+
+   <div class="chart-axis" aria-hidden="true">
+
+    <svg id="exerciseAxis"
+     xmlns="http://www.w3.org/2000/svg"></svg>
+
+   </div>
+
+   <div id="exerciseScroll" class="chart-scroll">
+
+    <svg id="exerciseChart"
+     class="chart-svg"
+     xmlns="http://www.w3.org/2000/svg"
+     role="group"
+     aria-label="Exercise activity chart"></svg>
+
+   </div>
+
+  </div>
+
+  <p id="exerciseNote" class="chart-note"></p>
+
+ </section>
+
+ <section id="exerciseSelected"></section>
+
+ <div class="summary-grid">
+
+  <div class="summary-card pink-card">
+
+   <div id="exerciseFrequentIcon"
+    class="summary-big">🌿</div>
+
+   <div id="exerciseFrequentName"
+    class="summary-heading">
+    No activity yet
+   </div>
+
+   <div class="summary-caption">
+    Most frequent activity
+   </div>
+
+  </div>
+
+  <div class="summary-card yellow-card">
+
+   <div id="exerciseDays"
+    class="summary-big">0 of 7</div>
+
+   <div class="summary-heading">
+    Active days
+   </div>
+
+   <div class="summary-caption">
+    Days with movement
+   </div>
+
+  </div>
+
+ </div>
+
+ <div class="activity-totals">
+
+  <div class="activity-total">
+   <strong id="exerciseActiveTotal">0</strong>
+   <span>Active days</span>
+  </div>
+
+  <div class="activity-total">
+   <strong id="exerciseRestTotal">0</strong>
+   <span>Rest days</span>
+  </div>
+
+ </div>
+
+ <section class="glance-section">
+
+  <h2>🌸 Your activities at a glance</h2>
+
+  <div id="exerciseGlance"></div>
+
+ </section>
+
+ <p class="timeline-explanation">
+  Rest is an important part of looking after yourself.
+  Days without a recorded activity aren't counted as rest days.
+  The chart shows activity types, not exercise intensity.
+ </p>
+
+ <p class="copyright">
+  &copy; 2026 Nate Fox. All Rights Reserved.
+ </p>
+
+</main>
+
+<!-- PREVIOUS ENTRIES -->
+
+<main id="previous-entries" class="page">
+
+ <div class="entry-navigation">
+
+  <button class="back-button"
+   onclick="showPage('home')">
+   ← Back to Journal
+  </button>
+
+  <span class="entry-label">
+   Previous Entries
+  </span>
+
+ </div>
+
+ <header class="page-title">
+
+  <h1>Previous Entries</h1>
+
+  <p>A collection of my moments</p>
+
+  <div class="sparkle">✧ ♡ ✧</div>
+
+ </header>
+
+ <section class="section">
+
+  <div class="calendar-header">
+
+   <button class="month-arrow"
+    onclick="moveMonth(-1)">‹</button>
+
+   <strong id="calendarMonth"></strong>
+
+   <button class="month-arrow"
+    onclick="moveMonth(1)">›</button>
+
+  </div>
+
+  <div id="calendarGrid"
+   class="calendar-grid"></div>
+
+  <div class="calendar-key">
+
+   <span>
+    <span class="pink">●</span>
+    Journal entry
+   </span>
+
+   <span>
+    <span class="gold">★</span>
+    Meaningful day
+   </span>
+
+  </div>
+
+ </section>
+
+ <section id="selectedDayArea"></section>
+
+ <p class="copyright">
+  &copy; 2026 Nate Fox. All Rights Reserved.
+ </p>
+
+</main>
+
+<!-- NEW / EDIT JOURNAL ENTRY -->
+
+<main id="new-entry" class="page">
+
+ <div class="entry-navigation">
+
+  <button id="entryBack"
+   class="back-button"
+   onclick="goBackFromEntry()">
+   ← Back to Journal
+  </button>
+
+  <span id="entryLabel"
+   class="entry-label">
+   New Entry
+  </span>
+
+ </div>
+
+ <header class="entry-header">
+
+  <button class="date-display"
+   onclick="showDateSelector()">
+
+   <h1 id="dayHeading"
+    class="day-heading"></h1>
+
+   <div id="dateHeading"
+    class="date-heading"></div>
+
+  </button>
+
+  <div class="entry-divider">✧ ♡ ✧</div>
+
+ </header>
+
+ <div id="dateSection" class="section">
+
+  <p class="section-title">
+   📅 Journal Date
+  </p>
+
+  <input type="date"
+   id="journalDate"
+   onchange="updateDate(true)">
+
+  <p class="date-help">
+   Choose a date. Tap the heading above to change it again.
+  </p>
+
+ </div>
+
+ <div class="section">
+
+  <p class="section-title">
+   💛 How am I feeling today?
+  </p>
+
+  <div id="moodGrid"
+   class="mood-grid"></div>
+
+ </div>
+
+ <div class="section">
+
+  <p class="section-title">
+   🌿 What activity have I done today?
+  </p>
+
+  <div id="activityChoice">
+
+   <select id="activity"
+    onchange="checkActivity()">
+
+    <option value="">
+     Choose an activity...
+    </option>
+
+    <option>Rest day</option>
+    <option>Short walk</option>
+    <option>Long walk</option>
+    <option>Exercise / workout</option>
+    <option>Day out / exploring</option>
+
+   </select>
+
+  </div>
+
+  <button id="activityScene"
+   class="activity-scene"
+   onclick="changeActivity()">
+
+   <span id="activityEmojis"
+    class="activity-emojis"></span>
+
+   <span id="activityName"
+    class="activity-name"></span>
+
+   <span class="activity-hint">
+    Tap to choose a different activity
+   </span>
+
+  </button>
+
+  <p id="legacyActivityNotice"
+   class="date-help hidden">
+   This entry contains an older custom activity.
+   It will be preserved unless you choose a new activity.
+  </p>
+
+ </div>
+
+ <div class="section">
+
+  <p class="section-title">
+   📷 Photos &amp; Memories
+  </p>
+
+  <label class="photo-button"
+   for="photoInput">
+   ＋ Add Photos
+  </label>
+
+  <input type="file"
+   id="photoInput"
+   accept="image/*"
+   multiple
+   style="display:none"
+   onchange="addPhotos(event)">
+
+  <div id="photoPreview"
+   class="photo-preview"></div>
+
+ </div>
+
+ <div class="section">
+
+  <div class="writing-heading">
+
+   <p class="section-title">
+    ✍️ What's on my mind...
+   </p>
+
+   <button id="starButton"
+    class="star-button"
+    onclick="toggleSpecialDay()"
+    aria-pressed="false">
+    ☆
+   </button>
+
+  </div>
+
+  <textarea id="journalText"
+   placeholder="A little space for whatever you're thinking or feeling..."></textarea>
+
+  <div id="specialDayBox"
+   class="special-day-box">
+
+   <p class="special-day-title">
+    ⭐ What made today special?
+   </p>
+
+   <textarea id="specialDayReason"
+    placeholder="A little reminder of why this day matters..."></textarea>
+
+   <p class="special-day-help">
+    A few words to help you remember this moment.
+   </p>
+
+  </div>
+
+ </div>
+
+ <button id="saveButton"
+  class="save-button"
+  onclick="saveEntry()">
+  Save Journal Entry
+ </button>
+
+ <p id="saveStatus"
+  class="status"
+  role="status"></p>
+
+ <p class="copyright">
+  &copy; 2026 Nate Fox. All Rights Reserved.
+ </p>
+
+</main>
+
+<script>
+
+/* CONFIGURATION */
+
+const $ = id => document.getElementById(id);
+
+const moods = [
+ ["🥰", "Loved"],
+ ["😊", "Happy"],
+ ["😌", "Calm"],
+ ["😐", "Okay"],
+ ["😔", "Sad"],
+ ["😰", "Anxious"],
+ ["😣", "Frustrated"],
+ ["🥺", "Overwhelmed"],
+ ["😴", "Tired"]
+];
+
+const emotionLevels = {
+ Loved: 9,
+ Happy: 8,
+ Calm: 7,
+ Okay: 6,
+ Tired: 5,
+ Overwhelmed: 4,
+ Anxious: 3,
+ Frustrated: 2,
+ Sad: 1
+};
+
+const emotionAxisOrder = [
+ "Loved",
+ "Happy",
+ "Calm",
+ "Okay",
+ "Tired",
+ "Overwhelmed",
+ "Anxious",
+ "Frustrated",
+ "Sad"
+];
+
+const activityCategories = [
+ {
+  name: "Rest day",
+  emoji: "🛋️",
+  scene: "🛋️ ☕ 📖",
+  level: 1,
+  color: "#d8bfd3"
+ },
+ {
+  name: "Short walk",
+  emoji: "🚶",
+  scene: "🌳 🚶 🌿",
+  level: 2,
+  color: "#e9b9ca"
+ },
+ {
+  name: "Long walk",
+  emoji: "🥾",
+  scene: "🌲 🥾 🌄",
+  level: 3,
+  color: "#c6d8c0"
+ },
+ {
+  name: "Exercise / workout",
+  emoji: "💪",
+  scene: "💪 🏋️ ✨",
+  level: 4,
+  color: "#e9d2a4"
+ },
+ {
+  name: "Day out / exploring",
+  emoji: "🎒",
+  scene: "🎒 🗺️ 🌞",
+  level: 5,
+  color: "#c8b9db"
+ }
+];
+
+const activityScenes = Object.fromEntries(
+ activityCategories.map(activity => [
+  activity.name,
+  activity.scene
+ ])
+);
+
+const emotionColors = {
+ Loved: "#e6a8bd",
+ Happy: "#e9b9ca",
+ Calm: "#e9d2a4",
+ Okay: "#c6d8c0",
+ Sad: "#c8b9db",
+ Anxious: "#d8bfd3",
+ Frustrated: "#e9b8a7",
+ Overwhelmed: "#b9c8df",
+ Tired: "#c9c5dc"
+};
+
+/* APPLICATION STATE */
+
+let selectedMood = null;
+let photos = [];
+let isSpecialDay = false;
+let databasePromise = null;
+let editingId = null;
+let originalSnapshot = null;
+let entryOrigin = "home";
+let saveInProgress = false;
+let legacyActivity = "";
+
+let historyEntries = [];
+let selectedDate = null;
+let previewUrls = [];
+
+let calendarYear = new Date().getFullYear();
+let calendarMonth = new Date().getMonth();
+
+const timelines = {
+ emotions: {
+  mode: "7",
+  start: "",
+  end: "",
+  entries: [],
+  groups: [],
+  selected: null,
+  granularity: "daily"
+ },
+ exercise: {
+  mode: "7",
+  start: "",
+  end: "",
+  entries: [],
+  groups: [],
+  selected: null,
+  granularity: "daily"
+ }
+};
+
+/*
+ NEW:
+ Track scheduled chart updates so that
+ outdated measurements cannot overwrite
+ a newer rendering.
+*/
+
+const chartRenderRequests = {
+ emotions: 0,
+ exercise: 0
+};
+
+const chartResizeObservers = {};
+
+/* GENERAL HELPERS */
+
+function showPage(id) {
+ document.querySelectorAll(".page").forEach(page => {
+  page.classList.remove("active");
+ });
+
+ $(id).classList.add("active");
+
+ window.scrollTo(0, 0);
+}
+
+function todayLocal() {
+ const date = new Date();
+
+ return dateKey(
+  date.getFullYear(),
+  date.getMonth(),
+  date.getDate()
+ );
+}
+
+function dateKey(year, month, day) {
+ return [
+  year,
+  String(month + 1).padStart(2, "0"),
+  String(day).padStart(2, "0")
+ ].join("-");
+}
+
+function dateFromKey(value) {
+ const [year, month, day] = value.split("-").map(Number);
+
+ return new Date(year, month - 1, day);
+}
+
+function dateToKey(date) {
+ return dateKey(
+  date.getFullYear(),
+  date.getMonth(),
+  date.getDate()
+ );
+}
+
+function addDays(date, amount) {
+ const result = new Date(
+  date.getFullYear(),
+  date.getMonth(),
+  date.getDate()
+ );
+
+ result.setDate(result.getDate() + amount);
+
+ return result;
+}
+
+function formatDate(value, options) {
+ if (!value) return "";
+
+ return dateFromKey(value).toLocaleDateString(
+  "en-GB",
+  options
+ );
+}
+
+function daysBetween(start, end) {
+ const a = dateFromKey(start);
+ const b = dateFromKey(end);
+
+ return Math.round(
+  (
+   Date.UTC(
+    b.getFullYear(),
+    b.getMonth(),
+    b.getDate()
+   ) -
+   Date.UTC(
+    a.getFullYear(),
+    a.getMonth(),
+    a.getDate()
+   )
+  ) / 86400000
+ ) + 1;
+}
+
+function createId() {
+ if (
+  typeof crypto !== "undefined" &&
+  typeof crypto.randomUUID === "function"
+ ) {
+  return crypto.randomUUID();
+ }
+
+ return (
+  Date.now().toString(36) +
+  "-" +
+  Math.random().toString(36).slice(2)
+ );
+}
+
+function textElement(tag, className, value) {
+ const element = document.createElement(tag);
+
+ if (className) {
+  element.className = className;
+ }
+
+ element.textContent = value;
+
+ return element;
+}
+
+function getEntryMood(entry) {
+ return entry.mood || entry.moods?.[0] || null;
+}
+
+function getEntryActivity(entry) {
+ return entry.activityCategory === "Other"
+  ? entry.activity || ""
+  : entry.activity || entry.activityCategory || "";
+}
+
+function getKnownActivity(entry) {
+ const name = getEntryActivity(entry);
+
+ return activityCategories.find(
+  activity => activity.name === name
+ ) || null;
+}
+
+/* NEW ENTRY */
+
+function openEntry() {
+ editingId = null;
+ originalSnapshot = null;
+ entryOrigin = "home";
+
+ resetEntry();
+
+ $("entryBack").textContent = "← Back to Journal";
+ $("entryLabel").textContent = "New Entry";
+ $("saveButton").textContent = "Save Journal Entry";
+
+ showPage("new-entry");
+}
+
+function showDateSelector() {
+ $("dateSection").classList.add("visible");
+ $("journalDate").focus();
+}
+
+function updateDate(hide = false) {
+ const value = $("journalDate").value;
+
+ $("dayHeading").textContent = formatDate(value, {
+  weekday: "long"
+ });
+
+ $("dateHeading").textContent = formatDate(value, {
+  day: "numeric",
+  month: "long",
+  year: "numeric"
+ });
+
+ if (hide) {
+  $("dateSection").classList.remove("visible");
+ }
+}
+
+/* MOODS */
+
+function renderMoods() {
+ const grid = $("moodGrid");
+
+ grid.replaceChildren();
+
+ grid.classList.toggle(
+  "has-selection",
+  selectedMood !== null
+ );
+
+ const visible = selectedMood
+  ? moods.filter(mood => mood[1] === selectedMood)
+  : moods;
+
+ visible.forEach(([emoji, name]) => {
+  const button = document.createElement("button");
+
+  button.type = "button";
+  button.className = "mood";
+
+  if (selectedMood === name) {
+   button.classList.add("selected");
+  }
+
+  button.append(
+   textElement("span", "mood-emoji", emoji),
+   textElement("span", "mood-name", name)
+  );
+
+  if (selectedMood === name) {
+   button.append(
+    textElement(
+     "span",
+     "mood-hint",
+     "Tap to choose a different emotion"
+    )
+   );
+  }
+
+  button.onclick = () => {
+   selectedMood = selectedMood === name
+    ? null
+    : name;
+
+   renderMoods();
+  };
+
+  grid.append(button);
+ });
+}
+
+/* ACTIVITIES */
+
+function checkActivity() {
+ const value = $("activity").value;
+
+ if (value) {
+  legacyActivity = "";
+
+  $("legacyActivityNotice").classList.add("hidden");
+
+  showActivityScene(value);
+ }
+}
+
+function showActivityScene(value, label = value) {
+ $("activityEmojis").textContent =
+  activityScenes[value] || "🌿";
+
+ $("activityName").textContent = label;
+
+ $("activityChoice").classList.add("hidden");
+
+ $("activityScene").classList.add("visible");
+}
+
+function changeActivity() {
+ $("activityScene").classList.remove("visible");
+
+ $("activityChoice").classList.remove("hidden");
+
+ if (legacyActivity) {
+  $("legacyActivityNotice").classList.remove("hidden");
+ }
+}
+
+function resetActivity() {
+ legacyActivity = "";
+
+ $("activity").value = "";
+
+ $("activityScene").classList.remove("visible");
+
+ $("activityChoice").classList.remove("hidden");
+
+ $("legacyActivityNotice").classList.add("hidden");
+}
+
+/* SPECIAL DAYS */
+
+function setSpecialDay(value) {
+ isSpecialDay = !!value;
+
+ $("starButton").textContent =
+  isSpecialDay ? "★" : "☆";
+
+ $("starButton").classList.toggle(
+  "active",
+  isSpecialDay
+ );
+
+ $("starButton").setAttribute(
+  "aria-pressed",
+  String(isSpecialDay)
+ );
+
+ $("specialDayBox").classList.toggle(
+  "visible",
+  isSpecialDay
+ );
+}
+
+function toggleSpecialDay() {
+ setSpecialDay(!isSpecialDay);
+}
+
+/* PHOTOS */
+
+function addPhotos(event) {
+ Array.from(event.target.files).forEach(file => {
+  if (file.type.startsWith("image/")) {
+   photos.push({
+    id: createId(),
+    file,
+    url: URL.createObjectURL(file)
+   });
+  }
+ });
+
+ event.target.value = "";
+
+ renderPhotos();
+}
+
+function renderPhotos() {
+ const area = $("photoPreview");
+
+ area.replaceChildren();
+
+ photos.forEach(photo => {
+  const wrap = document.createElement("div");
+
+  wrap.className = "photo-item";
+
+  const image = document.createElement("img");
+
+  image.src = photo.url;
+  image.alt = "Journal photo";
+
+  const remove = document.createElement("button");
+
+  remove.className = "remove-photo";
+  remove.textContent = "×";
+
+  remove.onclick = () => {
+   URL.revokeObjectURL(photo.url);
+
+   photos = photos.filter(
+    item => item.id !== photo.id
+   );
+
+   renderPhotos();
+  };
+
+  wrap.append(image, remove);
+
+  area.append(wrap);
+ });
+}
+
+function clearPhotoPreviews() {
+ photos.forEach(photo => {
+  URL.revokeObjectURL(photo.url);
+ });
+
+ photos = [];
+
+ renderPhotos();
+}
+
+function releasePreviewUrls() {
+ previewUrls.forEach(url => {
+  URL.revokeObjectURL(url);
+ });
+
+ previewUrls = [];
+}
+
+/* RESET ENTRY */
+
+function resetEntry() {
+ clearPhotoPreviews();
+
+ selectedMood = null;
+
+ $("journalDate").value = todayLocal();
+
+ $("journalText").value = "";
+
+ $("specialDayReason").value = "";
+
+ $("saveStatus").textContent = "";
+
+ $("dateSection").classList.remove("visible");
+
+ resetActivity();
+
+ setSpecialDay(false);
+
+ updateDate();
+
+ renderMoods();
+}
+
+function snapshot() {
+ return JSON.stringify({
+  date: $("journalDate").value,
+  mood: selectedMood,
+  activity: $("activity").value,
+  legacyActivity,
+  thoughts: $("journalText").value,
+  starred: isSpecialDay,
+  reason: $("specialDayReason").value,
+  photos: photos.map(photo => photo.id)
+ });
+}
+
+function goBackFromEntry() {
+ if (saveInProgress) return;
+
+ const changed = editingId
+  ? snapshot() !== originalSnapshot
+  : !!(
+   $("journalText").value.trim() ||
+   selectedMood ||
+   photos.length ||
+   $("activity").value ||
+   isSpecialDay
+  );
+
+ if (
+  changed &&
+  !confirm(
+   "Leave this page? Your unsaved changes will be lost."
+  )
+ ) {
+  return;
+ }
+
+ clearPhotoPreviews();
+
+ if (editingId && timelines[entryOrigin]) {
+  returnToTimeline(entryOrigin);
+ } else if (editingId) {
+  showPage("previous-entries");
+  renderCalendar();
+  renderSelectedDate();
+ } else {
+  showPage("home");
+ }
+}
+
+/* INDEXEDDB STORAGE */
+
+function openDatabase() {
+ if (databasePromise) {
+  return databasePromise;
+ }
+
+ databasePromise = new Promise((resolve, reject) => {
+  const request = indexedDB.open("NateJournal", 1);
+
+  request.onupgradeneeded = () => {
+   const database = request.result;
+
+   if (!database.objectStoreNames.contains("entries")) {
+    database.createObjectStore(
+     "entries",
+     { keyPath: "id" }
+    );
+   }
+  };
+
+  request.onsuccess = () => {
+   resolve(request.result);
+  };
+
+  request.onerror = () => {
+   databasePromise = null;
+   reject(request.error);
+  };
+ });
+
+ return databasePromise;
+}
+
+async function allEntries() {
+ const database = await openDatabase();
+
+ return new Promise((resolve, reject) => {
+  const request = database
+   .transaction("entries", "readonly")
+   .objectStore("entries")
+   .getAll();
+
+  request.onsuccess = () => {
+   resolve(request.result);
+  };
+
+  request.onerror = () => {
+   reject(request.error);
+  };
+ });
+}
+
+async function writeEntry(entry) {
+ const database = await openDatabase();
+
+ return new Promise((resolve, reject) => {
+  const transaction = database.transaction(
+   "entries",
+   "readwrite"
+  );
+
+  transaction.objectStore("entries").put(entry);
+
+  transaction.oncomplete = () => {
+   resolve();
+  };
+
+  transaction.onerror = () => {
+   reject(transaction.error);
+  };
+
+  transaction.onabort = () => {
+   reject(transaction.error);
+  };
+ });
+}
+
+/* SAVE ENTRY */
+
+async function saveEntry() {
+ if (saveInProgress) return;
+
+ const date = $("journalDate").value;
+
+ const chosenActivity = $("activity").value;
+
+ const activity = chosenActivity || legacyActivity;
+
+ const thoughts = $("journalText").value.trim();
+
+ if (!date) {
+  alert("Please choose a journal date.");
+  return;
+ }
+
+ if (
+  !thoughts &&
+  !selectedMood &&
+  !activity &&
+  !photos.length &&
+  !isSpecialDay
+ ) {
+  alert("Please add something to your journal first.");
+  return;
+ }
+
+ saveInProgress = true;
+
+ $("saveButton").disabled = true;
+
+ $("saveStatus").textContent = "Saving...";
+
+ try {
+  let existing = null;
+
+  if (editingId) {
+   existing = (await allEntries()).find(
+    entry => entry.id === editingId
+   );
+
+   if (!existing) {
+    throw new Error("Original entry not found.");
+   }
+  }
+
+  const entry = {
+   ...(existing || {}),
+   id: editingId || createId(),
+   date,
+   mood: selectedMood,
+   moods: selectedMood ? [selectedMood] : [],
+   activity,
+   activityCategory: chosenActivity ||
+    (
+     legacyActivity
+      ? existing?.activityCategory || "Other"
+      : ""
+    ),
+   thoughts,
+   photos: photos.map(photo => photo.file),
+   isSpecialDay,
+   specialDayReason: isSpecialDay
+    ? $("specialDayReason").value.trim()
+    : "",
+   createdAt:
+    existing?.createdAt ||
+    new Date().toISOString()
+  };
+
+  if (editingId) {
+   entry.updatedAt = new Date().toISOString();
+  }
+
+  await writeEntry(entry);
+
+  const wasEditing = !!editingId;
+  const returnOrigin = entryOrigin;
+  const savedDate = date;
+
+  $("saveStatus").textContent = wasEditing
+   ? "Your changes have been saved! 🌸"
+   : "Your journal entry has been saved! 🌸";
+
+  await new Promise(resolve => {
+   setTimeout(resolve, 900);
+  });
+
+  clearPhotoPreviews();
+
+  editingId = null;
+  originalSnapshot = null;
+
+  if (wasEditing && timelines[returnOrigin]) {
+   await returnToTimeline(returnOrigin);
+  } else if (wasEditing) {
+   historyEntries = await allEntries();
+
+   const [year, month] = savedDate
+    .split("-")
+    .map(Number);
+
+   calendarYear = year;
+   calendarMonth = month - 1;
+   selectedDate = savedDate;
+
+   showPage("previous-entries");
+
+   renderCalendar();
+   renderSelectedDate();
+  } else {
+   resetEntry();
+   showPage("home");
+  }
+
+ } catch (error) {
+  console.error(error);
+
+  $("saveStatus").textContent =
+   "Something went wrong. Please check your entry.";
+ } finally {
+  saveInProgress = false;
+
+  $("saveButton").disabled = false;
+ }
+}
+
+/* PREVIOUS ENTRIES */
+
+async function openHistory() {
+ showPage("previous-entries");
+
+ $("selectedDayArea").replaceChildren();
+
+ try {
+  historyEntries = await allEntries();
+
+  const now = new Date();
+
+  calendarYear = now.getFullYear();
+  calendarMonth = now.getMonth();
+  selectedDate = null;
+
+  renderCalendar();
+  renderSelectedDate();
+
+ } catch (error) {
+  console.error(error);
+
+  $("selectedDayArea").textContent =
+   "Unable to load saved entries.";
+ }
+}
+
+function moveMonth(amount) {
+ const date = new Date(
+  calendarYear,
+  calendarMonth + amount,
+  1
+ );
+
+ calendarYear = date.getFullYear();
+ calendarMonth = date.getMonth();
+ selectedDate = null;
+
+ renderCalendar();
+ renderSelectedDate();
+}
+
+function renderCalendar() {
+ const grid = $("calendarGrid");
+
+ grid.replaceChildren();
+
+ $("calendarMonth").textContent =
+  new Date(calendarYear, calendarMonth, 1)
+   .toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric"
+   });
+
+ ["M", "T", "W", "T", "F", "S", "S"].forEach(day => {
+  grid.append(
+   textElement("span", "weekday", day)
+  );
+ });
+
+ const offset =
+  (
+   new Date(
+    calendarYear,
+    calendarMonth,
+    1
+   ).getDay() + 6
+  ) % 7;
+
+ for (let i = 0; i < offset; i++) {
+  grid.append(document.createElement("span"));
+ }
+
+ const count = new Date(
+  calendarYear,
+  calendarMonth + 1,
+  0
+ ).getDate();
+
+ for (let day = 1; day <= count; day++) {
+  const date = dateKey(
+   calendarYear,
+   calendarMonth,
+   day
+  );
+
+  const matches = historyEntries.filter(
+   entry => entry.date === date
+  );
+
+  const starred = matches.some(
+   entry => entry.isSpecialDay
+  );
+
+  const button = document.createElement("button");
+
+  button.className = "calendar-day";
+
+  if (selectedDate === date) {
+   button.classList.add("selected");
+  }
+
+  if (date === todayLocal()) {
+   button.classList.add("today");
+  }
+
+  button.append(
+   textElement("span", "", day),
+   textElement(
+    "span",
+    "calendar-mark" +
+     (matches.length && !starred ? " dot" : ""),
+    starred
+     ? "★"
+     : matches.length
+      ? "●"
+      : " "
+   )
+  );
+
+  button.onclick = () => {
+   selectedDate = date;
+
+   renderCalendar();
+   renderSelectedDate();
+  };
+
+  grid.append(button);
+ }
+}
+
+function renderSelectedDate() {
+ releasePreviewUrls();
+
+ const area = $("selectedDayArea");
+
+ area.replaceChildren();
+
+ if (!selectedDate) {
+  area.append(
+   textElement(
+    "p",
+    "empty-day",
+    "Select a date to revisit your journal."
+   )
+  );
+
+  return;
+ }
+
+ const entries = historyEntries
+  .filter(entry => entry.date === selectedDate)
+  .sort((a, b) =>
+   (b.createdAt || "").localeCompare(
+    a.createdAt || ""
+   )
+  );
+
+ area.append(
+  textElement(
+   "div",
+   "selected-date-title",
+   formatDate(selectedDate, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+   })
+  )
+ );
+
+ if (!entries.length) {
+  area.append(
+   textElement(
+    "div",
+    "section empty-day",
+    "No journal entry for this day yet."
+   )
+  );
+
+  return;
+ }
+
+ if (entries.length > 1) {
+  area.append(
+   textElement(
+    "p",
+    "entry-counter",
+    `${entries.length} entries on this day`
+   )
+  );
+ }
+
+ entries.forEach(entry => {
+  area.append(buildEntryPreview(entry));
+ });
+}
+
+/* SAVED ENTRY PREVIEW */
+
+function buildEntryPreview(entry) {
+ const wrap = document.createElement("article");
+
+ wrap.className = "preview-entry";
+
+ const cards = document.createElement("div");
+
+ cards.className = "preview-cards";
+
+ const emotion = document.createElement("div");
+
+ emotion.className = "preview-card emotion";
+
+ const moodName = getEntryMood(entry) || "";
+
+ const mood = moods.find(
+  item => item[1] === moodName
+ );
+
+ emotion.append(
+  textElement(
+   "span",
+   "preview-icon",
+   mood?.[0] || "♡"
+  ),
+  textElement(
+   "strong",
+   "",
+   moodName || "Not recorded"
+  ),
+  textElement(
+   "small",
+   "",
+   "Emotion"
+  )
+ );
+
+ const exercise = document.createElement("div");
+
+ exercise.className = "preview-card exercise";
+
+ const activityName = getEntryActivity(entry);
+
+ const category = getKnownActivity(entry);
+
+ exercise.append(
+  textElement(
+   "span",
+   "preview-icon activity-icon",
+   category?.scene || "🌿"
+  ),
+  textElement(
+   "strong",
+   "",
+   activityName || "Not recorded"
+  ),
+  textElement(
+   "small",
+   "",
+   "Activity"
+  )
+ );
+
+ cards.append(emotion, exercise);
+
+ wrap.append(cards);
+
+ const summary = document.createElement("div");
+
+ summary.className = "preview-summary";
+
+ summary.append(
+  textElement(
+   "h3",
+   "",
+   "✍️ A little glimpse of my day"
+  )
+ );
+
+ const excerpt = entry.thoughts?.trim() ||
+  "No written thoughts for this entry.";
+
+ summary.append(
+  textElement(
+   "p",
+   "",
+   excerpt.length > 170
+    ? excerpt.slice(0, 170).trimEnd() + "…"
+    : excerpt
+  )
+ );
+
+ if (entry.isSpecialDay) {
+  const star = document.createElement("div");
+
+  star.className = "preview-star";
+
+  star.append(
+   textElement(
+    "strong",
+    "",
+    "★ A meaningful day"
+   )
+  );
+
+  if (entry.specialDayReason) {
+   star.append(
+    textElement(
+     "p",
+     "",
+     entry.specialDayReason
+    )
+   );
+  }
+
+  summary.append(star);
+ }
+
+ wrap.append(summary);
+
+ const photoSection = document.createElement("div");
+
+ photoSection.className = "preview-photo-section";
+
+ const header = document.createElement("div");
+
+ header.className = "preview-photo-header";
+
+ header.append(
+  textElement(
+   "h3",
+   "",
+   "📷 Photos & Memories"
+  )
+ );
+
+ const open = document.createElement("button");
+
+ open.className = "open-entry-link";
+
+ open.textContent = "Open Full Entry ›";
+
+ open.onclick = () => {
+  editSavedEntry(entry.id);
+ };
+
+ header.append(open);
+
+ photoSection.append(header);
+
+ const validPhotos = (entry.photos || [])
+  .filter(file => file instanceof Blob);
+
+ if (validPhotos.length) {
+  const strip = document.createElement("div");
+
+  strip.className = "thumbnail-strip";
+
+  validPhotos.forEach(file => {
+   const url = URL.createObjectURL(file);
+
+   previewUrls.push(url);
+
+   const image = document.createElement("img");
+
+   image.src = url;
+   image.alt = "Saved journal photo";
+
+   strip.append(image);
+  });
+
+  photoSection.append(strip);
+
+ } else {
+  photoSection.append(
+   textElement(
+    "p",
+    "no-photos",
+    "No photos added to this entry."
+   )
+  );
+ }
+
+ wrap.append(photoSection);
+
+ return wrap;
+}
+
+/* EDIT EXISTING ENTRY */
+
+function editSavedEntry(id) {
+ const entry = [
+  ...historyEntries,
+  ...timelines.emotions.entries,
+  ...timelines.exercise.entries
+ ].find(item => item.id === id);
+
+ if (!entry) return;
+
+ if ($("emotions").classList.contains("active")) {
+  entryOrigin = "emotions";
+ } else if (
+  $("exercise").classList.contains("active")
+ ) {
+  entryOrigin = "exercise";
+ } else {
+  entryOrigin = "previous-entries";
+ }
+
+ resetEntry();
+
+ editingId = id;
+
+ $("entryBack").textContent =
+  entryOrigin === "emotions"
+   ? "← Back to Emotions"
+   : entryOrigin === "exercise"
+    ? "← Back to Exercise"
+    : "← Back to Calendar";
+
+ $("entryLabel").textContent = "Saved Entry";
+
+ $("saveButton").textContent = "Save Changes";
+
+ $("journalDate").value =
+  entry.date || todayLocal();
+
+ updateDate();
+
+ selectedMood = getEntryMood(entry);
+
+ renderMoods();
+
+ const activityName = getEntryActivity(entry);
+
+ const known = activityCategories.some(
+  activity => activity.name === activityName
+ );
+
+ if (known) {
+  $("activity").value = activityName;
+
+  checkActivity();
+
+ } else if (activityName) {
+  legacyActivity = activityName;
+
+  $("legacyActivityNotice").classList.remove(
+   "hidden"
+  );
+
+  showActivityScene("legacy", activityName);
+ }
+
+ $("journalText").value = entry.thoughts || "";
+
+ setSpecialDay(!!entry.isSpecialDay);
+
+ $("specialDayReason").value =
+  entry.specialDayReason || "";
+
+ photos = (entry.photos || [])
+  .filter(file => file instanceof Blob)
+  .map(file => ({
+   id: createId(),
+   file,
+   url: URL.createObjectURL(file)
+  }));
+
+ renderPhotos();
+
+ originalSnapshot = snapshot();
+
+ showPage("new-entry");
+}
+
+/* TIMELINE NAVIGATION */
+
+async function openTimeline(type) {
+ const state = timelines[type];
+
+ state.mode = "7";
+ state.selected = null;
+ state.start = "";
+ state.end = "";
+
+ const today = todayLocal();
+
+ $(type + "To").value = today;
+
+ $(type + "From").value = dateToKey(
+  addDays(dateFromKey(today), -29)
+ );
+
+ updateTimelineButtons(type);
+
+ showPage(type);
+
+ try {
+  state.entries = await allEntries();
+
+  renderTimeline(type);
+
+ } catch (error) {
+  console.error(error);
+
+  $(type + "Description").textContent =
+   "Unable to load your journal data.";
+ }
+}
+
+async function returnToTimeline(type) {
+ showPage(type);
+
+ try {
+  timelines[type].entries = await allEntries();
+
+  renderTimeline(type);
+
+ } catch (error) {
+  console.error(error);
+
+  alert("Unable to refresh this page.");
+ }
+}
+
+function changeTimelinePeriod(type, mode) {
+ const state = timelines[type];
+
+ state.mode = mode;
+ state.selected = null;
+
+ updateTimelineButtons(type);
+
+ if (mode === "custom") {
+  $(type + "Message").textContent =
+   "Choose any period, from a few days to several years.";
+ } else {
+  renderTimeline(type);
+ }
+}
+
+function updateTimelineButtons(type) {
+ const mode = timelines[type].mode;
+
+ ["7", "30", "Custom"].forEach(label => {
+  const value = label === "Custom"
+   ? "custom"
+   : label;
+
+  $(type + label).classList.toggle(
+   "active",
+   mode === value
+  );
+ });
+
+ $(type + "Range").classList.toggle(
+  "visible",
+  mode === "custom"
+ );
+}
+
+function applyTimelineRange(type) {
+ const from = $(type + "From").value;
+ const to = $(type + "To").value;
+
+ if (!from || !to) {
+  $(type + "Message").textContent =
+   "Please choose both dates.";
+
+  return;
+ }
+
+ if (from > to) {
+  $(type + "Message").textContent =
+   "The From date must be before the To date.";
+
+  return;
+ }
+
+ const state = timelines[type];
+
+ state.start = from;
+ state.end = to;
+ state.selected = null;
+
+ $(type + "Message").textContent =
+  "Your chosen period is displayed below. 🌸";
+
+ renderTimeline(type);
+}
+
+function getLastNDaysRange(days) {
+ const end = todayLocal();
+
+ const start = dateToKey(
+  addDays(dateFromKey(end), -(days - 1))
+ );
+
+ return { start, end };
+}
+
+function getTimelineRange(type) {
+ const state = timelines[type];
+
+ if (state.mode === "custom") {
+  if (state.start && state.end) {
+   return {
+    start: state.start,
+    end: state.end
+   };
+  }
+
+  return getLastNDaysRange(30);
+ }
+
+ return getLastNDaysRange(Number(state.mode));
+}
+
+function determineGranularity(totalDays) {
+ if (totalDays <= 30) return "daily";
+
+ if (totalDays <= 90) return "weekly";
+
+ return "monthly";
+}
+
+function entriesWithin(entries, start, end) {
+ return entries.filter(
+  entry =>
+   entry.date >= start &&
+   entry.date <= end
+ );
+}
+
+/* BUILD TIMELINE DATA */
+
+function buildTimelineGroup(type, start, end, label) {
+ const entries = entriesWithin(
+  timelines[type].entries,
+  start,
+  end
+ );
+
+ let score = null;
+ let category = null;
+ let emotionNames = [];
+
+ if (type === "emotions") {
+
+  const recorded = entries
+   .map(entry => getEntryMood(entry))
+   .filter(name =>
+    Object.prototype.hasOwnProperty.call(
+     emotionLevels,
+     name
+    )
+   );
+
+  emotionNames = [...new Set(recorded)];
+
+  if (emotionNames.length === 1) {
+   score = emotionLevels[emotionNames[0]];
+  }
+
+ } else {
+  const counts = {};
+
+  entries.forEach(entry => {
+   const activity = getKnownActivity(entry);
+
+   if (activity) {
+    counts[activity.name] =
+     (counts[activity.name] || 0) + 1;
+   }
+  });
+
+  const ranked = Object.entries(counts)
+   .sort((a, b) => {
+    if (b[1] !== a[1]) {
+     return b[1] - a[1];
+    }
+
+    return (
+     activityCategories.findIndex(
+      item => item.name === a[0]
+     ) -
+     activityCategories.findIndex(
+      item => item.name === b[0]
+     )
+    );
+   });
+
+  if (ranked.length) {
+   category = ranked[0][0];
+
+   score = activityCategories.find(
+    activity => activity.name === category
+   ).level;
+  }
+ }
+
+ return {
+  key: start + "|" + end,
+  start,
+  end,
+  label,
+  entries,
+  score,
+  category,
+  emotionNames,
+  hasEntry: entries.length > 0
+ };
+}
+
+function buildTimelineGroups(
+ type,
+ start,
+ end,
+ granularity
+) {
+ const groups = [];
+
+ if (granularity === "daily") {
+  let current = dateFromKey(start);
+
+  const last = dateFromKey(end);
+
+  while (current <= last) {
+   const key = dateToKey(current);
+
+   const label = current.toLocaleDateString(
+    "en-GB",
+    { weekday: "short" }
+   );
+
+   groups.push(
+    buildTimelineGroup(
+     type,
+     key,
+     key,
+     label
+    )
+   );
+
+   current = addDays(current, 1);
+  }
+ }
+
+ if (granularity === "weekly") {
+  let current = dateFromKey(start);
+
+  const last = dateFromKey(end);
+
+  while (current <= last) {
+   const weekEnd = addDays(current, 6);
+
+   const actualEnd =
+    weekEnd > last ? last : weekEnd;
+
+   const from = dateToKey(current);
+   const to = dateToKey(actualEnd);
+
+   const label = current.toLocaleDateString(
+    "en-GB",
+    {
+     day: "numeric",
+     month: "short"
+    }
+   );
+
+   groups.push(
+    buildTimelineGroup(
+     type,
+     from,
+     to,
+     label
+    )
+   );
+
+   current = addDays(actualEnd, 1);
+  }
+ }
+
+ if (granularity === "monthly") {
+  let current = dateFromKey(start);
+
+  const last = dateFromKey(end);
+
+  while (current <= last) {
+   const monthEnd = new Date(
+    current.getFullYear(),
+    current.getMonth() + 1,
+    0
+   );
+
+   const actualEnd =
+    monthEnd > last ? last : monthEnd;
+
+   const from = dateToKey(current);
+   const to = dateToKey(actualEnd);
+
+   const label = current.toLocaleDateString(
+    "en-GB",
+    {
+     month: "short",
+     year: "2-digit"
+    }
+   );
+
+   groups.push(
+    buildTimelineGroup(
+     type,
+     from,
+     to,
+     label
+    )
+   );
+
+   current = addDays(actualEnd, 1);
+  }
+ }
+
+ return groups;
+}
+
+/* RENDER TIMELINE */
+
+function renderTimeline(type) {
+ const state = timelines[type];
+
+ const range = getTimelineRange(type);
+
+ state.start = range.start;
+ state.end = range.end;
+
+ const totalDays = daysBetween(
+  state.start,
+  state.end
+ );
+
+ state.granularity =
+  determineGranularity(totalDays);
+
+ state.groups = buildTimelineGroups(
+  type,
+  state.start,
+  state.end,
+  state.granularity
+ );
+
+ if (
+  !state.groups.some(
+   group => group.key === state.selected
+  )
+ ) {
+  state.selected = null;
+ }
+
+ $(type + "RangeLabel").textContent =
+  formatDate(state.start, {
+   day: "numeric",
+   month: "short",
+   year: "numeric"
+  }) +
+  " – " +
+  formatDate(state.end, {
+   day: "numeric",
+   month: "short",
+   year: "numeric"
+  });
+
+ if (type === "emotions") {
+  $(type + "Description").textContent =
+   state.granularity === "daily"
+    ? "Tap a point to revisit that day"
+    : `Tap a point to explore that ${
+      state.granularity === "weekly"
+       ? "week"
+       : "month"
+     }'s entries`;
+
+  $(type + "Note").textContent =
+   state.granularity === "daily"
+    ? "Each point represents an emotion you recorded. Missing days are left blank."
+    : `Recorded emotions for each ${
+      state.granularity === "weekly"
+       ? "week"
+       : "month"
+     }. Multiple emotions may appear in the same period.`;
+
+ } else {
+  $(type + "Description").textContent =
+   state.granularity === "daily"
+    ? "Tap a point to revisit that day's activity"
+    : `Tap a point to explore that ${
+      state.granularity === "weekly"
+       ? "week"
+       : "month"
+     }'s activities`;
+
+  $(type + "Note").textContent =
+   state.granularity === "daily"
+    ? "Each point shows the activity recorded that day. Unrecorded days have no point."
+    : `Each point shows the most frequently recorded activity for that ${
+      state.granularity === "weekly"
+       ? "week"
+       : "month"
+     }. All activities are included in the summaries below.`;
+ }
+
+ /*
+  NEW:
+  Schedule the chart for after the browser
+  has finished laying out the visible page.
+ */
+
+ scheduleTimelineChart(type);
+
+ renderTimelineSelection(type);
+ renderTimelineSummary(type);
+ renderTimelineGlance(type);
+}
+
+/* SVG HELPERS */
+
+function svgElement(name, attributes = {}) {
+ const element = document.createElementNS(
+  "http://www.w3.org/2000/svg",
+  name
+ );
+
+ Object.entries(attributes).forEach(
+  ([key, value]) => {
+   element.setAttribute(
+    key,
+    String(value)
+   );
+  }
+ );
+
+ return element;
+}
+
+/* CHART SCALE */
+
+function getChartScale(type) {
+ if (type === "emotions") {
+  return {
+   minimum: 1,
+   maximum: 9,
+   levels: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+  };
+ }
+
+ return {
+  minimum: 1,
+  maximum: 5,
+  levels: [5, 4, 3, 2, 1]
+ };
+}
+
+function chartYPosition(type, score, top, bottom) {
+ const scale = getChartScale(type);
+
+ return bottom -
+  (
+   (score - scale.minimum) /
+   (scale.maximum - scale.minimum)
+  ) * (bottom - top);
+}
+
+/* FROZEN Y-AXIS */
+
+function renderFrozenAxis(
+ type,
+ top,
+ bottom,
+ height
+) {
+ const axis = $(type + "Axis");
+
+ axis.replaceChildren();
+
+ const isExercise = type === "exercise";
+
+ const width = isExercise ? 94 : 92;
+
+ axis.setAttribute(
+  "viewBox",
+  `0 0 ${width} ${height}`
+ );
+
+ axis.setAttribute("width", width);
+ axis.setAttribute("height", height);
+
+ axis.style.width = width + "px";
+ axis.style.height = height + "px";
+
+ const yPosition = score =>
+  chartYPosition(type, score, top, bottom);
+
+ if (isExercise) {
+  [...activityCategories]
+   .reverse()
+   .forEach(activity => {
+    const y = yPosition(activity.level);
+
+    const emoji = svgElement("text", {
+     x: 2,
+     y: y + 5,
+     "font-size": 15
+    });
+
+    emoji.textContent = activity.emoji;
+
+    const label = svgElement("text", {
+     x: 25,
+     y: y + 3,
+     "font-size": 9,
+     fill: "#977a89"
+    });
+
+    label.textContent =
+     activity.name === "Exercise / workout"
+      ? "Workout"
+      : activity.name === "Day out / exploring"
+       ? "Day out"
+       : activity.name;
+
+    axis.append(emoji, label);
+   });
+
+ } else {
+  emotionAxisOrder.forEach(name => {
+   const score = emotionLevels[name];
+
+   const y = yPosition(score);
+
+   const emojiValue = moods.find(
+    mood => mood[1] === name
+   )?.[0] || "💗";
+
+   const emoji = svgElement("text", {
+    x: 2,
+    y: y + 5,
+    "font-size": 16
+   });
+
+   emoji.textContent = emojiValue;
+
+   const label = svgElement("text", {
+    x: 29,
+    y: y + 3,
+    "font-size": 9.5,
+    fill: "#977a89"
+   });
+
+   label.textContent = name;
+
+   axis.append(emoji, label);
+  });
+ }
+}
+
+/*
+ NEW:
+ SAFE CHART MEASUREMENT
+
+ The chart never uses a guessed width from
+ an invisible page.
+
+ Seven-day labels have at least 46 pixels
+ between their centers.
+
+ If necessary, the chart scrolls instead
+ of squeezing the weekdays together.
+*/
+
+function getChartDimensions(type, count) {
+ const isExercise = type === "exercise";
+
+ const scrollArea = $(type + "Scroll");
+
+ const availableWidth = Math.max(
+  1,
+  Math.floor(
+   scrollArea.getBoundingClientRect().width
+  )
+ );
+
+ const top = 25;
+
+ const bottom = isExercise ? 207 : 345;
+
+ const height = isExercise ? 256 : 393;
+
+ const padding = 22;
+
+ /*
+  46px minimum spacing protects short
+  weekday names from overlapping.
+ */
+
+ const minimumSpacing = 46;
+
+ let spacing;
+
+ if (count <= 7) {
+  spacing = minimumSpacing;
+ } else if (count <= 30) {
+  spacing = 46;
+ } else if (count <= 100) {
+  spacing = 46;
+ } else {
+  spacing = 54;
+ }
+
+ const minimumWidth =
+  padding * 2 +
+  Math.max(0, count - 1) * spacing;
+
+ const width = Math.max(
+  availableWidth,
+  minimumWidth
+ );
+
+ return {
+  top,
+  bottom,
+  height,
+  width,
+  padding,
+  isExercise
+ };
+}
+
+/* CHART POINTS */
+
+function getGroupChartPoints(type, group, x, yPosition) {
+ if (type === "emotions") {
+  return group.emotionNames.map(name => ({
+   x,
+   y: yPosition(emotionLevels[name]),
+   name,
+   score: emotionLevels[name]
+  }));
+ }
+
+ if (group.score === null) {
+  return [];
+ }
+
+ return [{
+  x,
+  y: yPosition(group.score),
+  name: group.category,
+  score: group.score
+ }];
+}
+
+/*
+ NEW:
+ WAIT FOR THE PAGE TO BE VISIBLE
+
+ Two animation frames allow the browser
+ to finish its layout before measuring.
+
+ Repeated requests cancel earlier ones.
+*/
+
+function scheduleTimelineChart(type) {
+ const requestNumber =
+  ++chartRenderRequests[type];
+
+ requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+   if (
+    requestNumber !== chartRenderRequests[type]
+   ) {
+    return;
+   }
+
+   if (
+    !$(type).classList.contains("active")
+   ) {
+    return;
+   }
+
+   const scrollArea = $(type + "Scroll");
+
+   if (
+    scrollArea.getBoundingClientRect().width <= 0
+   ) {
+    return;
+   }
+
+   renderTimelineChart(type);
+  });
+ });
+}
+
+/*
+ NEW:
+ RESIZE OBSERVERS
+
+ Both charts are recalculated if the
+ visible chart area changes size.
+
+ This also handles phone rotation and
+ changes to the browser window.
+*/
+
+function initializeChartResizeObservers() {
+ ["emotions", "exercise"].forEach(type => {
+  const scrollArea = $(type + "Scroll");
+
+  if (typeof ResizeObserver !== "undefined") {
+   let lastWidth = 0;
+
+   const observer = new ResizeObserver(entries => {
+    const width =
+     entries[0]?.contentRect.width || 0;
+
+    if (
+     width <= 0 ||
+     Math.abs(width - lastWidth) < 1
+    ) {
+     return;
+    }
+
+    lastWidth = width;
+
+    if ($(type).classList.contains("active")) {
+     scheduleTimelineChart(type);
+    }
+   });
+
+   observer.observe(scrollArea);
+
+   chartResizeObservers[type] = observer;
+  }
+ });
+
+ window.addEventListener("resize", () => {
+  ["emotions", "exercise"].forEach(type => {
+   if ($(type).classList.contains("active")) {
+    scheduleTimelineChart(type);
+   }
+  });
+ });
+}
+
+/* DRAW SCROLLABLE CHART */
+
+function renderTimelineChart(type) {
+ const state = timelines[type];
+
+ const groups = state.groups;
+
+ const svg = $(type + "Chart");
+
+ const scrollArea = $(type + "Scroll");
+
+ /*
+  Do not measure or draw a hidden chart.
+ */
+
+ if (
+  !$(type).classList.contains("active") ||
+  scrollArea.getBoundingClientRect().width <= 0
+ ) {
+  return;
+ }
+
+ const previousScroll = scrollArea.scrollLeft;
+
+ const previousMaximum = Math.max(
+  0,
+  scrollArea.scrollWidth -
+   scrollArea.clientWidth
+ );
+
+ const wasAtEnd =
+  previousMaximum === 0 ||
+  previousScroll >= previousMaximum - 12;
+
+ svg.replaceChildren();
+
+ const count = groups.length;
+
+ const dimensions = getChartDimensions(
+  type,
+  count
+ );
+
+ const {
+  top,
+  bottom,
+  height,
+  width,
+  padding
+ } = dimensions;
+
+ svg.setAttribute(
+  "viewBox",
+  `0 0 ${width} ${height}`
+ );
+
+ svg.setAttribute("width", width);
+ svg.setAttribute("height", height);
+
+ svg.style.width = width + "px";
+ svg.style.minWidth = width + "px";
+ svg.style.height = height + "px";
+
+ renderFrozenAxis(
+  type,
+  top,
+  bottom,
+  height
+ );
+
+ const yPosition = score =>
+  chartYPosition(type, score, top, bottom);
+
+ const xPosition = index =>
+  count === 1
+   ? width / 2
+   : padding +
+    index *
+     (width - padding * 2) /
+     (count - 1);
+
+ /* Soft horizontal gridlines */
+
+ const scale = getChartScale(type);
+
+ scale.levels.forEach(score => {
+  const y = yPosition(score);
+
+  svg.append(
+   svgElement("line", {
+    x1: 0,
+    y1: y,
+    x2: width,
+    y2: y,
+    stroke: "#e8d6df",
+    "stroke-width": 1,
+    "stroke-dasharray": "4 6"
+   })
+  );
+ });
+
+ const pointsByGroup = groups.map(
+  (group, index) =>
+   getGroupChartPoints(
+    type,
+    group,
+    xPosition(index),
+    yPosition
+   )
+ );
+
+ /*
+  Connect consecutive periods only when
+  each contains one unambiguous point.
+ */
+
+ let segment = [];
+
+ const segments = [];
+
+ pointsByGroup.forEach(points => {
+  if (points.length === 1) {
+   segment.push(points[0]);
+
+  } else {
+   if (segment.length > 1) {
+    segments.push(segment);
+   }
+
+   segment = [];
+  }
+ });
+
+ if (segment.length > 1) {
+  segments.push(segment);
+ }
+
+ segments.forEach(points => {
+  svg.append(
+   svgElement("polyline", {
+    points: points
+     .map(point =>
+      `${point.x},${point.y}`
+     )
+     .join(" "),
+    fill: "none",
+    stroke: "#d99cb9",
+    "stroke-width": 3.5,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round"
+   })
+  );
+ });
+
+ /* Dates and selectable points */
+
+ const labelEvery =
+  count > 100
+   ? Math.ceil(count / 30)
+   : 1;
+
+ groups.forEach((group, index) => {
+  const x = xPosition(index);
+
+  if (
+   index % labelEvery === 0 ||
+   index === count - 1
+  ) {
+   const label = svgElement("text", {
+    x,
+    y: height - 15,
+    "text-anchor": "middle",
+    "font-size": count > 30 ? 10 : 11,
+    fill: "#9a7888"
+   });
+
+   label.textContent =
+    state.granularity === "daily" &&
+    count > 7
+     ? formatDate(group.start, {
+       day: "numeric"
+      })
+     : group.label;
+
+   svg.append(label);
+  }
+
+  const points = pointsByGroup[index];
+
+  if (!points.length) {
+   return;
+  }
+
+  points.forEach(point => {
+   const selected =
+    state.selected === group.key;
+
+   const pointGroup = svgElement("g", {
+    role: "button",
+    tabindex: "0",
+    "aria-label":
+     `Explore ${group.label}: ${point.name}`
+   });
+
+   pointGroup.style.cursor = "pointer";
+
+   pointGroup.append(
+    svgElement("circle", {
+     cx: point.x,
+     cy: point.y,
+     r: 17,
+     fill: "transparent"
+    }),
+    svgElement("circle", {
+     cx: point.x,
+     cy: point.y,
+     r: selected ? 8 : 5.5,
+     fill: selected
+      ? "#a56e88"
+      : "#e5b1c9",
+     stroke: "#ffffff",
+     "stroke-width": selected ? 3 : 2
+    })
+   );
+
+   const selectPoint = () => {
+    state.selected =
+     state.selected === group.key
+      ? null
+      : group.key;
+
+    /*
+     Only redraw the points and selection.
+     The chart's width stays correctly
+     measured and its scroll is preserved.
+    */
+
+    renderTimelineChart(type);
+
+    renderTimelineSelection(type);
+
+    if (state.selected) {
+     $(type + "Selected").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+     });
+    }
+   };
+
+   pointGroup.addEventListener(
+    "click",
+    selectPoint
+   );
+
+   pointGroup.addEventListener(
+    "keydown",
+    event => {
+     if (
+      event.key === "Enter" ||
+      event.key === " "
+     ) {
+      event.preventDefault();
+
+      selectPoint();
+     }
+    }
+   );
+
+   svg.append(pointGroup);
+  });
+ });
+
+ /*
+  Keep the user's scroll position while
+  selecting points.
+
+  On initial opening, show the latest dates.
+ */
+
+ requestAnimationFrame(() => {
+  const maximum = Math.max(
+   0,
+   scrollArea.scrollWidth -
+    scrollArea.clientWidth
+  );
+
+  scrollArea.scrollLeft = wasAtEnd
+   ? maximum
+   : Math.min(
+    previousScroll,
+    maximum
+   );
+ });
+}
+
+/* SELECTED TIMELINE PERIOD */
+
+function renderTimelineSelection(type) {
+ releasePreviewUrls();
+
+ const state = timelines[type];
+
+ const area = $(type + "Selected");
+
+ area.replaceChildren();
+
+ if (!state.selected) return;
+
+ const group = state.groups.find(
+  item => item.key === state.selected
+ );
+
+ if (!group) return;
+
+ const section = document.createElement("div");
+
+ section.className = "timeline-selection";
+
+ const heading = document.createElement("div");
+
+ heading.className = "timeline-selection-heading";
+
+ let titleText;
+
+ if (state.granularity === "daily") {
+  titleText = formatDate(group.start, {
+   weekday: "long",
+   day: "numeric",
+   month: "long",
+   year: "numeric"
+  });
+
+ } else if (state.granularity === "weekly") {
+  titleText =
+   formatDate(group.start, {
+    day: "numeric",
+    month: "short"
+   }) +
+   " – " +
+   formatDate(group.end, {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+   });
+
+ } else {
+  titleText = formatDate(group.start, {
+   month: "long",
+   year: "numeric"
+  });
+ }
+
+ heading.append(
+  textElement("h2", "", titleText)
+ );
+
+ const close = document.createElement("button");
+
+ close.className = "close-selection";
+ close.textContent = "×";
+
+ close.setAttribute(
+  "aria-label",
+  "Close selected period"
+ );
+
+ close.onclick = () => {
+  state.selected = null;
+
+  renderTimelineChart(type);
+  renderTimelineSelection(type);
+ };
+
+ heading.append(close);
+
+ section.append(heading);
+
+ const entries = [...group.entries].sort(
+  (a, b) =>
+   a.date.localeCompare(b.date) ||
+   (a.createdAt || "").localeCompare(
+    b.createdAt || ""
+   )
+ );
+
+ if (!entries.length) {
+  section.append(
+   textElement(
+    "p",
+    "group-explanation",
+    "No journal entries were recorded during this period."
+   )
+  );
+
+  area.append(section);
+
+  return;
+ }
+
+ if (state.granularity !== "daily") {
+  const recordedDays = new Set(
+   entries.map(entry => entry.date)
+  ).size;
+
+  section.append(
+   textElement(
+    "p",
+    "group-explanation",
+    `${recordedDays} ${
+     recordedDays === 1 ? "day" : "days"
+    } recorded. Select any entry below to revisit and edit it.`
+   )
+  );
+ }
+
+ let previousDate = null;
+
+ entries.forEach(entry => {
+  if (
+   state.granularity !== "daily" &&
+   entry.date !== previousDate
+  ) {
+   section.append(
+    textElement(
+     "h3",
+     "group-day-heading",
+     formatDate(entry.date, {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+     })
+    )
+   );
+
+   previousDate = entry.date;
+  }
+
+  section.append(
+   buildEntryPreview(entry)
+  );
+ });
+
+ area.append(section);
+}
+
+/* SUMMARY DATA */
+
+function getTimelineEntries(type) {
+ const state = timelines[type];
+
+ return entriesWithin(
+  state.entries,
+  state.start,
+  state.end
+ );
+}
+
+function getTimelineCounts(type) {
+ const counts = {};
+
+ getTimelineEntries(type).forEach(entry => {
+  let name;
+
+  if (type === "emotions") {
+   name = getEntryMood(entry);
+
+   if (
+    !Object.prototype.hasOwnProperty.call(
+     emotionLevels,
+     name
+    )
+   ) {
+    return;
+   }
+
+  } else {
+   name = getKnownActivity(entry)?.name;
+
+   if (!name) return;
+  }
+
+  counts[name] =
+   (counts[name] || 0) + 1;
+ });
+
+ return counts;
+}
+
+/* SUMMARY CARDS */
+
+function renderTimelineSummary(type) {
+ const state = timelines[type];
+
+ const entries = getTimelineEntries(type);
+
+ const totalDays = daysBetween(
+  state.start,
+  state.end
+ );
+
+ const counts = getTimelineCounts(type);
+
+ const sorted = Object.entries(counts)
+  .sort((a, b) => b[1] - a[1]);
+
+ if (type === "emotions") {
+  const recordedDays = new Set(
+   entries.map(entry => entry.date)
+  ).size;
+
+  $("emotionsDays").textContent =
+   `${recordedDays} of ${totalDays}`;
+
+  if (!sorted.length) {
+   $("emotionsFrequentIcon").textContent = "💗";
+
+   $("emotionsFrequentName").textContent =
+    "No emotion yet";
+
+  } else {
+   const leaders = sorted
+    .filter(item =>
+     item[1] === sorted[0][1]
+    )
+    .map(item => item[0]);
+
+   $("emotionsFrequentIcon").textContent =
+    leaders.slice(0, 2)
+     .map(name =>
+      moods.find(
+       mood => mood[1] === name
+      )?.[0] || "💗"
+     )
+     .join(" ");
+
+   $("emotionsFrequentName").textContent =
+    leaders.length === 1
+     ? leaders[0]
+     : "A few emotions";
+  }
+
+  return;
+ }
+
+ const activeDates = new Set();
+
+ const restDates = new Set();
+
+ entries.forEach(entry => {
+  const activity = getKnownActivity(entry);
+
+  if (!activity) return;
+
+  if (activity.name === "Rest day") {
+   restDates.add(entry.date);
+  } else {
+   activeDates.add(entry.date);
+  }
+ });
+
+ activeDates.forEach(date => {
+  restDates.delete(date);
+ });
+
+ const activeCount = activeDates.size;
+ const restCount = restDates.size;
+
+ $("exerciseDays").textContent =
+  `${activeCount} of ${totalDays}`;
+
+ $("exerciseActiveTotal").textContent =
+  activeCount;
+
+ $("exerciseRestTotal").textContent =
+  restCount;
+
+ if (!sorted.length) {
+  $("exerciseFrequentIcon").textContent = "🌿";
+
+  $("exerciseFrequentName").textContent =
+   "No activity yet";
+
+ } else {
+  const leaders = sorted
+   .filter(item =>
+    item[1] === sorted[0][1]
+   )
+   .map(item => item[0]);
+
+  $("exerciseFrequentIcon").textContent =
+   leaders.slice(0, 2)
+    .map(name =>
+     activityCategories.find(
+      activity => activity.name === name
+     )?.emoji || "🌿"
+    )
+    .join(" ");
+
+  $("exerciseFrequentName").textContent =
+   leaders.length === 1
+    ? leaders[0]
+    : "A few activities";
+ }
+}
+
+/* EMOTION / ACTIVITY SUMMARIES */
+
+function renderTimelineGlance(type) {
+ const area = $(type + "Glance");
+
+ area.replaceChildren();
+
+ const counts = getTimelineCounts(type);
+
+ const sorted = Object.entries(counts)
+  .sort((a, b) => b[1] - a[1]);
+
+ if (!sorted.length) {
+  area.append(
+   textElement(
+    "p",
+    "glance-empty",
+    type === "emotions"
+     ? "Your emotions will appear here as you add journal entries. 🌸"
+     : "Your activities will appear here as you add journal entries. 🌸"
+   )
+  );
+
+  return;
+ }
+
+ const total = sorted.reduce(
+  (sum, item) => sum + item[1],
+  0
+ );
+
+ sorted.forEach(([name, count]) => {
+  let emoji;
+  let color;
+
+  if (type === "emotions") {
+   emoji = moods.find(
+    mood => mood[1] === name
+   )?.[0] || "💗";
+
+   color =
+    emotionColors[name] || "#e9b9ca";
+
+  } else {
+   const activity = activityCategories.find(
+    item => item.name === name
+   );
+
+   emoji = activity?.emoji || "🌿";
+
+   color = activity?.color || "#e9b9ca";
+  }
+
+  const row = document.createElement("div");
+
+  row.className = "glance-row";
+
+  const labels = document.createElement("div");
+
+  labels.className = "glance-labels";
+
+  labels.append(
+   textElement(
+    "span",
+    "",
+    `${emoji} ${name}`
+   ),
+   textElement(
+    "span",
+    "glance-count",
+    `${count} ${
+     count === 1 ? "entry" : "entries"
+    }`
+   )
+  );
+
+  const track = document.createElement("div");
+
+  track.className = "glance-track";
+
+  const fill = document.createElement("div");
+
+  fill.className = "glance-fill";
+
+  fill.style.width =
+   `${(count / total) * 100}%`;
+
+  fill.style.background = color;
+
+  track.append(fill);
+
+  row.append(labels, track);
+
+  area.append(row);
+ });
+}
+
+/* INITIALIZE */
+
+resetEntry();
+
+initializeChartResizeObservers();
+// Register Journal's offline service worker
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .then(() => {
+        console.log("Journal offline support registered.");
+      })
+      .catch(error => {
+        console.log("Service worker registration:", error);
+      });
+  });
+}
+</script>
+
+</body>
+</html>
