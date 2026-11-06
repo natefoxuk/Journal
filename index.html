@@ -1130,6 +1130,19 @@ textarea {
 .settings-accordion-content > p:first-child{margin-top:16px}
 .settings-accordion-content .safe-secondary,.settings-accordion-content .safe-action{max-width:100%}
 @media(prefers-reduced-motion:reduce){.settings-chevron,.settings-accordion{transition:none}}
+
+/* JOURNAL-STYLED CONFIRMATION — REMOVE PIN */
+.journal-dialog-backdrop{position:fixed;inset:0;z-index:10010;display:flex;align-items:center;justify-content:center;padding:20px;background:#3f293b99;backdrop-filter:blur(4px)}
+.journal-dialog-backdrop[hidden]{display:none!important}
+.journal-dialog{width:min(100%,360px);padding:30px 22px 24px;background:#fffafc;border:1px solid #fff;border-radius:26px;box-shadow:0 18px 65px #54344845;text-align:center;color:#795767}
+.journal-dialog-icon{display:grid;place-items:center;width:65px;height:65px;margin:0 auto 14px;border-radius:50%;background:#fce8ef;font-size:28px}
+.journal-dialog h2{font:italic 26px Georgia,serif;color:#a56e88;margin:0 0 14px}
+.journal-dialog p{font-size:14px;line-height:1.65;margin:0 0 22px}
+.journal-dialog-actions{display:flex;gap:10px}
+.journal-dialog-actions button{flex:1;min-width:0;margin:0;padding:13px 8px;border-radius:14px;font-weight:600;font-size:13px}
+.journal-dialog-cancel{background:#fff;border:1px solid #e7bfd0;color:#795767}
+.journal-dialog-confirm{background:#f6dbe6;border:1px solid #e8b8ca;color:#92536f}
+.journal-dialog button:focus-visible{outline:3px solid #a56e88;outline-offset:3px}
 </style>
 </head>
 
@@ -1849,7 +1862,7 @@ textarea {
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="3">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>♧ Backup Reminder</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>✧ Backup Reminder</span></button>
    <div class="settings-accordion-content" id="settingsContent3" role="region" aria-labelledby="settingsTrigger3" hidden>
 <p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input id="backupReminderToggle" onchange="setBackupReminder(this.checked)" type="checkbox"/> Remind me every 30 days when I open Journal</label>
    </div>
@@ -1866,6 +1879,19 @@ textarea {
 </main>
 <div id="lockScreen" aria-label="Journal PIN lock screen" role="dialog" aria-modal="true">
  <div class="lock-inner"><div style="font-size:36px">🌸</div><h1>Journal</h1><p id="lockPrompt">Welcome back. Your little space, just for you.</p><div style="font-size:28px">🔒</div><div class="pin-dots" id="pinDots"></div><div class="pin-error" id="pinError" role="alert"></div><div class="pin-grid" id="pinGrid"></div><button class="safe-secondary" id="forgotPinButton" onclick="startPinRecovery()" style="display:none;margin-top:14px">Forgotten your PIN?</button><section id="recoveryPanel" style="display:none;background:#fff9fc;border:1px solid #eed8e3;border-radius:18px;padding:18px;margin:16px 0;text-align:left"><label for="recoveryQuestionSelect" style="display:block;margin-bottom:8px">Choose your security question</label><select id="recoveryQuestionSelect" style="width:100%;padding:11px;border-radius:10px;border:1px solid #d8b4c5" onchange="onRecoveryQuestionChange()"><option value="pet">What was the name of your first pet?</option><option value="street">What street did you grow up on?</option><option value="teacher">What was your first teacher’s surname?</option><option value="place">What was the name of your childhood favourite place?</option><option value="custom">Write my own question</option></select><div id="customQuestionWrap" style="display:none;margin-top:12px"><label for="customRecoveryQuestion">Your personal question</label><input id="customRecoveryQuestion" type="text" maxlength="180" autocomplete="off" placeholder="Write a question only you can answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"></div><p id="recoveryQuestionDisplay" style="display:none;font-weight:bold"></p><label for="recoveryAnswer" style="display:block;margin-top:12px">Your secret answer</label><div style="position:relative;margin-top:6px"><input id="recoveryAnswer" type="password" maxlength="200" autocomplete="off" placeholder="Enter your answer" style="display:block;width:100%;padding:11px 55px 11px 11px;border:1px solid #d8b4c5;border-radius:10px"><button id="recoveryAnswerEye" type="button" onclick="toggleRecoveryAnswerVisibility()" aria-label="Show security answer" aria-pressed="false" title="Show security answer" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;border-radius:8px;background:#fff0f5;color:#795767;width:44px;height:38px;font-size:19px">👁</button></div><p id="recoveryMessage" role="status" style="font-size:13px;color:#a04465"></p><button class="safe-action" id="recoverySubmit" onclick="submitRecovery()" style="margin-top:10px">Continue</button></section><button class="safe-secondary" id="pinCancel" onclick="cancelPinFlow()" style="display:none;margin-top:18px">Cancel</button></div>
+</div>
+
+<!-- In-app confirmation: no browser website-name banner -->
+<div id="removePinDialog" class="journal-dialog-backdrop" role="presentation" hidden>
+ <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="removePinDialogTitle" aria-describedby="removePinDialogDescription">
+  <div class="journal-dialog-icon" aria-hidden="true">🔓</div>
+  <h2 id="removePinDialogTitle">Remove PIN Protection?</h2>
+  <p id="removePinDialogDescription">Your Journal will open without a PIN on this device. Your entries and photographs will remain unchanged.</p>
+  <div class="journal-dialog-actions">
+   <button type="button" class="journal-dialog-cancel" id="keepPinDialogButton" onclick="finishRemovePinDialog(false)">Keep PIN</button>
+   <button type="button" class="journal-dialog-confirm" id="confirmRemovePinButton" onclick="finishRemovePinDialog(true)">Remove PIN</button>
+  </div>
+ </div>
 </div>
 <script>
 
@@ -4811,18 +4837,47 @@ async function handlePinComplete(value){
    else $("pinError").textContent="Incorrect current PIN. Please try again.";
   }else if(pinFlow==="remove"){
    if(!(await verifyPin(value))){$("pinError").textContent="Incorrect current PIN. Please try again.";return}
-   if(!confirm("Remove Journal PIN protection? Journal will open without a PIN on this device. Your entries and photos will remain unchanged.")){
-    hidePin();return;
-   }
-   localStorage.removeItem(JOURNAL_PIN_KEY);
-   localStorage.removeItem(JOURNAL_RECOVERY_KEY);
-   localStorage.removeItem(JOURNAL_RECOVERY_LIMIT_KEY);
-   journalUnlocked=true;hidePin();updatePinSettings();
-   $("settingsStatus").textContent="PIN protection removed. Your journal entries and photos are unchanged.";
+   // PIN verified. Ask for final confirmation in a Journal-styled dialog.
+   showRemovePinDialog();
   }
  }catch(error){console.error("Journal PIN error:",error);$("pinError").textContent="PIN setup error: "+(error?.message||error?.name||"Unknown error")+". Please tell us this message."}
  finally{pinBusy=false}
 }
+let removePinDialogPreviouslyFocused = null;
+function showRemovePinDialog(){
+ removePinDialogPreviouslyFocused=document.activeElement;
+ $("removePinDialog").hidden=false;
+ $("keepPinDialogButton").focus();
+}
+function finishRemovePinDialog(approved){
+ $("removePinDialog").hidden=true;
+ if(approved){
+  localStorage.removeItem(JOURNAL_PIN_KEY);
+  localStorage.removeItem(JOURNAL_RECOVERY_KEY);
+  localStorage.removeItem(JOURNAL_RECOVERY_LIMIT_KEY);
+  journalUnlocked=true;
+  hidePin();
+  updatePinSettings();
+  $("settingsStatus").textContent="PIN protection removed. Your journal entries and photographs are unchanged.";
+ }else{
+  hidePin();
+  updatePinSettings();
+ }
+ if(removePinDialogPreviouslyFocused?.isConnected && !approved)removePinDialogPreviouslyFocused.focus();
+ removePinDialogPreviouslyFocused=null;
+}
+document.addEventListener("keydown",event=>{
+ const dialog=$("removePinDialog");
+ if(!dialog||dialog.hidden)return;
+ if(event.key==="Escape"){
+  event.preventDefault();
+  finishRemovePinDialog(false);
+ }else if(event.key==="Tab"){
+  const first=$("keepPinDialogButton"),last=$("confirmRemovePinButton");
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+ }
+});
 function buildPinKeys(){const grid=$("pinGrid");["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(d=>{const b=document.createElement("button");b.className="pin-key";b.type="button";b.textContent=d;b.disabled=!d;b.onclick=()=>pinPress(d==="⌫"?"back":d);grid.append(b)})}
 function updatePinSettings(){
  const enabled=!!pinRecord();
