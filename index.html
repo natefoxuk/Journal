@@ -1119,6 +1119,19 @@ textarea {
 .artwork-choice input {margin-right:8px; accent-color:#a56e88}
 .artwork-preview {width:100%;max-height:190px;object-fit:cover;border-radius:17px;margin:10px 0}
 .artwork-file {display:block;max-width:100%;margin:12px 0}
+
+/* SETTINGS ACCORDION */
+.settings-accordion{padding:0!important;overflow:hidden;transition:box-shadow .2s ease}
+.settings-accordion-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:72px;padding:20px;border:0;background:transparent;text-align:left;color:#8b6075;font-size:17px;font-weight:600;cursor:pointer}
+.settings-accordion-trigger:hover{background:#fff7fa}
+.settings-accordion-trigger:focus-visible{outline:3px solid #c789a6;outline-offset:-4px}
+.settings-chevron{font-size:27px;font-weight:400;color:#a56e88;transition:transform .2s ease;line-height:1}
+.settings-accordion-trigger[aria-expanded="true"] .settings-chevron{transform:rotate(180deg)}
+.settings-accordion-content{padding:0 19px 19px;border-top:1px solid #f2e1e8}
+.settings-accordion-content[hidden]{display:none!important}
+.settings-accordion-content > p:first-child{margin-top:16px}
+.settings-accordion-content .safe-secondary,.settings-accordion-content .safe-action{max-width:100%}
+@media(prefers-reduced-motion:reduce){.settings-chevron,.settings-accordion{transition:none}}
 </style>
 </head>
 
@@ -1806,30 +1819,55 @@ textarea {
   <div style="text-align:center">✧ ♡ ✧</div>
   <h2>Keep Your Memories Safe</h2>
   <p style="text-align:center">Your memories deserve a safe place to stay.</p>
-  <div class="safe-card">
-   <h3>💛 Personalize My Journal</h3>
-   <p>Enjoy a different pastel illustration whenever Journal starts, or choose a personal photograph that stays until you change it.</p>
-   <label class="artwork-choice"><input type="radio" name="artworkMode" value="rotate" onchange="setArtworkMode('rotate')"> Rotating Artwork — a new illustration each time Journal opens</label>
-   <label class="artwork-choice"><input type="radio" name="artworkMode" value="personal" onchange="setArtworkMode('personal')"> My Own Photograph — keep my chosen picture</label>
-   <div id="personalArtworkControls" class="hidden">
-    <label for="personalArtworkInput">Upload or replace your photograph</label>
-    <input class="artwork-file" id="personalArtworkInput" type="file" accept="image/jpeg,image/png,image/webp,image/bmp" onchange="savePersonalArtwork(event)">
-    <img id="personalArtworkPreview" class="artwork-preview hidden" alt="Your selected photograph">
-    <button class="safe-secondary" onclick="removePersonalArtwork()">Remove My Photograph</button>
+  <section class="safe-card settings-accordion" data-settings-section="0">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>💛 Personalize My Journal</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
+
+
+<p>Enjoy a different pastel illustration whenever Journal starts, or choose a personal photograph that stays until you change it.</p>
+<label class="artwork-choice"><input name="artworkMode" onchange="setArtworkMode('rotate')" type="radio" value="rotate"/> Rotating Artwork — a new illustration each time Journal opens</label>
+<label class="artwork-choice"><input name="artworkMode" onchange="setArtworkMode('personal')" type="radio" value="personal"/> My Own Photograph — keep my chosen picture</label>
+<div class="hidden" id="personalArtworkControls">
+<label for="personalArtworkInput">Upload or replace your photograph</label>
+<input accept="image/jpeg,image/png,image/webp,image/bmp" class="artwork-file" id="personalArtworkInput" onchange="savePersonalArtwork(event)" type="file"/>
+<img alt="Your selected photograph" class="artwork-preview hidden" id="personalArtworkPreview"/>
+<button class="safe-secondary" onclick="removePersonalArtwork()">Remove My Photograph</button>
+</div>
+<p class="safe-message" id="artworkSettingsStatus" role="status"></p>
+<p class="safe-note">Your chosen homepage photograph is stored on this device. It is not included in the existing entry backup, so please keep the original in your Gallery.</p>
+
    </div>
-   <p id="artworkSettingsStatus" class="safe-message" role="status"></p>
-   <p class="safe-note">Your chosen homepage photograph is stored on this device. It is not included in the existing entry backup, so please keep the original in your Gallery.</p>
-  </div>
-  <div class="safe-card"><h3>↧ Backup My Journal</h3><p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button></div>
-  <div class="safe-card"><h3>↥ Restore My Journal</h3><p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input id="restoreFile" type="file" accept=".json,application/json" style="display:block;max-width:100%;margin-bottom:10px"><button class="safe-action" onclick="restoreJournal()">Restore Backup</button></div>
-  <div class="safe-card"><h3>♧ Backup Reminder</h3><p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input type="checkbox" id="backupReminderToggle" onchange="setBackupReminder(this.checked)"> Remind me every 30 days when I open Journal</label></div>
-  <div class="safe-card"><h3>🔒 Journal PIN</h3><p id="pinSettingsStatus">Protect Journal with a six-digit PIN when opening the app.</p><button class="safe-action" onclick="startPinSetup()" id="pinSetupButton">Set Up PIN</button><button class="safe-secondary" onclick="changePin()" id="pinChangeButton">Change PIN</button><button class="safe-secondary" onclick="changeRecoveryQuestion()" id="recoveryChangeButton">Change Recovery Question</button><button class="safe-secondary" onclick="lockJournal()" id="pinLockButton">Lock Now</button></div>
+  </section>
+  <section class="safe-card settings-accordion" data-settings-section="1">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>↧ Backup My Journal</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <div class="settings-accordion-content" id="settingsContent1" role="region" aria-labelledby="settingsTrigger1" hidden>
+<p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button>
+   </div>
+  </section>
+  <section class="safe-card settings-accordion" data-settings-section="2">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>↥ Restore My Journal</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <div class="settings-accordion-content" id="settingsContent2" role="region" aria-labelledby="settingsTrigger2" hidden>
+<p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input accept=".json,application/json" id="restoreFile" style="display:block;max-width:100%;margin-bottom:10px" type="file"/><button class="safe-action" onclick="restoreJournal()">Restore Backup</button>
+   </div>
+  </section>
+  <section class="safe-card settings-accordion" data-settings-section="3">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>♧ Backup Reminder</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <div class="settings-accordion-content" id="settingsContent3" role="region" aria-labelledby="settingsTrigger3" hidden>
+<p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input id="backupReminderToggle" onchange="setBackupReminder(this.checked)" type="checkbox"/> Remind me every 30 days when I open Journal</label>
+   </div>
+  </section>
+  <section class="safe-card settings-accordion" data-settings-section="4">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger4" aria-expanded="false" aria-controls="settingsContent4" onclick="toggleSettingsSection(4)"><span>🔒 Journal PIN</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <div class="settings-accordion-content" id="settingsContent4" role="region" aria-labelledby="settingsTrigger4" hidden>
+<p id="pinSettingsStatus">Protect Journal with a six-digit PIN when opening the app.</p><button class="safe-action" id="pinSetupButton" onclick="startPinSetup()">Set Up PIN</button><div class=""><button class="safe-secondary" id="pinChangeButton" onclick="changePin()">Change PIN</button><button class="safe-secondary" id="recoveryChangeButton" onclick="changeRecoveryQuestion()">Change Recovery Question</button><button class="safe-secondary" id="pinLockButton" onclick="lockJournal()">Lock Now</button><div style="margin-top:10px;padding-top:12px;border-top:1px solid #f0dce5"><button class="safe-secondary" id="pinRemoveButton" onclick="startRemovePin()" style="color:#a04465;border-color:#e4b5c4">Remove PIN</button><p class="safe-note">Removing your PIN turns off Journal's lock screen. Your entries and photos are not deleted.</p></div></div>
+   </div>
+  </section>
   <p id="settingsStatus" class="safe-message" role="status"></p>
   <p class="safe-note">Your journal remains stored on this device. A PIN protects the app screen, not the underlying browser database. Backup files are encrypted separately with a password.</p>
  </div>
 </main>
 <div id="lockScreen" aria-label="Journal PIN lock screen" role="dialog" aria-modal="true">
- <div class="lock-inner"><div style="font-size:36px">🌸</div><h1>Journal</h1><p id="lockPrompt">Welcome back. Your little space, just for you.</p><div style="font-size:28px">🔒</div><div class="pin-dots" id="pinDots"></div><div class="pin-error" id="pinError" role="alert"></div><div class="pin-grid" id="pinGrid"></div><button class="safe-secondary" id="forgotPinButton" onclick="startPinRecovery()" style="display:none;margin-top:14px">Forgotten your PIN?</button><section id="recoveryPanel" style="display:none;background:#fff9fc;border:1px solid #eed8e3;border-radius:18px;padding:18px;margin:16px 0;text-align:left"><label for="recoveryQuestionSelect" style="display:block;margin-bottom:8px">Choose your security question</label><select id="recoveryQuestionSelect" style="width:100%;padding:11px;border-radius:10px;border:1px solid #d8b4c5" onchange="onRecoveryQuestionChange()"><option value="pet">What was the name of your first pet?</option><option value="street">What street did you grow up on?</option><option value="teacher">What was your first teacher’s surname?</option><option value="place">What was the name of your childhood favourite place?</option><option value="custom">Write my own question</option></select><div id="customQuestionWrap" style="display:none;margin-top:12px"><label for="customRecoveryQuestion">Your personal question</label><input id="customRecoveryQuestion" type="text" maxlength="180" autocomplete="off" placeholder="Write a question only you can answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"></div><p id="recoveryQuestionDisplay" style="display:none;font-weight:bold"></p><label for="recoveryAnswer" style="display:block;margin-top:12px">Your secret answer</label><input id="recoveryAnswer" type="password" maxlength="200" autocomplete="off" placeholder="Enter your answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"><p id="recoveryMessage" role="status" style="font-size:13px;color:#a04465"></p><button class="safe-action" id="recoverySubmit" onclick="submitRecovery()" style="margin-top:10px">Continue</button></section><button class="safe-secondary" id="pinCancel" onclick="cancelPinFlow()" style="display:none;margin-top:18px">Cancel</button></div>
+ <div class="lock-inner"><div style="font-size:36px">🌸</div><h1>Journal</h1><p id="lockPrompt">Welcome back. Your little space, just for you.</p><div style="font-size:28px">🔒</div><div class="pin-dots" id="pinDots"></div><div class="pin-error" id="pinError" role="alert"></div><div class="pin-grid" id="pinGrid"></div><button class="safe-secondary" id="forgotPinButton" onclick="startPinRecovery()" style="display:none;margin-top:14px">Forgotten your PIN?</button><section id="recoveryPanel" style="display:none;background:#fff9fc;border:1px solid #eed8e3;border-radius:18px;padding:18px;margin:16px 0;text-align:left"><label for="recoveryQuestionSelect" style="display:block;margin-bottom:8px">Choose your security question</label><select id="recoveryQuestionSelect" style="width:100%;padding:11px;border-radius:10px;border:1px solid #d8b4c5" onchange="onRecoveryQuestionChange()"><option value="pet">What was the name of your first pet?</option><option value="street">What street did you grow up on?</option><option value="teacher">What was your first teacher’s surname?</option><option value="place">What was the name of your childhood favourite place?</option><option value="custom">Write my own question</option></select><div id="customQuestionWrap" style="display:none;margin-top:12px"><label for="customRecoveryQuestion">Your personal question</label><input id="customRecoveryQuestion" type="text" maxlength="180" autocomplete="off" placeholder="Write a question only you can answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"></div><p id="recoveryQuestionDisplay" style="display:none;font-weight:bold"></p><label for="recoveryAnswer" style="display:block;margin-top:12px">Your secret answer</label><div style="position:relative;margin-top:6px"><input id="recoveryAnswer" type="password" maxlength="200" autocomplete="off" placeholder="Enter your answer" style="display:block;width:100%;padding:11px 55px 11px 11px;border:1px solid #d8b4c5;border-radius:10px"><button id="recoveryAnswerEye" type="button" onclick="toggleRecoveryAnswerVisibility()" aria-label="Show security answer" aria-pressed="false" title="Show security answer" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;border-radius:8px;background:#fff0f5;color:#795767;width:44px;height:38px;font-size:19px">👁</button></div><p id="recoveryMessage" role="status" style="font-size:13px;color:#a04465"></p><button class="safe-action" id="recoverySubmit" onclick="submitRecovery()" style="margin-top:10px">Continue</button></section><button class="safe-secondary" id="pinCancel" onclick="cancelPinFlow()" style="display:none;margin-top:18px">Cancel</button></div>
 </div>
 <script>
 
@@ -4730,6 +4768,7 @@ let pendingRecovery = null;
 let recoveryBusy = false;
 let pinBusy = false;
 
+
 function pinRecord(){try{return JSON.parse(localStorage.getItem(JOURNAL_PIN_KEY)||"null")}catch(_){return null}}
 function randomBytes(n){const b=new Uint8Array(n);crypto.getRandomValues(b);return b}
 function toB64(b){let out="";for(let i=0;i<b.length;i+=8192)out+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(out)}
@@ -4749,7 +4788,7 @@ function renderPin(){
  for(let i=0;i<6;i++){const d=document.createElement("span");d.className="pin-dot"+(i<pinDigits.length?" filled":"");$("pinDots").append(d)}
 }
 function showPin(flow,prompt){pinFlow=flow;pinDigits="";$("pinError").textContent="";$("lockPrompt").textContent=prompt;$("pinCancel").style.display=flow==="unlock"?"none":"inline-block";$("forgotPinButton").style.display=flow==="unlock"&&!!recoveryRecord()?"inline-block":"none";$("recoveryPanel").style.display="none";$("pinGrid").style.display="grid";$("pinDots").style.display="flex";$("lockScreen").classList.add("visible");renderPin()}
-function hidePin(){pinFlow="";pinDigits="";pendingPin="";recoveryFlow="";pendingRecovery=null;$("recoveryAnswer").value="";$("lockScreen").classList.remove("visible")}
+function hidePin(){pinFlow="";pinDigits="";pendingPin="";recoveryFlow="";pendingRecovery=null;$("recoveryAnswer").value="";resetRecoveryAnswerVisibility();$("lockScreen").classList.remove("visible")}
 function cancelPinFlow(){if(!journalUnlocked){if(recoveryFlow){recoveryFlow="";showPin("unlock","Welcome back. Enter your six-digit PIN.")}return;}hidePin();updatePinSettings()}
 function pinPress(digit){if(pinBusy)return;if(digit==="back"){pinDigits=pinDigits.slice(0,-1);renderPin();return}if(pinDigits.length>=6)return;pinDigits+=digit;renderPin();if(pinDigits.length===6)handlePinComplete(pinDigits)}
 async function handlePinComplete(value){
@@ -4772,12 +4811,57 @@ async function handlePinComplete(value){
   }else if(pinFlow==="change"){
    if(await verifyPin(value)){pinChangeAuthorized=true;showPin("new","Choose your new six-digit PIN.")}
    else $("pinError").textContent="Incorrect current PIN. Please try again.";
+  }else if(pinFlow==="remove"){
+   if(!(await verifyPin(value))){$("pinError").textContent="Incorrect current PIN. Please try again.";return}
+   if(!confirm("Remove Journal PIN protection? Journal will open without a PIN on this device. Your entries and photos will remain unchanged.")){
+    hidePin();return;
+   }
+   localStorage.removeItem(JOURNAL_PIN_KEY);
+   localStorage.removeItem(JOURNAL_RECOVERY_KEY);
+   localStorage.removeItem(JOURNAL_RECOVERY_LIMIT_KEY);
+   journalUnlocked=true;hidePin();updatePinSettings();
+   $("settingsStatus").textContent="PIN protection removed. Your journal entries and photos are unchanged.";
   }
  }catch(error){console.error("Journal PIN error:",error);$("pinError").textContent="PIN setup error: "+(error?.message||error?.name||"Unknown error")+". Please tell us this message."}
  finally{pinBusy=false}
 }
 function buildPinKeys(){const grid=$("pinGrid");["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(d=>{const b=document.createElement("button");b.className="pin-key";b.type="button";b.textContent=d;b.disabled=!d;b.onclick=()=>pinPress(d==="⌫"?"back":d);grid.append(b)})}
-function updatePinSettings(){const enabled=!!pinRecord();$("pinSettingsStatus").textContent=enabled?"Your six-digit PIN is enabled on this device.":"Choose a six-digit PIN to lock Journal when opening it.";$("pinSetupButton").style.display=enabled?"none":"inline-block";$("pinChangeButton").style.display=enabled?"inline-block":"none";$("pinLockButton").style.display=enabled?"inline-block":"none";$("recoveryChangeButton").style.display=enabled?"inline-block":"none";$("recoveryChangeButton").textContent=recoveryRecord()?"Change Recovery Question":"Set Up Recovery Question"}
+function updatePinSettings(){
+ const enabled=!!pinRecord();
+ $("pinSettingsStatus").textContent=enabled?"Your six-digit PIN is enabled on this device.":"Choose a six-digit PIN to lock Journal when opening it.";
+ $("pinSetupButton").style.display=enabled?"none":"inline-block";
+ ["pinChangeButton","recoveryChangeButton","pinLockButton","pinRemoveButton"].forEach(id=>$(id).style.display=enabled?"inline-block":"none");
+ $("recoveryChangeButton").textContent=recoveryRecord()?"Change Recovery Question":"Set Up Recovery Question";
+}
+function toggleSettingsSection(index){
+ document.querySelectorAll(".settings-accordion").forEach((section,i)=>{
+  const trigger=section.querySelector(".settings-accordion-trigger");
+  const content=section.querySelector(".settings-accordion-content");
+  const expand=i===index && trigger.getAttribute("aria-expanded")!=="true";
+  trigger.setAttribute("aria-expanded",String(expand));
+  content.hidden=!expand;
+ });
+}
+function toggleRecoveryAnswerVisibility(){
+ const field=$("recoveryAnswer"),button=$("recoveryAnswerEye"),show=field.type==="password";
+ field.type=show?"text":"password";
+ button.textContent=show?"🙈":"👁";
+ button.setAttribute("aria-label",show?"Hide security answer":"Show security answer");
+ button.setAttribute("title",show?"Hide security answer":"Show security answer");
+ button.setAttribute("aria-pressed",String(show));
+}
+function resetRecoveryAnswerVisibility(){
+ $("recoveryAnswer").type="password";
+ $("recoveryAnswerEye").textContent="👁";
+ $("recoveryAnswerEye").setAttribute("aria-label","Show security answer");
+ $("recoveryAnswerEye").setAttribute("title","Show security answer");
+ $("recoveryAnswerEye").setAttribute("aria-pressed","false");
+}
+function startRemovePin(){
+ if(!pinRecord()||!journalUnlocked)return;
+ showPin("remove","Enter your current six-digit PIN to remove PIN protection.");
+}
+
 function startPinSetup(){if(pinRecord())return;pendingRecovery=null;showPin("setup","Choose your six-digit Journal PIN.")}
 function changePin(){if(!pinRecord())return startPinSetup();showPin("change","Enter your current PIN to change it.")}
 const RECOVERY_QUESTIONS={pet:"What was the name of your first pet?",street:"What street did you grow up on?",teacher:"What was your first teacher’s surname?",place:"What was the name of your childhood favourite place?"};
@@ -4786,7 +4870,7 @@ function normaliseRecoveryAnswer(answer){return answer.trim().toLocaleLowerCase(
 async function recoveryVerifier(answer,salt){return pinVerifier(normaliseRecoveryAnswer(answer),salt)}
 function onRecoveryQuestionChange(){$("customQuestionWrap").style.display=$("recoveryQuestionSelect").value==="custom"?"block":"none"}
 function showRecoveryPanel(flow){
- recoveryFlow=flow;pinFlow="";pinDigits="";$("lockScreen").classList.add("visible");$("pinGrid").style.display="none";$("pinDots").style.display="none";$("forgotPinButton").style.display="none";$("recoveryPanel").style.display="block";$("recoveryMessage").textContent="";$("recoveryAnswer").value="";$("pinError").textContent="";
+ recoveryFlow=flow;pinFlow="";pinDigits="";$("lockScreen").classList.add("visible");$("pinGrid").style.display="none";$("pinDots").style.display="none";$("forgotPinButton").style.display="none";$("recoveryPanel").style.display="block";$("recoveryMessage").textContent="";$("recoveryAnswer").value="";resetRecoveryAnswerVisibility();$("pinError").textContent="";
  const setup=flow==="setup"||flow==="edit";$("recoveryQuestionSelect").style.display=setup?"block":"none";$("recoveryQuestionSelect").previousElementSibling.style.display=setup?"block":"none";$("customQuestionWrap").style.display="none";$("recoveryQuestionDisplay").style.display=setup?"none":"block";
  if(setup){$("lockPrompt").textContent="Choose a personal question and secret answer to recover your PIN.";$("recoveryQuestionSelect").value="pet";$("recoverySubmit").textContent="Save Security Question"}
  else{const r=recoveryRecord();if(!r){showPin("unlock","PIN recovery is not configured on this device.");return}$("lockPrompt").textContent="Answer your security question to reset your PIN.";$("recoveryQuestionDisplay").textContent=r.question;$("recoverySubmit").textContent="Verify Answer"}
