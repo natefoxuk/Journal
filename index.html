@@ -1903,6 +1903,31 @@ textarea {
  </div>
 </div>
 
+
+<!-- In-app restore confirmation, without a browser-origin popup -->
+<div id="restoreConfirmDialog" class="journal-dialog-backdrop" hidden>
+ <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="restoreConfirmTitle" aria-describedby="restoreConfirmDescription">
+  <div class="journal-dialog-icon" aria-hidden="true">📖</div>
+  <h2 id="restoreConfirmTitle">Restore Your Memories?</h2>
+  <p id="restoreConfirmDescription"></p>
+  <div class="journal-dialog-actions">
+   <button type="button" class="journal-dialog-cancel" onclick="finishRestoreConfirmation(false)">Cancel</button>
+   <button type="button" class="journal-dialog-confirm" onclick="finishRestoreConfirmation(true)">Restore Entries</button>
+  </div>
+ </div>
+</div>
+<!-- Journal-styled backup reminder information and due reminder -->
+<div id="backupReminderDialog" class="journal-dialog-backdrop" hidden>
+ <div class="journal-dialog" role="dialog" aria-modal="true" aria-labelledby="backupReminderDialogTitle" aria-describedby="backupReminderDialogDescription">
+  <div class="journal-dialog-icon" aria-hidden="true">✧</div>
+  <h2 id="backupReminderDialogTitle">Backup Reminders Enabled</h2>
+  <p id="backupReminderDialogDescription">Every 30 days, Journal will gently remind you to back up your memories the next time you open the app.</p>
+  <div class="journal-dialog-actions">
+   <button type="button" class="journal-dialog-cancel" id="backupReminderLaterButton" onclick="finishBackupReminderDialog(false)" hidden>Maybe Later</button>
+   <button type="button" class="journal-dialog-confirm" id="backupReminderActionButton" onclick="finishBackupReminderDialog(true)">Got It</button>
+  </div>
+ </div>
+</div>
 <!-- Styled backup/restore password dialog -->
 <div id="journalPasswordDialog" class="journal-dialog-backdrop" hidden>
  <form id="journalPasswordForm" class="journal-dialog" role="dialog" aria-modal="true" aria-labelledby="journalPasswordTitle" onsubmit="submitJournalPasswordDialog(event)">
@@ -4986,9 +5011,89 @@ async function submitRecovery(){
 }
 function lockJournal(){if(!pinRecord())return;journalUnlocked=false;showPage("home");showPin("unlock","Welcome back. Enter your six-digit PIN.")}
 function openSettings(){updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
-function setBackupReminder(enabled){localStorage.setItem(JOURNAL_REMINDER_KEY,enabled?"yes":"no");updateBackupReminderText()}
-function updateBackupReminderText(){const last=localStorage.getItem(JOURNAL_BACKUP_DATE_KEY);$("backupReminderText").textContent=last?"Last backup created: "+new Date(last).toLocaleDateString()+". A reminder appears after 30 days when you open Journal.":"No backup recorded yet. Enable reminders to be prompted every 30 days when you open Journal."}
-function showBackupReminder(){if(localStorage.getItem(JOURNAL_REMINDER_KEY)!=="yes")return;const last=localStorage.getItem(JOURNAL_BACKUP_DATE_KEY);if(last&&Date.now()-new Date(last).getTime()<30*86400000)return;const key="journal-reminded-"+new Date().toISOString().slice(0,10);if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"yes");setTimeout(()=>{if(confirm("🌸 Your memories matter. Would you like to create a Journal backup now?"))openSettings()},500)}
+/* A 30-day in-app reminder, counted from opt-in, backup, or the last reminder. */
+const JOURNAL_REMINDER_START_KEY="journal-reminder-start-v2";
+const JOURNAL_REMINDER_SHOWN_KEY="journal-reminder-shown-v2";
+const JOURNAL_REMINDER_INTERVAL=30*24*60*60*1000;
+let backupReminderDialogMode="";
+let backupReminderDialogFocus=null;
+function validReminderTime(key){
+ const raw=localStorage.getItem(key);
+ const time=raw?Date.parse(raw):NaN;
+ return Number.isFinite(time)&&time<=Date.now()?time:0;
+}
+function setBackupReminder(enabled){
+ localStorage.setItem(JOURNAL_REMINDER_KEY,enabled?"yes":"no");
+ if(enabled){
+  // A fresh opt-in starts a fresh 30-day period; never prompt immediately.
+  localStorage.setItem(JOURNAL_REMINDER_START_KEY,new Date().toISOString());
+  localStorage.removeItem(JOURNAL_REMINDER_SHOWN_KEY);
+  showBackupReminderDialog("enabled");
+ }else{
+  localStorage.removeItem(JOURNAL_REMINDER_START_KEY);
+  localStorage.removeItem(JOURNAL_REMINDER_SHOWN_KEY);
+ }
+ updateBackupReminderText();
+}
+function updateBackupReminderText(){
+ const last=validReminderTime(JOURNAL_BACKUP_DATE_KEY);
+ const enabled=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";
+ const label=$("backupReminderText");
+ if(!enabled){label.textContent=last?"Last backup created: "+new Date(last).toLocaleDateString()+". Enable reminders to receive a gentle reminder every 30 days when you open Journal.":"Enable reminders to receive a gentle reminder every 30 days when you open Journal.";return}
+ const start=validReminderTime(JOURNAL_REMINDER_START_KEY);
+ const shown=validReminderTime(JOURNAL_REMINDER_SHOWN_KEY);
+ const reference=Math.max(start,last,shown);
+ const due=reference?new Date(reference+JOURNAL_REMINDER_INTERVAL):null;
+ label.textContent=(last?"Last backup created: "+new Date(last).toLocaleDateString()+". ":"")+"Reminders are on. "+(due?"Next reminder due: "+due.toLocaleDateString()+" (when you open Journal).":"Your first reminder will be due in 30 days.");
+}
+function showBackupReminderDialog(mode){
+ if(!$("backupReminderDialog").hidden)return;
+ backupReminderDialogMode=mode;
+ backupReminderDialogFocus=document.activeElement;
+ const enabled=mode==="enabled";
+ $("backupReminderDialogTitle").textContent=enabled?"Backup Reminders Enabled":"Time to Back Up?";
+ $("backupReminderDialogDescription").textContent=enabled
+  ?"Every 30 days, Journal will gently remind you to back up your memories the next time you open the app."
+  :"Your memories matter. It's been 30 days since your last backup or reminder. Would you like to create an encrypted backup now?";
+ $("backupReminderLaterButton").hidden=enabled;
+ $("backupReminderActionButton").textContent=enabled?"Got It":"Back Up Now";
+ $("backupReminderDialog").hidden=false;
+ $("backupReminderActionButton").focus();
+}
+function finishBackupReminderDialog(accepted){
+ $("backupReminderDialog").hidden=true;
+ const mode=backupReminderDialogMode;
+ backupReminderDialogMode="";
+ if(backupReminderDialogFocus?.isConnected)backupReminderDialogFocus.focus();
+ backupReminderDialogFocus=null;
+ if(mode==="due"&&accepted){
+  openSettings();
+  // Expand the Backup My Journal section to show the download button.
+  if(typeof toggleSettingsSection==="function"){
+   const panel=$("settingsContent1");
+   if(panel&&!panel.classList.contains("expanded")&&$("settingsTrigger1")?.getAttribute("aria-expanded")!=="true")toggleSettingsSection(1);
+  }
+ }
+}
+function showBackupReminder(){
+ if(localStorage.getItem(JOURNAL_REMINDER_KEY)!=="yes")return;
+ let start=validReminderTime(JOURNAL_REMINDER_START_KEY);
+ if(!start){
+  // Migrate older installs that enabled reminders without an opt-in date.
+  start=Date.now();
+  localStorage.setItem(JOURNAL_REMINDER_START_KEY,new Date(start).toISOString());
+ }
+ const last=validReminderTime(JOURNAL_BACKUP_DATE_KEY);
+ const shown=validReminderTime(JOURNAL_REMINDER_SHOWN_KEY);
+ if(Date.now()-Math.max(start,last,shown)<JOURNAL_REMINDER_INTERVAL)return;
+ // Record the reminder before showing it so reopening Journal won't repeat it.
+ localStorage.setItem(JOURNAL_REMINDER_SHOWN_KEY,new Date().toISOString());
+ setTimeout(()=>{
+  if(localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes"&&journalUnlocked){
+   showBackupReminderDialog("due");
+  }
+ },500);
+}
 async function removeEntry(id){const db=await openDatabase();return new Promise((resolve,reject)=>{const tx=db.transaction("entries","readwrite");tx.objectStore("entries").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)})}
 async function deleteCurrentEntry(){
  if(!editingId)return;
@@ -5071,6 +5176,32 @@ async function backupJournal(){
   localStorage.setItem(JOURNAL_BACKUP_DATE_KEY,new Date().toISOString());updateBackupReminderText();$("settingsStatus").textContent="Backup prepared. Save the downloaded file somewhere safe and keep its password. Check that the file is in your Downloads folder.";
  }catch(error){console.error(error);$("settingsStatus").textContent="Backup failed: "+(error.message||"unknown error")}
 }
+
+let restoreConfirmationResolve=null;
+let restoreConfirmationFocus=null;
+function askRestoreConfirmation(count,duplicates){
+ return new Promise(resolve=>{
+  restoreConfirmationResolve=resolve;
+  restoreConfirmationFocus=document.activeElement;
+  $("restoreConfirmDescription").textContent=
+   "Restore "+count+" "+(count===1?"entry":"entries")+"? "+
+   (duplicates>0
+     ? duplicates+" existing "+(duplicates===1?"entry matches and will":"entries match and will")+" be updated. "
+     : "No existing entries will be overwritten. ")+
+   "All other existing entries will remain unchanged.";
+  $("restoreConfirmDialog").hidden=false;
+  $("restoreConfirmDialog").querySelector(".journal-dialog-cancel").focus();
+ });
+}
+function finishRestoreConfirmation(confirmed){
+ $("restoreConfirmDialog").hidden=true;
+ const resolve=restoreConfirmationResolve;
+ restoreConfirmationResolve=null;
+ if(restoreConfirmationFocus?.isConnected)restoreConfirmationFocus.focus();
+ restoreConfirmationFocus=null;
+ if(resolve)resolve(confirmed);
+}
+
 async function restoreJournal(){
  const file=$("restoreFile").files[0];if(!file){$("settingsStatus").textContent="Choose a Journal backup file first.";return}
  const password=await askJournalPassword("restore");if(password===null)return;
@@ -5083,7 +5214,7 @@ async function restoreJournal(){
   const restored=[];const ids=new Set();
   for(const entry of payload.entries){if(!entry||typeof entry.id!=="string"||!entry.id||typeof entry.date!=="string"||!Array.isArray(entry.photos)||ids.has(entry.id))throw new Error("Backup contains invalid or duplicate entries.");ids.add(entry.id);const photos=entry.photos.map(dataUrlAsBlob);restored.push({...entry,photos})}
   const current=await allEntries();const existingIds=new Set(current.map(e=>e.id));const duplicates=restored.filter(e=>existingIds.has(e.id)).length;
-  if(!confirm("Restore "+restored.length+" entries? "+duplicates+" entries already exist and will be updated; all other existing entries will remain. Continue?")){ $("settingsStatus").textContent="Restore canceled. No entries changed.";return}
+  if(!(await askRestoreConfirmation(restored.length,duplicates))){ $("settingsStatus").textContent="Restore canceled. No entries changed.";return}
   const db=await openDatabase();await new Promise((resolve,reject)=>{const tx=db.transaction("entries","readwrite");const store=tx.objectStore("entries");for(const entry of restored)store.put(entry);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)});
   $("restoreFile").value="";$("settingsStatus").textContent="Restored "+restored.length+" entries successfully. Your existing entries with different IDs were kept.";
  }catch(error){console.error(error);$("settingsStatus").textContent="Restore failed: "+(error.message||"unknown error")}
