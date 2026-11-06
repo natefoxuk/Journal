@@ -1143,6 +1143,15 @@ textarea {
 .journal-dialog-cancel{background:#fff;border:1px solid #e7bfd0;color:#795767}
 .journal-dialog-confirm{background:#f6dbe6;border:1px solid #e8b8ca;color:#92536f}
 .journal-dialog button:focus-visible{outline:3px solid #a56e88;outline-offset:3px}
+
+/* IN-APP BACKUP AND RESTORE PASSWORD WINDOW */
+.journal-password-field[hidden]{display:none!important}
+.journal-password-field{display:block;text-align:left;margin:14px 0;font-size:13px;font-weight:600}
+.journal-password-wrap{display:flex;align-items:center;gap:5px;margin-top:7px;background:white;border:1px solid #ebd4dd;border-radius:13px;padding:3px 5px 3px 11px}
+.journal-password-wrap input{flex:1;width:0;min-width:0;border:0;background:transparent;padding:10px 0;color:#795767;font-size:16px;outline:none}
+.journal-password-wrap:focus-within{outline:2px solid #d4a2ba}
+.journal-password-eye{border:0;background:#fce8ef;border-radius:9px;min-width:42px;height:38px;color:#795767;font-size:19px}
+.journal-password-error{min-height:18px;color:#a04465;font-size:12px;text-align:left;margin:5px 0 12px}
 </style>
 </head>
 
@@ -1892,6 +1901,28 @@ textarea {
    <button type="button" class="journal-dialog-confirm" id="confirmRemovePinButton" onclick="finishRemovePinDialog(true)">Remove PIN</button>
   </div>
  </div>
+</div>
+
+<!-- Styled backup/restore password dialog -->
+<div id="journalPasswordDialog" class="journal-dialog-backdrop" hidden>
+ <form id="journalPasswordForm" class="journal-dialog" role="dialog" aria-modal="true" aria-labelledby="journalPasswordTitle" onsubmit="submitJournalPasswordDialog(event)">
+  <div class="journal-dialog-icon" aria-hidden="true">🌸</div>
+  <h2 id="journalPasswordTitle">Protect Your Memories</h2>
+  <p id="journalPasswordDescription">Choose a password for your encrypted backup.</p>
+  <label class="journal-password-field" for="journalPasswordInput">Backup password
+   <span class="journal-password-wrap"><input id="journalPasswordInput" type="password" autocomplete="new-password" required>
+    <button class="journal-password-eye" type="button" onclick="toggleJournalPassword('journalPasswordInput',this)" aria-label="Show password" aria-pressed="false">👁</button></span>
+  </label>
+  <label class="journal-password-field" id="journalPasswordConfirmWrap" for="journalPasswordConfirm">Confirm backup password
+   <span class="journal-password-wrap"><input id="journalPasswordConfirm" type="password" autocomplete="new-password">
+    <button class="journal-password-eye" type="button" onclick="toggleJournalPassword('journalPasswordConfirm',this)" aria-label="Show password" aria-pressed="false">👁</button></span>
+  </label>
+  <div id="journalPasswordError" class="journal-password-error" role="alert"></div>
+  <div class="journal-dialog-actions">
+   <button class="journal-dialog-cancel" type="button" onclick="closeJournalPasswordDialog(null)">Cancel</button>
+   <button class="journal-dialog-confirm" type="submit" id="journalPasswordSubmit">Create Backup</button>
+  </div>
+ </form>
 </div>
 <script>
 
@@ -4969,10 +5000,64 @@ async function deleteCurrentEntry(){
 }
 async function blobAsDataUrl(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob)})}
 function dataUrlAsBlob(data){if(typeof data!=="string"||!/^data:image\/[a-z0-9.+-]+;base64,/i.test(data))throw new Error("Invalid photo in backup.");const [header,b64]=data.split(",");const raw=atob(b64);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return new Blob([bytes],{type:header.slice(5).split(";")[0]})}
+
+/* Journal-styled password entry; no native browser prompt banner. */
+let journalPasswordResolve=null;
+let journalPasswordFocus=null;
+function toggleJournalPassword(id,button){
+ const field=$(id),show=field.type==="password";
+ field.type=show?"text":"password";
+ button.setAttribute("aria-label",show?"Hide password":"Show password");
+ button.setAttribute("aria-pressed",String(show));
+}
+function askJournalPassword(mode){
+ if(journalPasswordResolve)return Promise.resolve(null);
+ return new Promise(resolve=>{
+  journalPasswordResolve=resolve;
+  journalPasswordFocus=document.activeElement;
+  const backup=mode==="backup";
+  $("journalPasswordTitle").textContent=backup?"Create Encrypted Backup":"Restore My Journal";
+  $("journalPasswordDescription").textContent=backup
+   ?"Create a password of at least 8 characters. Keep it safe: without it, your backup cannot be restored."
+   :"Enter the password you used when creating this encrypted backup.";
+  $("journalPasswordConfirmWrap").hidden=!backup;
+  $("journalPasswordInput").autocomplete=backup?"new-password":"current-password";
+  $("journalPasswordConfirm").required=backup;
+  $("journalPasswordSubmit").textContent=backup?"Create Backup":"Unlock Backup";
+  $("journalPasswordError").textContent="";
+  for(const id of ["journalPasswordInput","journalPasswordConfirm"]){
+   $(id).value="";$(id).type="password";
+   const btn=$(id).nextElementSibling;
+   btn.setAttribute("aria-label","Show password");btn.setAttribute("aria-pressed","false");
+  }
+  $("journalPasswordDialog").dataset.mode=mode;
+  $("journalPasswordDialog").hidden=false;
+  $("journalPasswordInput").focus();
+ });
+}
+function closeJournalPasswordDialog(result){
+ $("journalPasswordDialog").hidden=true;
+ $("journalPasswordInput").value="";
+ $("journalPasswordConfirm").value="";
+ const resolve=journalPasswordResolve;
+ journalPasswordResolve=null;
+ if(journalPasswordFocus?.isConnected)journalPasswordFocus.focus();
+ journalPasswordFocus=null;
+ if(resolve)resolve(result);
+}
+function submitJournalPasswordDialog(event){
+ event.preventDefault();
+ const password=$("journalPasswordInput").value;
+ if($("journalPasswordDialog").dataset.mode==="backup"){
+  if(password.length<8){$("journalPasswordError").textContent="Please use at least 8 characters.";return}
+  if(password!==$("journalPasswordConfirm").value){$("journalPasswordError").textContent="Passwords do not match. Please try again.";return}
+ }
+ closeJournalPasswordDialog(password);
+}
+
 async function backupJournal(){
- const password=prompt("Create a backup password (at least 8 characters). Keep it safe: without it your backup cannot be restored.");
- if(password===null)return;if(password.length<8){$("settingsStatus").textContent="Please choose a password of at least 8 characters.";return}
- const again=prompt("Confirm your backup password:");if(password!==again){$("settingsStatus").textContent="Passwords didn't match. No backup was created.";return}
+ const password=await askJournalPassword("backup");
+ if(password===null)return;
  $("settingsStatus").textContent="Preparing your encrypted backup, including photographs...";
  try{
   const entries=await allEntries();const exportEntries=[];
@@ -4988,7 +5073,7 @@ async function backupJournal(){
 }
 async function restoreJournal(){
  const file=$("restoreFile").files[0];if(!file){$("settingsStatus").textContent="Choose a Journal backup file first.";return}
- const password=prompt("Enter the password used to encrypt this backup:");if(password===null)return;
+ const password=await askJournalPassword("restore");if(password===null)return;
  $("settingsStatus").textContent="Checking and decrypting backup...";
  try{
   const envelope=JSON.parse(await file.text());if(envelope.format!=="journal-encrypted-backup"||envelope.version!==1)throw new Error("This is not a supported encrypted Journal backup.");
