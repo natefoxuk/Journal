@@ -151,6 +151,24 @@ h1 {
  padding: 12px;
  background: #ffffffaa;
  color: #956b80;
+ display: inline-flex;
+ align-items: center;
+ gap: 9px;
+ font: inherit;
+ cursor: pointer;
+}
+
+/* Strong, consistent navigation arrow across Journal pages. */
+.back-button::before {
+ content: "";
+ display: inline-block;
+ width: 11px;
+ height: 11px;
+ border-left: 3px solid currentColor;
+ border-bottom: 3px solid currentColor;
+ transform: rotate(45deg);
+ flex: 0 0 auto;
+ margin-left: 3px;
 }
 
 .entry-label {
@@ -1235,7 +1253,7 @@ textarea {
 
   <button class="back-button"
    onclick="showPage('home')">
-   ← Back to Journal
+   Back to Journal
   </button>
 
   <span class="entry-label">
@@ -1407,7 +1425,7 @@ textarea {
 
   <button class="back-button"
    onclick="showPage('home')">
-   ← Back to Journal
+   Back to Journal
   </button>
 
   <span class="entry-label">
@@ -1595,7 +1613,7 @@ textarea {
 
   <button class="back-button"
    onclick="showPage('home')">
-   ← Back to Journal
+   Back to Journal
   </button>
 
   <span class="entry-label">
@@ -1664,7 +1682,7 @@ textarea {
   <button id="entryBack"
    class="back-button"
    onclick="goBackFromEntry()">
-   ← Back to Journal
+   Back to Journal
   </button>
 
   <span id="entryLabel"
@@ -1849,7 +1867,7 @@ textarea {
 
 <!-- SETTINGS -->
 <main id="settings" class="page">
- <div class="entry-navigation"><button class="back-button" onclick="showPage('home')">← Back to Journal</button><span class="entry-label">Settings</span></div>
+ <div class="entry-navigation"><button class="back-button" onclick="showPage('home')">Back to Journal</button><span class="entry-label">Settings</span></div>
  <div class="safe-panel">
   <div style="text-align:center">✧ ♡ ✧</div>
   <h2>Keep Your Memories Safe</h2>
@@ -2482,7 +2500,7 @@ function openEntry() {
  resetEntry();
  renderActivityOptions();
 
- $("entryBack").textContent = "← Back to Journal";
+ $("entryBack").textContent = "Back to Journal";
  $("entryLabel").textContent = "New Entry";
  $("saveButton").textContent = "Save Journal Entry";
 
@@ -3532,10 +3550,10 @@ function editSavedEntry(id) {
 
  $("entryBack").textContent =
   entryOrigin === "emotions"
-   ? "← Back to Emotions"
+   ? "Back to Emotions"
    : entryOrigin === "exercise"
-    ? "← Back to Exercise"
-    : "← Back to Calendar";
+    ? "Back to Exercise"
+    : "Back to Calendar";
 
  $("entryLabel").textContent = "Saved Entry";
 
