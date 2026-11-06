@@ -1080,6 +1080,45 @@ textarea {
   padding: 19px;
  }
 }
+
+/* JOURNAL SETTINGS, BACKUPS AND PIN LOCK */
+.settings-cog{position:absolute;top:18px;right:18px;border:1px solid #e8c6d5;border-radius:50%;width:44px;height:44px;background:#fff9fc;color:#9b6883;font-size:23px;box-shadow:0 3px 12px #b67e9720}
+#home{position:relative}
+.safe-panel{max-width:690px;margin:24px auto;padding:24px;border-radius:25px;background:#fff1f5;color:#8b6075}
+.safe-panel h2{text-align:center;font-family:Georgia,serif;font-size:27px}
+.safe-panel .safe-card{background:#fff;border-radius:17px;padding:19px;margin:15px 0}
+.safe-panel .safe-card h3{margin:0 0 8px;font-size:19px}
+.safe-panel .safe-card p{font-size:14px;line-height:1.6}
+.safe-action,.safe-secondary{border:0;border-radius:13px;background:#e7b7cb;color:#653e53;padding:12px 16px;font-weight:600;margin:5px 7px 5px 0}
+.safe-secondary{background:#fff;border:1px solid #dcb3c6}
+.safe-action:disabled{opacity:.5}
+.safe-message{font-size:14px;line-height:1.5;white-space:pre-wrap}
+.safe-note{font-size:13px;line-height:1.5}
+#lockScreen{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 8% 10%,#fff5df,transparent 50%),linear-gradient(145deg,#fff0e7,#fbe1e9,#f9e7f1);display:none;overflow:auto;padding:32px 16px}
+#lockScreen.visible{display:flex;align-items:center;justify-content:center}
+.lock-inner{text-align:center;max-width:360px;width:100%;color:#966b83}
+.lock-inner h1{font:italic 64px Georgia,serif;margin:15px 0}
+.lock-inner p{line-height:1.5}
+.pin-dots{display:flex;justify-content:center;gap:13px;margin:24px 0}
+.pin-dot{width:13px;height:13px;border-radius:50%;background:#e7c7d6}
+.pin-dot.filled{background:#ae7795}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 auto;max-width:290px}
+.pin-key{background:#fff;border:1px solid #f3dfe7;border-radius:17px;height:59px;color:#906780;font-size:22px}
+.pin-error{min-height:25px;font-size:14px;color:#a04465}
+.delete-entry{margin:12px auto;display:none;border:1px solid #d99db2;background:#fff6f8;color:#a34b69;border-radius:12px;padding:12px 18px;font-weight:600}
+
+/* PERSONALIZED HOME ARTWORK */
+.home-artwork {
+ width: min(100%,175px); height: clamp(145px,45vw,180px);
+ margin: -16px auto 0; overflow:hidden; border-radius:23px;
+ background:#fff5f7; border:1px solid #ffffffdd;
+ box-shadow:0 7px 24px #b1718b1a;
+}
+.home-artwork img { display:block; width:100%; height:100%; object-fit:cover; }
+.artwork-choice {display:block; margin:14px 0; font-size:14px; line-height:1.5}
+.artwork-choice input {margin-right:8px; accent-color:#a56e88}
+.artwork-preview {width:100%;max-height:190px;object-fit:cover;border-radius:17px;margin:10px 0}
+.artwork-file {display:block;max-width:100%;margin:12px 0}
 </style>
 </head>
 
@@ -1088,6 +1127,7 @@ textarea {
 <!-- HOME -->
 
 <main id="home" class="page active">
+ <button class="settings-cog" aria-label="Settings" title="Settings" onclick="openSettings()">⚙</button>
 
  <div class="flowers">🌸</div>
 
@@ -1096,6 +1136,10 @@ textarea {
  <p class="subtitle">
   A little space just for me
  </p>
+
+ <div class="home-artwork">
+  <img id="homeArtworkImage" src="./artwork/artwork-01.jpg" alt="Pastel Journal illustration">
+ </div>
 
  <div class="sparkle">✧ ♡ ✧</div>
 
@@ -1742,6 +1786,8 @@ textarea {
   Save Journal Entry
  </button>
 
+ <button id="deleteEntryButton" class="delete-entry" onclick="deleteCurrentEntry()">🗑 Delete This Entry</button>
+
  <p id="saveStatus"
   class="status"
   role="status"></p>
@@ -1752,6 +1798,39 @@ textarea {
 
 </main>
 
+
+<!-- SETTINGS -->
+<main id="settings" class="page">
+ <div class="entry-navigation"><button class="back-button" onclick="showPage('home')">← Back to Journal</button><span class="entry-label">Settings</span></div>
+ <div class="safe-panel">
+  <div style="text-align:center">✧ ♡ ✧</div>
+  <h2>Keep Your Memories Safe</h2>
+  <p style="text-align:center">Your memories deserve a safe place to stay.</p>
+  <div class="safe-card">
+   <h3>💛 Personalize My Journal</h3>
+   <p>Enjoy a different pastel illustration whenever Journal starts, or choose a personal photograph that stays until you change it.</p>
+   <label class="artwork-choice"><input type="radio" name="artworkMode" value="rotate" onchange="setArtworkMode('rotate')"> Rotating Artwork — a new illustration each time Journal opens</label>
+   <label class="artwork-choice"><input type="radio" name="artworkMode" value="personal" onchange="setArtworkMode('personal')"> My Own Photograph — keep my chosen picture</label>
+   <div id="personalArtworkControls" class="hidden">
+    <label for="personalArtworkInput">Upload or replace your photograph</label>
+    <input class="artwork-file" id="personalArtworkInput" type="file" accept="image/jpeg,image/png,image/webp,image/bmp" onchange="savePersonalArtwork(event)">
+    <img id="personalArtworkPreview" class="artwork-preview hidden" alt="Your selected photograph">
+    <button class="safe-secondary" onclick="removePersonalArtwork()">Remove My Photograph</button>
+   </div>
+   <p id="artworkSettingsStatus" class="safe-message" role="status"></p>
+   <p class="safe-note">Your chosen homepage photograph is stored on this device. It is not included in the existing entry backup, so please keep the original in your Gallery.</p>
+  </div>
+  <div class="safe-card"><h3>↧ Backup My Journal</h3><p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button></div>
+  <div class="safe-card"><h3>↥ Restore My Journal</h3><p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input id="restoreFile" type="file" accept=".json,application/json" style="display:block;max-width:100%;margin-bottom:10px"><button class="safe-action" onclick="restoreJournal()">Restore Backup</button></div>
+  <div class="safe-card"><h3>♧ Backup Reminder</h3><p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input type="checkbox" id="backupReminderToggle" onchange="setBackupReminder(this.checked)"> Remind me every 30 days when I open Journal</label></div>
+  <div class="safe-card"><h3>🔒 Journal PIN</h3><p id="pinSettingsStatus">Protect Journal with a six-digit PIN when opening the app.</p><button class="safe-action" onclick="startPinSetup()" id="pinSetupButton">Set Up PIN</button><button class="safe-secondary" onclick="changePin()" id="pinChangeButton">Change PIN</button><button class="safe-secondary" onclick="changeRecoveryQuestion()" id="recoveryChangeButton">Change Recovery Question</button><button class="safe-secondary" onclick="lockJournal()" id="pinLockButton">Lock Now</button></div>
+  <p id="settingsStatus" class="safe-message" role="status"></p>
+  <p class="safe-note">Your journal remains stored on this device. A PIN protects the app screen, not the underlying browser database. Backup files are encrypted separately with a password.</p>
+ </div>
+</main>
+<div id="lockScreen" aria-label="Journal PIN lock screen" role="dialog" aria-modal="true">
+ <div class="lock-inner"><div style="font-size:36px">🌸</div><h1>Journal</h1><p id="lockPrompt">Welcome back. Your little space, just for you.</p><div style="font-size:28px">🔒</div><div class="pin-dots" id="pinDots"></div><div class="pin-error" id="pinError" role="alert"></div><div class="pin-grid" id="pinGrid"></div><button class="safe-secondary" id="forgotPinButton" onclick="startPinRecovery()" style="display:none;margin-top:14px">Forgotten your PIN?</button><section id="recoveryPanel" style="display:none;background:#fff9fc;border:1px solid #eed8e3;border-radius:18px;padding:18px;margin:16px 0;text-align:left"><label for="recoveryQuestionSelect" style="display:block;margin-bottom:8px">Choose your security question</label><select id="recoveryQuestionSelect" style="width:100%;padding:11px;border-radius:10px;border:1px solid #d8b4c5" onchange="onRecoveryQuestionChange()"><option value="pet">What was the name of your first pet?</option><option value="street">What street did you grow up on?</option><option value="teacher">What was your first teacher’s surname?</option><option value="place">What was the name of your childhood favourite place?</option><option value="custom">Write my own question</option></select><div id="customQuestionWrap" style="display:none;margin-top:12px"><label for="customRecoveryQuestion">Your personal question</label><input id="customRecoveryQuestion" type="text" maxlength="180" autocomplete="off" placeholder="Write a question only you can answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"></div><p id="recoveryQuestionDisplay" style="display:none;font-weight:bold"></p><label for="recoveryAnswer" style="display:block;margin-top:12px">Your secret answer</label><input id="recoveryAnswer" type="password" maxlength="200" autocomplete="off" placeholder="Enter your answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"><p id="recoveryMessage" role="status" style="font-size:13px;color:#a04465"></p><button class="safe-action" id="recoverySubmit" onclick="submitRecovery()" style="margin-top:10px">Continue</button></section><button class="safe-secondary" id="pinCancel" onclick="cancelPinFlow()" style="display:none;margin-top:18px">Cancel</button></div>
+</div>
 <script>
 
 /* CONFIGURATION */
@@ -2038,6 +2117,7 @@ function getKnownActivity(entry) {
 /* NEW ENTRY */
 
 function openEntry() {
+ $("deleteEntryButton").style.display="none";
  editingId = null;
  originalSnapshot = null;
  entryOrigin = "home";
@@ -2426,6 +2506,113 @@ async function writeEntry(entry) {
  });
 }
 
+/* PHOTO OPTIMISATION — resize large camera images before saving. */
+
+async function preparePhotoForStorage(file) {
+ if (!(file instanceof Blob)) {
+  throw new Error("One of your photographs could not be read.");
+ }
+
+ if (!file.size) {
+  throw new Error("One of your photographs is empty.");
+ }
+
+ const supported = new Set([
+  "image/jpeg", "image/png", "image/webp", "image/bmp"
+ ]);
+ const type = (file.type || "").toLowerCase();
+
+ // Small, supported screenshots and photos need no processing.
+ if (file.size <= 1024 * 1024 && supported.has(type)) {
+  return file;
+ }
+
+ // HEIC/HEIF decoding varies by Android browser. Don't silently store
+ // an unsupported file and imply that the photograph is safe.
+ if (!supported.has(type)) {
+  throw new Error(
+   "This photo format is not supported by Journal on this device. " +
+   "Please use a JPG or PNG photo, or change your camera format to JPEG."
+  );
+ }
+
+ let bitmap = null;
+ let image = null;
+ let sourceUrl = null;
+
+ try {
+  let width = 0;
+  let height = 0;
+
+  if (typeof createImageBitmap === "function") {
+   try {
+    bitmap = await createImageBitmap(file, {
+     imageOrientation: "from-image"
+    });
+    width = bitmap.width;
+    height = bitmap.height;
+   } catch (error) {
+    bitmap = null;
+   }
+  }
+
+  if (!bitmap) {
+   sourceUrl = URL.createObjectURL(file);
+   image = new Image();
+   image.src = sourceUrl;
+   if (typeof image.decode === "function") {
+    await image.decode();
+   } else {
+    await new Promise((resolve, reject) => {
+     image.onload = resolve;
+     image.onerror = reject;
+    });
+   }
+   width = image.naturalWidth;
+   height = image.naturalHeight;
+  }
+
+  if (!width || !height) {
+   throw new Error("Unable to read the photograph dimensions.");
+  }
+
+  const maxDimension = 1600;
+  const scale = Math.min(1, maxDimension / Math.max(width, height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(width * scale));
+  canvas.height = Math.max(1, Math.round(height * scale));
+
+  const context = canvas.getContext("2d");
+  if (!context) {
+   throw new Error("Image processing is unavailable on this device.");
+  }
+
+  // JPEG has no transparency; use white behind PNG/WebP transparency.
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(bitmap || image, 0, 0, canvas.width, canvas.height);
+
+  const compressed = await new Promise((resolve, reject) => {
+   canvas.toBlob(blob => {
+    if (blob) resolve(blob);
+    else reject(new Error("Photograph compression failed."));
+   }, "image/jpeg", 0.82);
+  });
+
+  // Preserve the original when conversion would increase storage usage.
+  return compressed.size < file.size ? compressed : file;
+ } catch (error) {
+  console.error("Journal photo processing error:", error);
+  throw new Error(
+   "This photograph could not be prepared. " +
+   "Try a smaller JPG image or a different photograph."
+  );
+ } finally {
+  if (bitmap && typeof bitmap.close === "function") bitmap.close();
+  if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+ }
+}
+
 /* SAVE ENTRY */
 
 async function saveEntry() {
@@ -2474,6 +2661,17 @@ async function saveEntry() {
    }
   }
 
+  // Compress camera photographs before opening the database transaction.
+  // Keep existing photo previews unchanged until the save succeeds.
+  $("saveStatus").textContent = photos.length
+   ? "Preparing photographs..."
+   : "Saving...";
+  const storedPhotos = [];
+  for (const photo of photos) {
+   storedPhotos.push(await preparePhotoForStorage(photo.file));
+  }
+  $("saveStatus").textContent = "Saving...";
+
   const entry = {
    ...(existing || {}),
    id: editingId || createId(),
@@ -2488,7 +2686,7 @@ async function saveEntry() {
       : ""
     ),
    thoughts,
-   photos: photos.map(photo => photo.file),
+   photos: storedPhotos,
    isSpecialDay,
    specialDayReason: isSpecialDay
     ? $("specialDayReason").value.trim()
@@ -2547,7 +2745,10 @@ async function saveEntry() {
   console.error(error);
 
   $("saveStatus").textContent =
-   "Something went wrong. Please check your entry.";
+   "Unable to save entry: " +
+   (error && (error.message || error.name)
+    ? (error.message || error.name)
+    : "Please try again.");
  } finally {
   saveInProgress = false;
 
@@ -2967,6 +3168,7 @@ function editSavedEntry(id) {
  resetEntry();
 
  editingId = id;
+ $("deleteEntryButton").style.display="block";
 
  $("entryBack").textContent =
   entryOrigin === "emotions"
@@ -4511,9 +4713,299 @@ function renderTimelineGlance(type) {
  });
 }
 
+
+/* PRIVATE JOURNAL CONTROLS — v3 */
+const JOURNAL_PIN_KEY = "journal-pin-v1";
+const JOURNAL_REMINDER_KEY = "journal-reminder-v1";
+const JOURNAL_BACKUP_DATE_KEY = "journal-last-backup-v1";
+let pinFlow = "";
+let pinDigits = "";
+let pendingPin = "";
+let pinChangeAuthorized = false;
+let journalUnlocked = false;
+const JOURNAL_RECOVERY_KEY = "journal-pin-recovery-v1";
+const JOURNAL_RECOVERY_LIMIT_KEY = "journal-recovery-attempts-v1";
+let recoveryFlow = "";
+let pendingRecovery = null;
+let recoveryBusy = false;
+let pinBusy = false;
+
+function pinRecord(){try{return JSON.parse(localStorage.getItem(JOURNAL_PIN_KEY)||"null")}catch(_){return null}}
+function randomBytes(n){const b=new Uint8Array(n);crypto.getRandomValues(b);return b}
+function toB64(b){let out="";for(let i=0;i<b.length;i+=8192)out+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(out)}
+function fromB64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+async function deriveKey(secret,salt,usage){
+ const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),"PBKDF2",false,["deriveBits","deriveKey"]);
+ return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,usage);
+}
+async function pinVerifier(pin,salt){
+ const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveBits"]);
+ const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},256);
+ return toB64(new Uint8Array(bits));
+}
+async function verifyPin(pin){const record=pinRecord();if(!record)return false;return (await pinVerifier(pin,fromB64(record.salt)))===record.verifier}
+function renderPin(){
+ $("pinDots").replaceChildren();
+ for(let i=0;i<6;i++){const d=document.createElement("span");d.className="pin-dot"+(i<pinDigits.length?" filled":"");$("pinDots").append(d)}
+}
+function showPin(flow,prompt){pinFlow=flow;pinDigits="";$("pinError").textContent="";$("lockPrompt").textContent=prompt;$("pinCancel").style.display=flow==="unlock"?"none":"inline-block";$("forgotPinButton").style.display=flow==="unlock"&&!!recoveryRecord()?"inline-block":"none";$("recoveryPanel").style.display="none";$("pinGrid").style.display="grid";$("pinDots").style.display="flex";$("lockScreen").classList.add("visible");renderPin()}
+function hidePin(){pinFlow="";pinDigits="";pendingPin="";recoveryFlow="";pendingRecovery=null;$("recoveryAnswer").value="";$("lockScreen").classList.remove("visible")}
+function cancelPinFlow(){if(!journalUnlocked){if(recoveryFlow){recoveryFlow="";showPin("unlock","Welcome back. Enter your six-digit PIN.")}return;}hidePin();updatePinSettings()}
+function pinPress(digit){if(pinBusy)return;if(digit==="back"){pinDigits=pinDigits.slice(0,-1);renderPin();return}if(pinDigits.length>=6)return;pinDigits+=digit;renderPin();if(pinDigits.length===6)handlePinComplete(pinDigits)}
+async function handlePinComplete(value){
+ if(pinBusy)return;pinBusy=true;
+ pinDigits="";renderPin();$("pinError").textContent="Checking...";
+ try{
+  if(pinFlow==="unlock"){
+   if(await verifyPin(value)){journalUnlocked=true;hidePin();showBackupReminder();if(!recoveryRecord())setTimeout(()=>alert("For PIN recovery, please open Settings and set a security question before you forget your PIN."),250)}else $("pinError").textContent="Incorrect PIN. Please try again.";
+  }else if(pinFlow==="setup"||pinFlow==="new"){
+   pendingPin=value;showPin("confirm","Enter your new PIN again to confirm.");
+  }else if(pinFlow==="confirm"){
+   if(value!==pendingPin){pendingPin="";showPin("new","PINs didn't match. Choose a six-digit PIN.");return}
+   const salt=randomBytes(16);const verifier=await pinVerifier(value,salt);
+   if(!pinRecord()&&!pendingRecovery){showRecoveryPanel("setup");return}
+   localStorage.setItem(JOURNAL_PIN_KEY,JSON.stringify({salt:toB64(salt),verifier}));
+   if(pendingRecovery)localStorage.setItem(JOURNAL_RECOVERY_KEY,JSON.stringify(pendingRecovery));
+   journalUnlocked=true;hidePin();updatePinSettings();$("settingsStatus").textContent="Your Journal PIN and recovery settings have been saved.";
+  }else if(pinFlow==="change"){
+   if(await verifyPin(value)){pinChangeAuthorized=true;showPin("new","Choose your new six-digit PIN.")}
+   else $("pinError").textContent="Incorrect current PIN. Please try again.";
+  }
+ }catch(error){console.error(error);$("pinError").textContent="Unable to verify PIN on this device."}
+ finally{pinBusy=false}
+}
+function buildPinKeys(){const grid=$("pinGrid");["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(d=>{const b=document.createElement("button");b.className="pin-key";b.type="button";b.textContent=d;b.disabled=!d;b.onclick=()=>pinPress(d==="⌫"?"back":d);grid.append(b)})}
+function updatePinSettings(){const enabled=!!pinRecord();$("pinSettingsStatus").textContent=enabled?"Your six-digit PIN is enabled on this device.":"Choose a six-digit PIN to lock Journal when opening it.";$("pinSetupButton").style.display=enabled?"none":"inline-block";$("pinChangeButton").style.display=enabled?"inline-block":"none";$("pinLockButton").style.display=enabled?"inline-block":"none";$("recoveryChangeButton").style.display=enabled?"inline-block":"none";$("recoveryChangeButton").textContent=recoveryRecord()?"Change Recovery Question":"Set Up Recovery Question"}
+function startPinSetup(){if(pinRecord())return;pendingRecovery=null;showPin("setup","Choose your six-digit Journal PIN.")}
+function changePin(){if(!pinRecord())return startPinSetup();showPin("change","Enter your current PIN to change it.")}
+const RECOVERY_QUESTIONS={pet:"What was the name of your first pet?",street:"What street did you grow up on?",teacher:"What was your first teacher’s surname?",place:"What was the name of your childhood favourite place?"};
+function recoveryRecord(){try{return JSON.parse(localStorage.getItem(JOURNAL_RECOVERY_KEY)||"null")}catch(_){return null}}
+function normaliseRecoveryAnswer(answer){return answer.trim().toLocaleLowerCase("en-US").replace(/\s+/g," ")}
+async function recoveryVerifier(answer,salt){return pinVerifier(normaliseRecoveryAnswer(answer),salt)}
+function onRecoveryQuestionChange(){$("customQuestionWrap").style.display=$("recoveryQuestionSelect").value==="custom"?"block":"none"}
+function showRecoveryPanel(flow){
+ recoveryFlow=flow;pinFlow="";pinDigits="";$("lockScreen").classList.add("visible");$("pinGrid").style.display="none";$("pinDots").style.display="none";$("forgotPinButton").style.display="none";$("recoveryPanel").style.display="block";$("recoveryMessage").textContent="";$("recoveryAnswer").value="";$("pinError").textContent="";
+ const setup=flow==="setup"||flow==="edit";$("recoveryQuestionSelect").style.display=setup?"block":"none";$("recoveryQuestionSelect").previousElementSibling.style.display=setup?"block":"none";$("customQuestionWrap").style.display="none";$("recoveryQuestionDisplay").style.display=setup?"none":"block";
+ if(setup){$("lockPrompt").textContent="Choose a personal question and secret answer to recover your PIN.";$("recoveryQuestionSelect").value="pet";$("recoverySubmit").textContent="Save Security Question"}
+ else{const r=recoveryRecord();if(!r){showPin("unlock","PIN recovery is not configured on this device.");return}$("lockPrompt").textContent="Answer your security question to reset your PIN.";$("recoveryQuestionDisplay").textContent=r.question;$("recoverySubmit").textContent="Verify Answer"}
+ $("pinCancel").style.display="inline-block";
+}
+function startPinRecovery(){if(!recoveryRecord())return;showRecoveryPanel("verify")}
+function changeRecoveryQuestion(){if(!pinRecord())return;pendingRecovery=null;showRecoveryPanel("edit")}
+function recoveryDelay(){try{const r=JSON.parse(localStorage.getItem(JOURNAL_RECOVERY_LIMIT_KEY)||"null");return r&&r.until>Date.now()?r.until-Date.now():0}catch(_){return 0}}
+function recordRecoveryFailure(){let r;try{r=JSON.parse(localStorage.getItem(JOURNAL_RECOVERY_LIMIT_KEY)||"null")}catch(_){}const count=(r?.count||0)+1;const until=count>=5?Date.now()+Math.min(3600000,60000*Math.pow(2,Math.min(count-5,6))):0;localStorage.setItem(JOURNAL_RECOVERY_LIMIT_KEY,JSON.stringify({count,until}))}
+async function submitRecovery(){
+ if(recoveryBusy)return;const message=$("recoveryMessage");const answer=$("recoveryAnswer").value;const normalised=normaliseRecoveryAnswer(answer);
+ if(normalised.length<4){message.textContent="Please enter an answer of at least four characters.";return}
+ recoveryBusy=true;$("recoverySubmit").disabled=true;
+ try{
+  if(recoveryFlow==="setup"||recoveryFlow==="edit"){
+   const choice=$("recoveryQuestionSelect").value;const question=choice==="custom"?$("customRecoveryQuestion").value.trim():RECOVERY_QUESTIONS[choice];
+   if(!question||question.length<8){message.textContent="Please enter a meaningful security question.";return}
+   const salt=randomBytes(16);const verifier=await recoveryVerifier(answer,salt);const record={question,salt:toB64(salt),verifier};
+   if(recoveryFlow==="setup"){pendingRecovery=record;if(pendingPin){const pin=pendingPin;const pinSalt=randomBytes(16);const pinHash=await pinVerifier(pin,pinSalt);localStorage.setItem(JOURNAL_RECOVERY_KEY,JSON.stringify(record));localStorage.setItem(JOURNAL_PIN_KEY,JSON.stringify({salt:toB64(pinSalt),verifier:pinHash}));journalUnlocked=true;hidePin();updatePinSettings();$("settingsStatus").textContent="PIN and recovery question saved successfully."}}
+   else{localStorage.setItem(JOURNAL_RECOVERY_KEY,JSON.stringify(record));hidePin();updatePinSettings();$("settingsStatus").textContent="Your recovery question has been updated."}
+  }else if(recoveryFlow==="verify"){
+   const wait=recoveryDelay();if(wait){message.textContent="Too many attempts. Try again in "+Math.ceil(wait/60000)+" minute(s).";return}
+   const r=recoveryRecord();const correct=r&&(await recoveryVerifier(answer,fromB64(r.salt)))===r.verifier;
+   if(!correct){recordRecoveryFailure();message.textContent="That answer doesn't match. Please try again.";return}
+   localStorage.removeItem(JOURNAL_RECOVERY_LIMIT_KEY);journalUnlocked=false;showPin("new","Answer verified. Choose a new six-digit PIN.");
+  }
+ }catch(error){console.error(error);message.textContent="Unable to save or check your recovery answer."}
+ finally{recoveryBusy=false;$("recoverySubmit").disabled=false}
+}
+function lockJournal(){if(!pinRecord())return;journalUnlocked=false;showPage("home");showPin("unlock","Welcome back. Enter your six-digit PIN.")}
+function openSettings(){updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
+function setBackupReminder(enabled){localStorage.setItem(JOURNAL_REMINDER_KEY,enabled?"yes":"no");updateBackupReminderText()}
+function updateBackupReminderText(){const last=localStorage.getItem(JOURNAL_BACKUP_DATE_KEY);$("backupReminderText").textContent=last?"Last backup created: "+new Date(last).toLocaleDateString()+". A reminder appears after 30 days when you open Journal.":"No backup recorded yet. Enable reminders to be prompted every 30 days when you open Journal."}
+function showBackupReminder(){if(localStorage.getItem(JOURNAL_REMINDER_KEY)!=="yes")return;const last=localStorage.getItem(JOURNAL_BACKUP_DATE_KEY);if(last&&Date.now()-new Date(last).getTime()<30*86400000)return;const key="journal-reminded-"+new Date().toISOString().slice(0,10);if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"yes");setTimeout(()=>{if(confirm("🌸 Your memories matter. Would you like to create a Journal backup now?"))openSettings()},500)}
+async function removeEntry(id){const db=await openDatabase();return new Promise((resolve,reject)=>{const tx=db.transaction("entries","readwrite");tx.objectStore("entries").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)})}
+async function deleteCurrentEntry(){
+ if(!editingId)return;
+ if(!confirm("Permanently delete this entry and its saved photographs? This cannot be undone. Please create a backup first if you might want it later."))return;
+ const id=editingId,origin=entryOrigin;
+ try{await removeEntry(id);clearPhotoPreviews();editingId=null;originalSnapshot=null;$("deleteEntryButton").style.display="none";
+  if(timelines[origin])await returnToTimeline(origin);else await openHistory();
+ }catch(error){console.error(error);$("saveStatus").textContent="Unable to delete entry: "+(error.message||"storage error")}
+}
+async function blobAsDataUrl(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob)})}
+function dataUrlAsBlob(data){if(typeof data!=="string"||!/^data:image\/[a-z0-9.+-]+;base64,/i.test(data))throw new Error("Invalid photo in backup.");const [header,b64]=data.split(",");const raw=atob(b64);const bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return new Blob([bytes],{type:header.slice(5).split(";")[0]})}
+async function backupJournal(){
+ const password=prompt("Create a backup password (at least 8 characters). Keep it safe: without it your backup cannot be restored.");
+ if(password===null)return;if(password.length<8){$("settingsStatus").textContent="Please choose a password of at least 8 characters.";return}
+ const again=prompt("Confirm your backup password:");if(password!==again){$("settingsStatus").textContent="Passwords didn't match. No backup was created.";return}
+ $("settingsStatus").textContent="Preparing your encrypted backup, including photographs...";
+ try{
+  const entries=await allEntries();const exportEntries=[];
+  for(const entry of entries){const converted=[];for(const photo of (entry.photos||[])){if(photo instanceof Blob)converted.push(await blobAsDataUrl(photo));else throw new Error("An entry has an unsupported photograph; backup stopped to avoid losing it.")};exportEntries.push({...entry,photos:converted})}
+  const payload=JSON.stringify({format:"journal-backup",version:1,createdAt:new Date().toISOString(),entries:exportEntries});
+  const salt=randomBytes(16),iv=randomBytes(12),key=await deriveKey(password,salt,["encrypt"]);
+  const encrypted=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(payload));
+  const envelope={format:"journal-encrypted-backup",version:1,salt:toB64(salt),iv:toB64(iv),data:toB64(new Uint8Array(encrypted))};
+  const blob=new Blob([JSON.stringify(envelope)],{type:"application/json"});const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="Journal-Backup-"+todayLocal()+".json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  localStorage.setItem(JOURNAL_BACKUP_DATE_KEY,new Date().toISOString());updateBackupReminderText();$("settingsStatus").textContent="Backup prepared. Save the downloaded file somewhere safe and keep its password. Check that the file is in your Downloads folder.";
+ }catch(error){console.error(error);$("settingsStatus").textContent="Backup failed: "+(error.message||"unknown error")}
+}
+async function restoreJournal(){
+ const file=$("restoreFile").files[0];if(!file){$("settingsStatus").textContent="Choose a Journal backup file first.";return}
+ const password=prompt("Enter the password used to encrypt this backup:");if(password===null)return;
+ $("settingsStatus").textContent="Checking and decrypting backup...";
+ try{
+  const envelope=JSON.parse(await file.text());if(envelope.format!=="journal-encrypted-backup"||envelope.version!==1)throw new Error("This is not a supported encrypted Journal backup.");
+  const key=await deriveKey(password,fromB64(envelope.salt),["decrypt"]);let plaintext;
+  try{plaintext=await crypto.subtle.decrypt({name:"AES-GCM",iv:fromB64(envelope.iv)},key,fromB64(envelope.data))}catch(_){throw new Error("Wrong backup password or damaged backup file.")}
+  const payload=JSON.parse(new TextDecoder().decode(plaintext));if(payload.format!=="journal-backup"||payload.version!==1||!Array.isArray(payload.entries))throw new Error("Backup contents are invalid.");
+  const restored=[];const ids=new Set();
+  for(const entry of payload.entries){if(!entry||typeof entry.id!=="string"||!entry.id||typeof entry.date!=="string"||!Array.isArray(entry.photos)||ids.has(entry.id))throw new Error("Backup contains invalid or duplicate entries.");ids.add(entry.id);const photos=entry.photos.map(dataUrlAsBlob);restored.push({...entry,photos})}
+  const current=await allEntries();const existingIds=new Set(current.map(e=>e.id));const duplicates=restored.filter(e=>existingIds.has(e.id)).length;
+  if(!confirm("Restore "+restored.length+" entries? "+duplicates+" entries already exist and will be updated; all other existing entries will remain. Continue?")){ $("settingsStatus").textContent="Restore canceled. No entries changed.";return}
+  const db=await openDatabase();await new Promise((resolve,reject)=>{const tx=db.transaction("entries","readwrite");const store=tx.objectStore("entries");for(const entry of restored)store.put(entry);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)});
+  $("restoreFile").value="";$("settingsStatus").textContent="Restored "+restored.length+" entries successfully. Your existing entries with different IDs were kept.";
+ }catch(error){console.error(error);$("settingsStatus").textContent="Restore failed: "+(error.message||"unknown error")}
+}
+let journalBackgroundAt=0;document.addEventListener("visibilitychange",()=>{if(document.hidden){journalBackgroundAt=Date.now()}else if(pinRecord()&&journalUnlocked&&journalBackgroundAt&&Date.now()-journalBackgroundAt>45000){lockJournal()}});
+function initializeJournalSecurity(){buildPinKeys();updatePinSettings();if(pinRecord()){showPin("unlock","Welcome back. Enter your six-digit PIN.")}else{journalUnlocked=true;showBackupReminder()}}
+
+
+/* HOMEPAGE ARTWORK: separate storage from journal entries */
+const ARTWORK_MODE_KEY="journal-artwork-mode-v1";
+const ARTWORK_DECK_KEY="journal-artwork-deck-v1";
+const ARTWORK_LAST_KEY="journal-artwork-last-v1";
+const ARTWORK_DB="JournalArtwork";
+let artworkNumber=1, artworkObjectUrl=null, artworkRequest=0;
+
+function artworkPath(n) {
+ return "./artwork/artwork-"+String(n).padStart(2,"0")+".jpg";
+}
+function chooseArtwork() {
+ let deck;
+ try { deck=JSON.parse(localStorage.getItem(ARTWORK_DECK_KEY)||"null"); }
+ catch (_) { deck=null; }
+ if(!Array.isArray(deck)||deck.some(n=>!Number.isInteger(n)||n<1||n>24)||new Set(deck).size!==deck.length) deck=[];
+ if(!deck.length) {
+  deck=Array.from({length:24},(_,i)=>i+1);
+  for(let i=deck.length-1;i>0;i--) {
+   const j=Math.floor(Math.random()*(i+1));
+   [deck[i],deck[j]]=[deck[j],deck[i]];
+  }
+  const last=Number(localStorage.getItem(ARTWORK_LAST_KEY));
+  if(deck[0]===last && deck.length>1) [deck[0],deck[1]]=[deck[1],deck[0]];
+ }
+ const n=deck.shift();
+ localStorage.setItem(ARTWORK_DECK_KEY,JSON.stringify(deck));
+ localStorage.setItem(ARTWORK_LAST_KEY,String(n));
+ return n;
+}
+function getArtworkMode() {
+ return localStorage.getItem(ARTWORK_MODE_KEY)==="personal"?"personal":"rotate";
+}
+function artworkDatabase() {
+ return new Promise((resolve,reject)=>{
+  const r=indexedDB.open(ARTWORK_DB,1);
+  r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains("images"))r.result.createObjectStore("images")};
+  r.onsuccess=()=>resolve(r.result);
+  r.onerror=()=>reject(r.error);
+ });
+}
+async function artworkStore(action,blob) {
+ const db=await artworkDatabase();
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction("images",action==="get"?"readonly":"readwrite");
+  const store=tx.objectStore("images");
+  const request=action==="get"?store.get("homepage"):action==="put"?store.put(blob,"homepage"):store.delete("homepage");
+  let result=null;
+  request.onsuccess=()=>{result=request.result};
+  tx.oncomplete=()=>{db.close();resolve(result)};
+  tx.onerror=()=>{db.close();reject(tx.error)};
+  tx.onabort=()=>{db.close();reject(tx.error)};
+ });
+}
+function updateArtworkSettings() {
+ const mode=getArtworkMode();
+ document.querySelectorAll('input[name="artworkMode"]').forEach(el=>el.checked=el.value===mode);
+ $("personalArtworkControls").classList.toggle("hidden",mode!=="personal");
+}
+async function renderHomeArtwork() {
+ const request=++artworkRequest;
+ const img=$("homeArtworkImage");
+ let next=artworkPath(artworkNumber),personal=false,newObjectUrl=null;
+ if(getArtworkMode()==="personal") {
+  try {
+   const blob=await artworkStore("get");
+   if(request!==artworkRequest)return;
+   if(blob instanceof Blob && blob.size) {
+    newObjectUrl=URL.createObjectURL(blob);
+    next=newObjectUrl;
+    personal=true;
+   }
+  } catch(error) {console.error("Homepage photograph:",error)}
+ }
+ if(request!==artworkRequest) {
+  if(newObjectUrl)URL.revokeObjectURL(newObjectUrl);
+  return;
+ }
+ const old=artworkObjectUrl;
+ artworkObjectUrl=newObjectUrl;
+ img.src=next;
+ img.alt=personal?"Your chosen homepage photograph":"Peaceful pastel Journal illustration";
+ const preview=$("personalArtworkPreview");
+ preview.classList.toggle("hidden",!personal);
+ if(personal)preview.src=next;
+ else preview.removeAttribute("src");
+ if(old)setTimeout(()=>URL.revokeObjectURL(old),1500);
+}
+async function setArtworkMode(mode) {
+ if(mode!=="rotate"&&mode!=="personal")return;
+ localStorage.setItem(ARTWORK_MODE_KEY,mode);
+ updateArtworkSettings();
+ $("artworkSettingsStatus").textContent=mode==="personal"
+  ?"Upload a photograph below. It will remain on your homepage until you change it."
+  :"Rotating artwork is enabled.";
+ await renderHomeArtwork();
+}
+async function savePersonalArtwork(event) {
+ const input=event.target,file=input.files&&input.files[0];
+ if(!file)return;
+ const status=$("artworkSettingsStatus");
+ status.textContent="Preparing your photograph...";
+ try {
+  // Reuse Journal's existing image resizing and compression function.
+  const prepared=await preparePhotoForStorage(file);
+  await artworkStore("put",prepared);
+  localStorage.setItem(ARTWORK_MODE_KEY,"personal");
+  updateArtworkSettings();
+  await renderHomeArtwork();
+  status.textContent="Photograph saved! It will stay until you replace or remove it.";
+ } catch(error) {
+  console.error(error);
+  status.textContent="Couldn't save this picture. Please try a JPG or PNG. "+(error.message||"");
+ } finally {input.value=""}
+}
+async function removePersonalArtwork() {
+ if(!confirm("Remove your homepage photograph and return to rotating artwork? Your original Gallery photo won't be affected."))return;
+ try {
+  await artworkStore("delete");
+  localStorage.setItem(ARTWORK_MODE_KEY,"rotate");
+  updateArtworkSettings();
+  await renderHomeArtwork();
+  $("artworkSettingsStatus").textContent="Your personal photograph has been removed.";
+ } catch(error) {
+  console.error(error);
+  $("artworkSettingsStatus").textContent="Unable to remove this photograph.";
+ }
+}
+function initializeHomeArtwork() {
+ try {artworkNumber=chooseArtwork()} catch(error) {console.warn(error);artworkNumber=1}
+ updateArtworkSettings();
+ renderHomeArtwork();
+}
+
 /* INITIALIZE */
 
 resetEntry();
+initializeHomeArtwork();
+initializeJournalSecurity();
 
 initializeChartResizeObservers();
 // Register Journal's offline service worker
