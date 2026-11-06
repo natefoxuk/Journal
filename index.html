@@ -1153,13 +1153,19 @@ textarea {
 .journal-password-eye{border:0;background:#fce8ef;border-radius:9px;min-width:42px;height:38px;color:#795767;font-size:19px}
 .journal-password-error{min-height:18px;color:#a04465;font-size:12px;text-align:left;margin:5px 0 12px}
 
-/* TAP-TO-ENLARGE JOURNAL PHOTOGRAPHS */
+/* THEMED PHOTOS & MEMORIES GALLERY */
 .photo-item img,.thumbnail-strip img{cursor:zoom-in}
 .photo-item img:focus-visible,.thumbnail-strip img:focus-visible{outline:3px solid #ae7795;outline-offset:3px}
 #journalPhotoZoom[hidden]{display:none!important}
-#journalPhotoZoom{position:fixed;inset:0;z-index:11000;background:rgba(35,22,32,.88);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
-#journalPhotoZoom img{display:block;max-width:100%;max-height:calc(100dvh - 40px);width:auto;height:auto;object-fit:contain;border-radius:12px;box-shadow:0 10px 40px #0005}
+#journalPhotoZoom{position:fixed;inset:0;z-index:11000;background:rgba(48,30,43,.64);display:flex;align-items:center;justify-content:center;padding:18px;overscroll-behavior:contain}
+.journal-gallery-card{width:min(100%,440px);max-height:calc(100dvh - 36px);overflow:auto;background:linear-gradient(155deg,#fff9f5,#fff0f5 65%,#fbe5ef);border:1px solid #f0cfdd;border-radius:25px;box-shadow:0 18px 60px #38202e55;padding:24px 18px 18px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.journal-gallery-title{font:italic 38px Georgia,serif;color:#a56e88;margin:0;line-height:1.15}
+.journal-gallery-subtitle{font-size:13px;letter-spacing:1.4px;color:#9a7888;margin:8px 0 18px}
+.journal-gallery-photo{display:block;max-width:100%;width:auto;height:auto;max-height:min(59dvh,590px);object-fit:contain;border-radius:13px;box-shadow:0 6px 22px #7957672a;cursor:zoom-out;touch-action:pan-y;user-select:none;-webkit-user-drag:none}
+.journal-gallery-counter{font-size:12px;color:#9a7888;letter-spacing:.5px;margin-top:16px}
+.journal-gallery-hint{font-size:11px;color:#a78b98;margin:7px 0 0}
 #journalPhotoZoom:focus-visible{outline:3px solid #fff;outline-offset:-7px}
+@media(max-height:540px){.journal-gallery-card{padding:12px}.journal-gallery-title{font-size:30px}.journal-gallery-subtitle{margin:3px 0 9px}.journal-gallery-photo{max-height:45dvh}}
 </style>
 </head>
 
@@ -1958,9 +1964,15 @@ textarea {
  </form>
 </div>
 
-<!-- Full-screen photograph preview: tap again or press Escape to close -->
-<div id="journalPhotoZoom" hidden role="dialog" aria-modal="true" aria-label="Enlarged journal photograph" tabindex="-1" onclick="closeJournalPhotoZoom()">
- <img id="journalPhotoZoomImage" alt="Enlarged journal photograph">
+<!-- Themed photograph gallery: tap the photograph to close; swipe for other entry photos -->
+<div id="journalPhotoZoom" hidden role="dialog" aria-modal="true" aria-label="Journal Photos and Memories" tabindex="-1" onclick="if(event.target===this)closeJournalPhotoZoom()">
+ <div class="journal-gallery-card">
+  <h2 class="journal-gallery-title">Journal</h2>
+  <p class="journal-gallery-subtitle">Photos &amp; Memories</p>
+  <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
+  <div id="journalGalleryCounter" class="journal-gallery-counter" aria-live="polite"></div>
+  <p id="journalGalleryHint" class="journal-gallery-hint">Tap the photograph to return</p>
+ </div>
 </div>
 <script>
 
@@ -2116,39 +2128,86 @@ const chartRenderRequests = {
 const chartResizeObservers = {};
 
 
-/* Enlarge photographs without changing or removing them. */
+/* Gallery is scoped to the photographs belonging to the current entry. */
 let journalPhotoZoomPreviousFocus=null;
-function openJournalPhotoZoom(src,alt){
- if(!src)return;
- journalPhotoZoomPreviousFocus=document.activeElement;
- const overlay=$("journalPhotoZoom");
+let journalGalleryPhotos=[];
+let journalGalleryIndex=0;
+let journalGalleryTouchStart=null;
+let journalGalleryIgnoreClick=false;
+function showJournalGalleryPhoto(){
+ const photo=journalGalleryPhotos[journalGalleryIndex];
+ if(!photo)return;
  const image=$("journalPhotoZoomImage");
- image.src=src;
- image.alt=alt||"Enlarged journal photograph";
- overlay.hidden=false;
- overlay.focus();
+ image.src=photo.src;
+ image.alt=photo.alt||"Journal photograph";
+ $("journalGalleryCounter").textContent=journalGalleryPhotos.length>1?`${journalGalleryIndex+1} of ${journalGalleryPhotos.length}`:"";
+ $("journalGalleryHint").textContent=journalGalleryPhotos.length>1?"Swipe for more memories · Tap photo to return":"Tap the photograph to return";
+}
+function openJournalPhotoZoom(image){
+ if(!image?.src)return;
+ journalPhotoZoomPreviousFocus=document.activeElement;
+ const group=image.closest(".thumbnail-strip, #photoPreview");
+ const images=group?[...group.querySelectorAll("img")]:[image];
+ journalGalleryPhotos=images.filter(item=>item.src).map(item=>({src:item.src,alt:item.alt}));
+ journalGalleryIndex=Math.max(0,images.indexOf(image));
+ journalGalleryIgnoreClick=false;
+ showJournalGalleryPhoto();
+ $("journalPhotoZoom").hidden=false;
+ $("journalPhotoZoom").focus();
 }
 function closeJournalPhotoZoom(){
  const overlay=$("journalPhotoZoom");
  if(overlay.hidden)return;
  overlay.hidden=true;
  $("journalPhotoZoomImage").removeAttribute("src");
+ journalGalleryPhotos=[];
+ journalGalleryTouchStart=null;
  if(journalPhotoZoomPreviousFocus?.isConnected)journalPhotoZoomPreviousFocus.focus();
  journalPhotoZoomPreviousFocus=null;
+}
+function journalGalleryMove(direction){
+ if(journalGalleryPhotos.length<2)return;
+ journalGalleryIndex=(journalGalleryIndex+direction+journalGalleryPhotos.length)%journalGalleryPhotos.length;
+ showJournalGalleryPhoto();
+}
+function journalGalleryImageClick(event){
+ event.stopPropagation();
+ if(journalGalleryIgnoreClick){journalGalleryIgnoreClick=false;return;}
+ closeJournalPhotoZoom();
 }
 function makeJournalPhotoZoomable(image){
  image.tabIndex=0;
  image.setAttribute("role","button");
- image.setAttribute("aria-label","Enlarge journal photograph");
- image.addEventListener("click",()=>openJournalPhotoZoom(image.src,image.alt));
+ image.setAttribute("aria-label","Open photograph in Photos and Memories gallery");
+ image.addEventListener("click",()=>openJournalPhotoZoom(image));
  image.addEventListener("keydown",event=>{
   if(event.key==="Enter"||event.key===" "){
-   event.preventDefault();openJournalPhotoZoom(image.src,image.alt);
+   event.preventDefault();openJournalPhotoZoom(image);
   }
  });
 }
+$("journalPhotoZoomImage").addEventListener("touchstart",event=>{
+ const touch=event.changedTouches[0];
+ journalGalleryTouchStart={x:touch.clientX,y:touch.clientY};
+},{passive:true});
+$("journalPhotoZoomImage").addEventListener("touchend",event=>{
+ if(!journalGalleryTouchStart)return;
+ const touch=event.changedTouches[0];
+ const dx=touch.clientX-journalGalleryTouchStart.x;
+ const dy=touch.clientY-journalGalleryTouchStart.y;
+ journalGalleryTouchStart=null;
+ if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2&&journalGalleryPhotos.length>1){
+  journalGalleryIgnoreClick=true;
+  journalGalleryMove(dx<0?1:-1);
+  // A swipe may synthesize a click; ignore that click, then clear the guard.
+  setTimeout(()=>{journalGalleryIgnoreClick=false;},350);
+ }
+},{passive:true});
 document.addEventListener("keydown",event=>{
- if(event.key==="Escape"&&!$("journalPhotoZoom").hidden)closeJournalPhotoZoom();
+ if($( "journalPhotoZoom" ).hidden)return;
+ if(event.key==="Escape")closeJournalPhotoZoom();
+ else if(event.key==="ArrowRight")journalGalleryMove(1);
+ else if(event.key==="ArrowLeft")journalGalleryMove(-1);
 });
 
 /* GENERAL HELPERS */
