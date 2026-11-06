@@ -4762,8 +4762,10 @@ async function handlePinComplete(value){
    pendingPin=value;showPin("confirm","Enter your new PIN again to confirm.");
   }else if(pinFlow==="confirm"){
    if(value!==pendingPin){pendingPin="";showPin("new","PINs didn't match. Choose a six-digit PIN.");return}
-   const salt=randomBytes(16);const verifier=await pinVerifier(value,salt);
+   // On first setup, collect the recovery answer before running PIN cryptography.
+   // Previously this unnecessary first hash could fail and block setup.
    if(!pinRecord()&&!pendingRecovery){showRecoveryPanel("setup");return}
+   const salt=randomBytes(16);const verifier=await pinVerifier(value,salt);
    localStorage.setItem(JOURNAL_PIN_KEY,JSON.stringify({salt:toB64(salt),verifier}));
    if(pendingRecovery)localStorage.setItem(JOURNAL_RECOVERY_KEY,JSON.stringify(pendingRecovery));
    journalUnlocked=true;hidePin();updatePinSettings();$("settingsStatus").textContent="Your Journal PIN and recovery settings have been saved.";
@@ -4771,7 +4773,7 @@ async function handlePinComplete(value){
    if(await verifyPin(value)){pinChangeAuthorized=true;showPin("new","Choose your new six-digit PIN.")}
    else $("pinError").textContent="Incorrect current PIN. Please try again.";
   }
- }catch(error){console.error(error);$("pinError").textContent="Unable to verify PIN on this device."}
+ }catch(error){console.error("Journal PIN error:",error);$("pinError").textContent="PIN setup error: "+(error?.message||error?.name||"Unknown error")+". Please tell us this message."}
  finally{pinBusy=false}
 }
 function buildPinKeys(){const grid=$("pinGrid");["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(d=>{const b=document.createElement("button");b.className="pin-key";b.type="button";b.textContent=d;b.disabled=!d;b.onclick=()=>pinPress(d==="⌫"?"back":d);grid.append(b)})}
@@ -4811,7 +4813,7 @@ async function submitRecovery(){
    if(!correct){recordRecoveryFailure();message.textContent="That answer doesn't match. Please try again.";return}
    localStorage.removeItem(JOURNAL_RECOVERY_LIMIT_KEY);journalUnlocked=false;showPin("new","Answer verified. Choose a new six-digit PIN.");
   }
- }catch(error){console.error(error);message.textContent="Unable to save or check your recovery answer."}
+ }catch(error){console.error("Journal recovery error:",error);message.textContent="Security setup error: "+(error?.message||error?.name||"Unknown error")+". Please tell us this message."}
  finally{recoveryBusy=false;$("recoverySubmit").disabled=false}
 }
 function lockJournal(){if(!pinRecord())return;journalUnlocked=false;showPage("home");showPin("unlock","Welcome back. Enter your six-digit PIN.")}
