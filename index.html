@@ -1185,6 +1185,26 @@ textarea {
 .journal-gallery-hint{font-size:11px;color:#a78b98;margin:7px 0 0}
 #journalPhotoZoom:focus-visible{outline:3px solid #fff;outline-offset:-7px}
 @media(max-height:540px){.journal-gallery-card{padding:12px}.journal-gallery-title{font-size:30px}.journal-gallery-subtitle{margin:3px 0 9px}.journal-gallery-photo{max-height:45dvh}}
+
+/* JOURNAL HELP GUIDE */
+#journalGuideOverlay[hidden]{display:none!important}
+#journalGuideOverlay{position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vw,24px);background:#3f293b99;backdrop-filter:blur(5px)}
+.journal-guide-window{position:relative;width:min(100%,720px);max-height:92dvh;max-height:92vh;display:flex;flex-direction:column;background:linear-gradient(155deg,#fffafc,#fff1f6);border:1px solid #f2d8e3;border-radius:26px;box-shadow:0 18px 65px #54344845;overflow:hidden;color:#795767}
+@supports(height:100dvh){.journal-guide-window{max-height:92dvh}}
+.journal-guide-header{position:relative;text-align:center;padding:24px 60px 15px;border-bottom:1px solid #f0dce5;flex:none}
+.journal-guide-header h2{font:italic 36px Georgia,serif;color:#a56e88;margin:0}
+.journal-guide-header p{margin:7px 0 0;font-size:13px;letter-spacing:.7px;color:#967384}
+.journal-guide-close{position:absolute;right:15px;top:16px;display:grid;place-items:center;width:40px;height:40px;border:1px solid #edd2df;border-radius:50%;background:#fff;color:#925c77;font-size:24px;line-height:1;cursor:pointer}
+.journal-guide-scroll{padding:18px clamp(16px,4vw,34px) 30px;overflow-y:auto;overscroll-behavior:contain;line-height:1.7}
+.journal-guide-intro{text-align:center;font-size:14px;margin:0 0 19px}
+.journal-guide-section{background:#fff;border:1px solid #f1dfe8;border-radius:18px;padding:17px 18px;margin:12px 0;box-shadow:0 3px 13px #7957670b}
+.journal-guide-section h3{font-size:16px;color:#98627d;margin:0 0 8px}
+.journal-guide-section p{font-size:13px;margin:7px 0}
+.journal-guide-section ul{margin:8px 0 0;padding-left:19px;font-size:13px}
+.journal-guide-section li{margin:5px 0}
+.journal-guide-outro{text-align:center;font:italic 17px Georgia,serif;color:#a56e88;padding:10px 0}
+.journal-guide-close:focus-visible,.journal-guide-window:focus-visible{outline:3px solid #c789a6;outline-offset:-3px}
+@media(max-width:480px){.journal-guide-header{padding:19px 53px 13px}.journal-guide-header h2{font-size:31px}.journal-guide-close{right:11px;top:13px}.journal-guide-section{padding:14px}}
 </style>
 </head>
 
@@ -1934,12 +1954,44 @@ textarea {
 <p id="pinSettingsStatus">Protect Journal with a six-digit PIN when opening the app.</p><button class="safe-action" id="pinSetupButton" onclick="startPinSetup()">Set Up PIN</button><div class=""><button class="safe-secondary" id="pinChangeButton" onclick="changePin()">Change PIN</button><button class="safe-secondary" id="recoveryChangeButton" onclick="changeRecoveryQuestion()">Change Recovery Question</button><button class="safe-secondary" id="pinLockButton" onclick="lockJournal()">Lock Now</button><div style="margin-top:10px;padding-top:12px;border-top:1px solid #f0dce5"><button class="safe-secondary" id="pinRemoveButton" onclick="startRemovePin()" style="color:#a04465;border-color:#e4b5c4">Remove PIN</button><p class="safe-note">Removing your PIN turns off Journal's lock screen. Your entries and photos are not deleted.</p></div></div>
    </div>
   </section>
+
+  <section class="safe-card settings-accordion" data-settings-section="6">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger6" aria-expanded="false" aria-controls="settingsContent6" onclick="toggleSettingsSection(6)"><span>📖 How to Use Journal</span></button>
+   <div class="settings-accordion-content" id="settingsContent6" role="region" aria-labelledby="settingsTrigger6" hidden>
+    <p>New to Journal, or looking for a little reminder? Explore a friendly guide to all the things you can do.</p>
+    <button type="button" class="safe-action" onclick="openJournalGuide()">Open My Journal Guide</button>
+   </div>
+  </section>
   <p id="settingsStatus" class="safe-message" role="status"></p>
   <p class="safe-note">Your journal remains stored on this device. A PIN protects the app screen, not the underlying browser database. Backup files are encrypted separately with a password.</p>
  </div>
 </main>
 <div id="lockScreen" aria-label="Journal PIN lock screen" role="dialog" aria-modal="true">
  <div class="lock-inner"><div style="font-size:36px">🌸</div><h1>Journal</h1><p id="lockPrompt">Welcome back. Your little space, just for you.</p><div style="font-size:28px">🔒</div><div class="pin-dots" id="pinDots"></div><div class="pin-error" id="pinError" role="alert"></div><div class="pin-grid" id="pinGrid"></div><button class="safe-secondary" id="forgotPinButton" onclick="startPinRecovery()" style="display:none;margin-top:14px">Forgotten your PIN?</button><section id="recoveryPanel" style="display:none;background:#fff9fc;border:1px solid #eed8e3;border-radius:18px;padding:18px;margin:16px 0;text-align:left"><label for="recoveryQuestionSelect" style="display:block;margin-bottom:8px">Choose your security question</label><select id="recoveryQuestionSelect" style="width:100%;padding:11px;border-radius:10px;border:1px solid #d8b4c5" onchange="onRecoveryQuestionChange()"><option value="pet">What was the name of your first pet?</option><option value="street">What street did you grow up on?</option><option value="teacher">What was your first teacher’s surname?</option><option value="place">What was the name of your childhood favourite place?</option><option value="custom">Write my own question</option></select><div id="customQuestionWrap" style="display:none;margin-top:12px"><label for="customRecoveryQuestion">Your personal question</label><input id="customRecoveryQuestion" type="text" maxlength="180" autocomplete="off" placeholder="Write a question only you can answer" style="display:block;width:100%;padding:11px;margin-top:6px;border:1px solid #d8b4c5;border-radius:10px"></div><p id="recoveryQuestionDisplay" style="display:none;font-weight:bold"></p><label for="recoveryAnswer" style="display:block;margin-top:12px">Your secret answer</label><div style="position:relative;margin-top:6px"><input id="recoveryAnswer" type="password" maxlength="200" autocomplete="off" placeholder="Enter your answer" style="display:block;width:100%;padding:11px 55px 11px 11px;border:1px solid #d8b4c5;border-radius:10px"><button id="recoveryAnswerEye" type="button" onclick="toggleRecoveryAnswerVisibility()" aria-label="Show security answer" aria-pressed="false" title="Show security answer" style="position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;border-radius:8px;background:#fff0f5;color:#795767;width:44px;height:38px;font-size:19px">👁</button></div><p id="recoveryMessage" role="status" style="font-size:13px;color:#a04465"></p><button class="safe-action" id="recoverySubmit" onclick="submitRecovery()" style="margin-top:10px">Continue</button></section><button class="safe-secondary" id="pinCancel" onclick="cancelPinFlow()" style="display:none;margin-top:18px">Cancel</button></div>
+</div>
+
+
+<!-- FULL-SCREEN IN-APP GUIDE -->
+<div id="journalGuideOverlay" hidden role="presentation" onclick="if(event.target===this)closeJournalGuide()">
+ <div class="journal-guide-window" role="dialog" aria-modal="true" aria-labelledby="journalGuideTitle" aria-describedby="journalGuideSubtitle" tabindex="-1">
+  <header class="journal-guide-header">
+   <button class="journal-guide-close" type="button" onclick="closeJournalGuide()" aria-label="Close Journal guide" title="Close guide">×</button>
+   <h2 id="journalGuideTitle">Journal</h2>
+   <p id="journalGuideSubtitle">Your Guide to Journaling</p>
+  </header>
+  <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
+   <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
+   <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>Tap a photograph to open <strong>Photos &amp; Memories</strong>. Swipe left or right to explore more photographs from that entry, then tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions, view the graphs and open related journal entries to understand the moments behind them.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
+   <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns, and you can open related entries to see what was happening on those days.</p></section>
+   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → My Emotions &amp; Exercise</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Previously recorded emotions and activities are kept in your entries and charts, even when you hide or remove a choice.</p></section>
+   <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
+   <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
+   <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
+   <p class="journal-guide-outro">Every page is part of my journey. ✧ ♡ ✧</p>
+  </div>
+ </div>
 </div>
 
 <!-- In-app confirmation: no browser website-name banner -->
@@ -5205,6 +5257,37 @@ function updatePinSettings(){
  ["pinChangeButton","recoveryChangeButton","pinLockButton","pinRemoveButton"].forEach(id=>$(id).style.display=enabled?"inline-block":"none");
  $("recoveryChangeButton").textContent=recoveryRecord()?"Change Recovery Question":"Set Up Recovery Question";
 }
+
+/* IN-APP JOURNAL GUIDE */
+let journalGuidePreviousFocus=null;
+function openJournalGuide(){
+ const overlay=document.getElementById("journalGuideOverlay");
+ if(!overlay.hidden)return;
+ journalGuidePreviousFocus=document.activeElement;
+ document.getElementById("journalGuideScroll").scrollTop=0;
+ overlay.hidden=false;
+ document.body.style.overflow="hidden";
+ overlay.querySelector(".journal-guide-close").focus();
+}
+function closeJournalGuide(){
+ const overlay=document.getElementById("journalGuideOverlay");
+ if(overlay.hidden)return;
+ overlay.hidden=true;
+ document.body.style.overflow="";
+ if(journalGuidePreviousFocus?.isConnected)journalGuidePreviousFocus.focus();
+ journalGuidePreviousFocus=null;
+}
+document.addEventListener("keydown",event=>{
+ if(document.getElementById("journalGuideOverlay").hidden)return;
+ if(event.key==="Escape"){event.preventDefault();closeJournalGuide();return;}
+ if(event.key==="Tab"){
+  const controls=[...document.querySelectorAll("#journalGuideOverlay button:not([disabled]),#journalGuideOverlay [tabindex='0']")];
+  const first=controls[0],last=controls[controls.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ }
+});
+
 function toggleSettingsSection(index){
  document.querySelectorAll(".settings-accordion").forEach(section=>{
   const i=Number(section.dataset.settingsSection);
