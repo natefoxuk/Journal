@@ -1115,6 +1115,7 @@ textarea {
  box-shadow:0 7px 24px #b1718b1a;
 }
 .home-artwork img { display:block; width:100%; height:100%; object-fit:cover; }
+.choice-manager-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #f2e3e9;font-size:14px}.choice-manager-row .safe-secondary{width:auto;padding:7px 12px;margin:0}.choice-add{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0 22px}.choice-add input{min-width:0;flex:1;border:1px solid #e4c6d4;border-radius:10px;padding:10px;background:white}.choice-add input:first-child{flex:0 0 55px}.choice-add button{width:auto;margin:0}.artwork-positioner{margin:14px 0;padding:12px;border-radius:16px;background:#fff8fb}.artwork-positioner label{display:block;margin:9px 0 4px;font-size:13px}.artwork-positioner input[type=range]{width:100%;accent-color:#a56e88}.artwork-positioner .artwork-crop-frame{width:175px;height:180px;overflow:hidden;border-radius:23px;margin:10px auto;background:#f6e8ee}.artwork-positioner .artwork-crop-frame img{display:block;width:100%;height:100%;object-fit:cover;touch-action:none;cursor:grab}
 .artwork-choice {display:block; margin:14px 0; font-size:14px; line-height:1.5}
 .artwork-choice input {margin-right:8px; accent-color:#a56e88}
 .artwork-preview {width:100%;max-height:190px;object-fit:cover;border-radius:17px;margin:10px 0}
@@ -1865,11 +1866,30 @@ textarea {
 <label for="personalArtworkInput">Upload or replace your photograph</label>
 <input accept="image/jpeg,image/png,image/webp,image/bmp" class="artwork-file" id="personalArtworkInput" onchange="savePersonalArtwork(event)" type="file"/>
 <img alt="Your selected photograph" class="artwork-preview hidden" id="personalArtworkPreview"/>
+<div id="artworkPositioner" class="artwork-positioner hidden">
+ <p>Adjust how your photograph appears on the homepage. Drag the image to move it, or use the sliders.</p>
+ <div class="artwork-crop-frame"><img id="artworkCropPreview" alt="Preview of your homepage photograph"/></div>
+ <label for="artworkZoom">Photo size</label><input id="artworkZoom" type="range" min="100" max="300" value="100" oninput="updateArtworkCrop('zoom',this.value)">
+ <label for="artworkX">Move left or right</label><input id="artworkX" type="range" min="0" max="100" value="50" oninput="updateArtworkCrop('x',this.value)">
+ <label for="artworkY">Move up or down</label><input id="artworkY" type="range" min="0" max="100" value="50" oninput="updateArtworkCrop('y',this.value)">
+ <button class="safe-secondary" onclick="resetArtworkCrop()">Reset Position</button>
+</div>
 <button class="safe-secondary" onclick="removePersonalArtwork()">Remove My Photograph</button>
 </div>
 <p class="safe-message" id="artworkSettingsStatus" role="status"></p>
 <p class="safe-note">Your chosen homepage photograph is stored on this device. It is not included in the existing entry backup, so please keep the original in your Gallery.</p>
 
+   </div>
+  </section>
+  <section class="safe-card settings-accordion" data-settings-section="5">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>🌸 My Emotions & Exercise</span></button>
+   <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
+    <p>Make Journal your own. Hide choices you don't use, or add new ones. Hidden choices remain in saved entries and charts.</p>
+    <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
+    <div class="choice-add"><input id="newEmotionEmoji" aria-label="Emotion emoji" maxlength="12" placeholder="💗"><input id="newEmotionName" aria-label="New emotion name" maxlength="35" placeholder="New emotion"><button class="safe-secondary" onclick="addPersonalChoice('emotions')">Add</button></div>
+    <h3>🌿 My Exercise</h3><div id="manageActivities"></div>
+    <div class="choice-add"><input id="newActivityEmoji" aria-label="Exercise emoji" maxlength="12" placeholder="🌿"><input id="newActivityName" aria-label="New activity name" maxlength="35" placeholder="New activity"><button class="safe-secondary" onclick="addPersonalChoice('activities')">Add</button></div>
+    <p id="manageChoicesStatus" class="safe-message" role="status"></p>
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="1">
@@ -1980,7 +2000,7 @@ textarea {
 
 const $ = id => document.getElementById(id);
 
-const moods = [
+let moods = [
  ["🥰", "Loved"],
  ["😊", "Happy"],
  ["😌", "Calm"],
@@ -1992,7 +2012,7 @@ const moods = [
  ["😴", "Tired"]
 ];
 
-const emotionLevels = {
+let emotionLevels = {
  Loved: 9,
  Happy: 8,
  Calm: 7,
@@ -2004,7 +2024,7 @@ const emotionLevels = {
  Sad: 1
 };
 
-const emotionAxisOrder = [
+let emotionAxisOrder = [
  "Loved",
  "Happy",
  "Calm",
@@ -2016,7 +2036,7 @@ const emotionAxisOrder = [
  "Sad"
 ];
 
-const activityCategories = [
+let activityCategories = [
  {
   name: "Rest day",
   emoji: "🛋️",
@@ -2054,14 +2074,14 @@ const activityCategories = [
  }
 ];
 
-const activityScenes = Object.fromEntries(
+let activityScenes = Object.fromEntries(
  activityCategories.map(activity => [
   activity.name,
   activity.scene
  ])
 );
 
-const emotionColors = {
+let emotionColors = {
  Loved: "#e6a8bd",
  Happy: "#e9b9ca",
  Calm: "#e9d2a4",
@@ -2072,6 +2092,72 @@ const emotionColors = {
  Overwhelmed: "#b9c8df",
  Tired: "#c9c5dc"
 };
+
+/* PERSONAL CHOICES: hidden items remain available to historical charts. */
+const CHOICES_KEY="journal-personal-choices-v1";
+const choicePalette=["#e6a8bd","#e9b9ca","#e9d2a4","#c6d8c0","#c8b9db","#d8bfd3","#e9b8a7","#b9c8df","#c9c5dc"];
+const defaultMoods=moods.map(m=>[...m]);
+const defaultActivities=activityCategories.map(a=>({...a}));
+let hiddenMoods=[],hiddenActivities=[];
+function safeChoiceName(name){return String(name||"").trim().replace(/\s+/g," ").slice(0,35)}
+function getChoiceConfig(){try{return JSON.parse(localStorage.getItem(CHOICES_KEY)||"null")}catch(_){return null}}
+function applyChoiceConfig(config){
+ const clean=(items)=>Array.isArray(items)?items.filter(x=>x&&typeof x.name==="string"&&typeof x.emoji==="string").slice(0,50):[];
+ const customM=clean(config?.emotions).filter(x=>!defaultMoods.some(m=>m[1].toLowerCase()===x.name.toLowerCase()));
+ const customA=clean(config?.activities).filter(x=>!defaultActivities.some(a=>a.name.toLowerCase()===x.name.toLowerCase()));
+ moods=[...defaultMoods,...customM.map(x=>[x.emoji.slice(0,12),safeChoiceName(x.name)])];
+ activityCategories=[...defaultActivities,...customA.map((x,i)=>({name:safeChoiceName(x.name),emoji:x.emoji.slice(0,12),scene:x.emoji.slice(0,12),level:6+i,color:choicePalette[i%choicePalette.length]}))];
+ hiddenMoods=Array.isArray(config?.hiddenEmotions)?config.hiddenEmotions:[];
+ hiddenActivities=Array.isArray(config?.hiddenActivities)?config.hiddenActivities:[];
+ emotionAxisOrder=moods.map(x=>x[1]);
+ emotionLevels=Object.fromEntries(emotionAxisOrder.map((name,i)=>[name,emotionAxisOrder.length-i]));
+ activityScenes=Object.fromEntries(activityCategories.map(a=>[a.name,a.scene]));
+ emotionColors=Object.fromEntries(moods.map((m,i)=>[m[1],choicePalette[i%choicePalette.length]]));
+}
+function saveChoiceConfig(){
+ const data={emotions:moods.filter(m=>!defaultMoods.some(d=>d[1]===m[1])).map(m=>({name:m[1],emoji:m[0]})),activities:activityCategories.filter(a=>!defaultActivities.some(d=>d.name===a.name)).map(a=>({name:a.name,emoji:a.emoji})),hiddenEmotions:hiddenMoods,hiddenActivities:hiddenActivities};
+ localStorage.setItem(CHOICES_KEY,JSON.stringify(data));
+ renderChoiceManagers();renderActivityOptions();renderMoods();
+}
+function renderActivityOptions(){
+ const select=$("activity");const previous=select.value;
+ select.replaceChildren(new Option("Choose an activity...",""));
+ activityCategories.forEach(a=>{if(!hiddenActivities.includes(a.name)||a.name===previous)select.add(new Option(a.name,a.name))});
+ if(previous&&!Array.from(select.options).some(o=>o.value===previous))select.add(new Option(previous,previous));
+ select.value=previous;
+}
+function renderChoiceManagers(){
+ for(const type of ["emotions","activities"]){
+  const target=$("manage"+(type==="emotions"?"Emotions":"Activities"));if(!target)return;
+  target.replaceChildren();
+  const items=type==="emotions"?moods.map(m=>({name:m[1],emoji:m[0]})):activityCategories;
+  const hidden=type==="emotions"?hiddenMoods:hiddenActivities;
+  items.forEach(item=>{
+   const line=document.createElement("div");line.className="choice-manager-row";
+   const name=document.createElement("span");name.textContent=item.emoji+"  "+item.name;
+   const button=document.createElement("button");button.type="button";button.className="safe-secondary";
+   button.textContent=hidden.includes(item.name)?"Show":"Hide";
+   button.onclick=()=>{const list=type==="emotions"?hiddenMoods:hiddenActivities;const i=list.indexOf(item.name);if(i>=0)list.splice(i,1);else list.push(item.name);saveChoiceConfig()};
+   line.append(name,button);target.append(line);
+  });
+ }
+}
+function addPersonalChoice(type){
+ const prefix=type==="emotions"?"Emotion":"Activity";
+ const nameInput=$("new"+prefix+"Name"),emojiInput=$("new"+prefix+"Emoji"),status=$("manageChoicesStatus");
+ const name=safeChoiceName(nameInput.value),emoji=emojiInput.value.trim().slice(0,12)|| (type==="emotions"?"💗":"🌿");
+ const names=type==="emotions"?moods.map(m=>m[1]):activityCategories.map(a=>a.name);
+ if(!name){status.textContent="Please enter a name first.";return}
+ if(names.some(n=>n.toLowerCase()===name.toLowerCase())){status.textContent="That choice already exists. You can show it again using the list above.";return}
+ if(names.length>=50){status.textContent="The maximum is 50 choices in each category.";return}
+ if(type==="emotions")moods.push([emoji,name]);
+ else activityCategories.push({name,emoji,scene:emoji,level:activityCategories.length+1,color:choicePalette[activityCategories.length%choicePalette.length]});
+ emotionAxisOrder=moods.map(x=>x[1]);emotionLevels=Object.fromEntries(emotionAxisOrder.map((n,i)=>[n,emotionAxisOrder.length-i]));
+ activityScenes=Object.fromEntries(activityCategories.map(a=>[a.name,a.scene]));
+ emotionColors=Object.fromEntries(moods.map((m,i)=>[m[1],choicePalette[i%choicePalette.length]]));
+ nameInput.value="";emojiInput.value="";saveChoiceConfig();status.textContent=name+" added to your Journal choices.";
+}
+applyChoiceConfig(getChoiceConfig());
 
 /* APPLICATION STATE */
 
@@ -2350,6 +2436,7 @@ function openEntry() {
  entryOrigin = "home";
 
  resetEntry();
+ renderActivityOptions();
 
  $("entryBack").textContent = "← Back to Journal";
  $("entryLabel").textContent = "New Entry";
@@ -2395,7 +2482,7 @@ function renderMoods() {
 
  const visible = selectedMood
   ? moods.filter(mood => mood[1] === selectedMood)
-  : moods;
+  : moods.filter(mood => !hiddenMoods.includes(mood[1]));
 
  visible.forEach(([emoji, name]) => {
   const button = document.createElement("button");
@@ -3416,6 +3503,7 @@ function editSavedEntry(id) {
  updateDate();
 
  selectedMood = getEntryMood(entry);
+ renderActivityOptions();
 
  renderMoods();
 
@@ -3424,6 +3512,7 @@ function editSavedEntry(id) {
  const known = activityCategories.some(
   activity => activity.name === activityName
  );
+ if(known && !Array.from($("activity").options).some(o=>o.value===activityName))$("activity").add(new Option(activityName,activityName));
 
  if (known) {
   $("activity").value = activityName;
@@ -3936,15 +4025,15 @@ function getChartScale(type) {
  if (type === "emotions") {
   return {
    minimum: 1,
-   maximum: 9,
-   levels: [9, 8, 7, 6, 5, 4, 3, 2, 1]
+   maximum: Math.max(2,emotionAxisOrder.length),
+   levels: Array.from({length:Math.max(2,emotionAxisOrder.length)},(_,i)=>Math.max(2,emotionAxisOrder.length)-i)
   };
  }
 
  return {
   minimum: 1,
-  maximum: 5,
-  levels: [5, 4, 3, 2, 1]
+  maximum: Math.max(2,activityCategories.length),
+  levels: Array.from({length:Math.max(2,activityCategories.length)},(_,i)=>Math.max(2,activityCategories.length)-i)
  };
 }
 
@@ -4079,9 +4168,10 @@ function getChartDimensions(type, count) {
 
  const top = 25;
 
- const bottom = isExercise ? 207 : 345;
+ const axisItems=isExercise?activityCategories.length:emotionAxisOrder.length;
+ const bottom = Math.max(isExercise?207:345,25+(axisItems-1)*36);
 
- const height = isExercise ? 256 : 393;
+ const height = bottom+(isExercise?49:48);
 
  const padding = 22;
 
@@ -5054,7 +5144,8 @@ function updatePinSettings(){
  $("recoveryChangeButton").textContent=recoveryRecord()?"Change Recovery Question":"Set Up Recovery Question";
 }
 function toggleSettingsSection(index){
- document.querySelectorAll(".settings-accordion").forEach((section,i)=>{
+ document.querySelectorAll(".settings-accordion").forEach(section=>{
+  const i=Number(section.dataset.settingsSection);
   const trigger=section.querySelector(".settings-accordion-trigger");
   const content=section.querySelector(".settings-accordion-content");
   const expand=i===index && trigger.getAttribute("aria-expanded")!=="true";
@@ -5121,7 +5212,7 @@ async function submitRecovery(){
  finally{recoveryBusy=false;$("recoverySubmit").disabled=false}
 }
 function lockJournal(){if(!pinRecord())return;journalUnlocked=false;showPage("home");showPin("unlock","Welcome back. Enter your six-digit PIN.")}
-function openSettings(){updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
+function openSettings(){renderChoiceManagers();updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
 /* A 30-day in-app reminder, counted from opt-in, backup, or the last reminder. */
 const JOURNAL_REMINDER_START_KEY="journal-reminder-start-v2";
 const JOURNAL_REMINDER_SHOWN_KEY="journal-reminder-shown-v2";
@@ -5278,7 +5369,7 @@ async function backupJournal(){
  try{
   const entries=await allEntries();const exportEntries=[];
   for(const entry of entries){const converted=[];for(const photo of (entry.photos||[])){if(photo instanceof Blob)converted.push(await blobAsDataUrl(photo));else throw new Error("An entry has an unsupported photograph; backup stopped to avoid losing it.")};exportEntries.push({...entry,photos:converted})}
-  const payload=JSON.stringify({format:"journal-backup",version:1,createdAt:new Date().toISOString(),entries:exportEntries});
+  const payload=JSON.stringify({format:"journal-backup",version:1,createdAt:new Date().toISOString(),choices:getChoiceConfig()||{emotions:[],activities:[],hiddenEmotions:[],hiddenActivities:[]},entries:exportEntries});
   const salt=randomBytes(16),iv=randomBytes(12),key=await deriveKey(password,salt,["encrypt"]);
   const encrypted=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(payload));
   const envelope={format:"journal-encrypted-backup",version:1,salt:toB64(salt),iv:toB64(iv),data:toB64(new Uint8Array(encrypted))};
@@ -5327,6 +5418,7 @@ async function restoreJournal(){
   const current=await allEntries();const existingIds=new Set(current.map(e=>e.id));const duplicates=restored.filter(e=>existingIds.has(e.id)).length;
   if(!(await askRestoreConfirmation(restored.length,duplicates))){ $("settingsStatus").textContent="Restore canceled. No entries changed.";return}
   const db=await openDatabase();await new Promise((resolve,reject)=>{const tx=db.transaction("entries","readwrite");const store=tx.objectStore("entries");for(const entry of restored)store.put(entry);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)});
+  if(payload.choices && typeof payload.choices==="object"){applyChoiceConfig(payload.choices);saveChoiceConfig()}
   $("restoreFile").value="";$("settingsStatus").textContent="Restored "+restored.length+" entries successfully. Your existing entries with different IDs were kept.";
  }catch(error){console.error(error);$("settingsStatus").textContent="Restore failed: "+(error.message||"unknown error")}
 }
@@ -5339,6 +5431,13 @@ const ARTWORK_MODE_KEY="journal-artwork-mode-v1";
 const ARTWORK_DECK_KEY="journal-artwork-deck-v1";
 const ARTWORK_LAST_KEY="journal-artwork-last-v1";
 const ARTWORK_DB="JournalArtwork";
+const ARTWORK_CROP_KEY="journal-artwork-crop-v1";
+let artworkCrop={zoom:100,x:50,y:50};
+try{const stored=JSON.parse(localStorage.getItem(ARTWORK_CROP_KEY)||"null");if(stored&&[stored.zoom,stored.x,stored.y].every(Number.isFinite))artworkCrop=stored}catch(_){}
+function artworkCropStyle(img){img.style.objectPosition=artworkCrop.x+"% "+artworkCrop.y+"%";img.style.transform="scale("+(artworkCrop.zoom/100)+")";img.style.transformOrigin=artworkCrop.x+"% "+artworkCrop.y+"%"}
+function updateArtworkCrop(axis,value){artworkCrop[axis]=Number(value);localStorage.setItem(ARTWORK_CROP_KEY,JSON.stringify(artworkCrop));artworkCropStyle($("homeArtworkImage"));artworkCropStyle($("artworkCropPreview"))}
+function resetArtworkCrop(){artworkCrop={zoom:100,x:50,y:50};for(const [key,id] of [["zoom","artworkZoom"],["x","artworkX"],["y","artworkY"]])$(id).value=artworkCrop[key];updateArtworkCrop("zoom",100)}
+function initArtworkDrag(){const img=$("artworkCropPreview");let start=null;img.addEventListener("pointerdown",e=>{start={x:e.clientX,y:e.clientY,ox:artworkCrop.x,oy:artworkCrop.y};img.setPointerCapture(e.pointerId)});img.addEventListener("pointermove",e=>{if(!start)return;const dx=(e.clientX-start.x)/1.75,dy=(e.clientY-start.y)/1.8;artworkCrop.x=Math.max(0,Math.min(100,start.ox-dx));artworkCrop.y=Math.max(0,Math.min(100,start.oy-dy));$("artworkX").value=artworkCrop.x;$("artworkY").value=artworkCrop.y;updateArtworkCrop("x",artworkCrop.x)});img.addEventListener("pointerup",()=>start=null);img.addEventListener("pointercancel",()=>start=null)}
 let artworkNumber=1, artworkObjectUrl=null, artworkRequest=0;
 
 function artworkPath(n) {
@@ -5414,11 +5513,13 @@ async function renderHomeArtwork() {
  const old=artworkObjectUrl;
  artworkObjectUrl=newObjectUrl;
  img.src=next;
+ img.style.transform=personal?"":"none";img.style.objectPosition="50% 50%";if(personal)artworkCropStyle(img);
  img.alt=personal?"Your chosen homepage photograph":"Peaceful pastel Journal illustration";
  const preview=$("personalArtworkPreview");
  preview.classList.toggle("hidden",!personal);
- if(personal)preview.src=next;
- else preview.removeAttribute("src");
+ if(personal){preview.src=next;$("artworkCropPreview").src=next;artworkCropStyle($("artworkCropPreview"));}
+ else {preview.removeAttribute("src");$("artworkCropPreview").removeAttribute("src");}
+ $("artworkPositioner").classList.toggle("hidden",!personal);
  if(old)setTimeout(()=>URL.revokeObjectURL(old),1500);
 }
 async function setArtworkMode(mode) {
@@ -5439,6 +5540,8 @@ async function savePersonalArtwork(event) {
   // Reuse Journal's existing image resizing and compression function.
   const prepared=await preparePhotoForStorage(file);
   await artworkStore("put",prepared);
+  artworkCrop={zoom:100,x:50,y:50};localStorage.setItem(ARTWORK_CROP_KEY,JSON.stringify(artworkCrop));
+  for(const [key,id] of [["zoom","artworkZoom"],["x","artworkX"],["y","artworkY"]])$(id).value=artworkCrop[key];
   localStorage.setItem(ARTWORK_MODE_KEY,"personal");
   updateArtworkSettings();
   await renderHomeArtwork();
@@ -5464,11 +5567,15 @@ async function removePersonalArtwork() {
 function initializeHomeArtwork() {
  try {artworkNumber=chooseArtwork()} catch(error) {console.warn(error);artworkNumber=1}
  updateArtworkSettings();
+ for(const [key,id] of [["zoom","artworkZoom"],["x","artworkX"],["y","artworkY"]])$(id).value=artworkCrop[key];
+ initArtworkDrag();
  renderHomeArtwork();
 }
 
 /* INITIALIZE */
 
+renderActivityOptions();
+renderChoiceManagers();
 resetEntry();
 initializeHomeArtwork();
 initializeJournalSecurity();
