@@ -1884,11 +1884,11 @@ textarea {
   <section class="safe-card settings-accordion" data-settings-section="5">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>🌸 My Emotions & Exercise</span></button>
    <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
-    <p>Make Journal your own. Hide choices you don't use, or add new ones. Hidden choices remain in saved entries and charts.</p>
+    <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Past entries and charts stay intact.</p>
     <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
-    <div class="choice-add"><input id="newEmotionEmoji" aria-label="Emotion emoji" maxlength="12" placeholder="💗"><input id="newEmotionName" aria-label="New emotion name" maxlength="35" placeholder="New emotion"><button class="safe-secondary" onclick="addPersonalChoice('emotions')">Add</button></div>
+    <div class="choice-add"><input id="newEmotionEmoji" aria-label="Emotion emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="💗"><input id="newEmotionName" aria-label="New emotion name" maxlength="35" placeholder="New emotion"><button class="safe-secondary" onclick="addPersonalChoice('emotions')">Add</button></div>
     <h3>🌿 My Exercise</h3><div id="manageActivities"></div>
-    <div class="choice-add"><input id="newActivityEmoji" aria-label="Exercise emoji" maxlength="12" placeholder="🌿"><input id="newActivityName" aria-label="New activity name" maxlength="35" placeholder="New activity"><button class="safe-secondary" onclick="addPersonalChoice('activities')">Add</button></div>
+    <div class="choice-add"><input id="newActivityEmoji" aria-label="Exercise emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="🌿"><input id="newActivityName" aria-label="New activity name" maxlength="35" placeholder="New activity"><button class="safe-secondary" onclick="addPersonalChoice('activities')">Add</button></div>
     <p id="manageChoicesStatus" class="safe-message" role="status"></p>
    </div>
   </section>
@@ -2099,23 +2099,36 @@ const choicePalette=["#e6a8bd","#e9b9ca","#e9d2a4","#c6d8c0","#c8b9db","#d8bfd3"
 const defaultMoods=moods.map(m=>[...m]);
 const defaultActivities=activityCategories.map(a=>({...a}));
 let hiddenMoods=[],hiddenActivities=[];
+let removedCustomMoods=[],removedCustomActivities=[];
+const emojiGraphemes = value => Array.from(new Intl.Segmenter(undefined,{granularity:"grapheme"}).segment(String(value||"").trim()), x=>x.segment).filter(x=>!/^\s+$/.test(x));
+const isEmojiGrapheme = value => /\p{Extended_Pictographic}/u.test(value) || /^[0-9#*]\uFE0F?\u20E3$/u.test(value);
+function limitChoiceEmoji(input){
+ const chars=emojiGraphemes(input.value);
+ const first=chars.find(isEmojiGrapheme);
+ input.value=first||"";
+}
+
 function safeChoiceName(name){return String(name||"").trim().replace(/\s+/g," ").slice(0,35)}
 function getChoiceConfig(){try{return JSON.parse(localStorage.getItem(CHOICES_KEY)||"null")}catch(_){return null}}
 function applyChoiceConfig(config){
  const clean=(items)=>Array.isArray(items)?items.filter(x=>x&&typeof x.name==="string"&&typeof x.emoji==="string").slice(0,50):[];
+ removedCustomMoods=clean(config?.removedEmotions);
+ removedCustomActivities=clean(config?.removedActivities);
  const customM=clean(config?.emotions).filter(x=>!defaultMoods.some(m=>m[1].toLowerCase()===x.name.toLowerCase()));
  const customA=clean(config?.activities).filter(x=>!defaultActivities.some(a=>a.name.toLowerCase()===x.name.toLowerCase()));
- moods=[...defaultMoods,...customM.map(x=>[x.emoji.slice(0,12),safeChoiceName(x.name)])];
- activityCategories=[...defaultActivities,...customA.map((x,i)=>({name:safeChoiceName(x.name),emoji:x.emoji.slice(0,12),scene:x.emoji.slice(0,12),level:6+i,color:choicePalette[i%choicePalette.length]}))];
+ moods=[...defaultMoods,...customM.map(x=>[x.emoji,safeChoiceName(x.name)]),...removedCustomMoods.filter(x=>!customM.some(c=>c.name===x.name)).map(x=>[x.emoji,safeChoiceName(x.name)])];
+ activityCategories=[...defaultActivities,...[...customA,...removedCustomActivities.filter(x=>!customA.some(c=>c.name===x.name))].map((x,i)=>({name:safeChoiceName(x.name),emoji:x.emoji,scene:x.emoji,level:6+i,color:choicePalette[i%choicePalette.length]}))];
  hiddenMoods=Array.isArray(config?.hiddenEmotions)?config.hiddenEmotions:[];
+ removedCustomMoods.forEach(x=>{if(!hiddenMoods.includes(x.name))hiddenMoods.push(x.name)});
  hiddenActivities=Array.isArray(config?.hiddenActivities)?config.hiddenActivities:[];
+ removedCustomActivities.forEach(x=>{if(!hiddenActivities.includes(x.name))hiddenActivities.push(x.name)});
  emotionAxisOrder=moods.map(x=>x[1]);
  emotionLevels=Object.fromEntries(emotionAxisOrder.map((name,i)=>[name,emotionAxisOrder.length-i]));
  activityScenes=Object.fromEntries(activityCategories.map(a=>[a.name,a.scene]));
  emotionColors=Object.fromEntries(moods.map((m,i)=>[m[1],choicePalette[i%choicePalette.length]]));
 }
 function saveChoiceConfig(){
- const data={emotions:moods.filter(m=>!defaultMoods.some(d=>d[1]===m[1])).map(m=>({name:m[1],emoji:m[0]})),activities:activityCategories.filter(a=>!defaultActivities.some(d=>d.name===a.name)).map(a=>({name:a.name,emoji:a.emoji})),hiddenEmotions:hiddenMoods,hiddenActivities:hiddenActivities};
+ const data={emotions:moods.filter(m=>!defaultMoods.some(d=>d[1]===m[1])&&!removedCustomMoods.some(x=>x.name===m[1])).map(m=>({name:m[1],emoji:m[0]})),activities:activityCategories.filter(a=>!defaultActivities.some(d=>d.name===a.name)&&!removedCustomActivities.some(x=>x.name===a.name)).map(a=>({name:a.name,emoji:a.emoji})),removedEmotions:removedCustomMoods,removedActivities:removedCustomActivities,hiddenEmotions:hiddenMoods,hiddenActivities:hiddenActivities};
  localStorage.setItem(CHOICES_KEY,JSON.stringify(data));
  renderChoiceManagers();renderActivityOptions();renderMoods();
 }
@@ -2132,23 +2145,54 @@ function renderChoiceManagers(){
   target.replaceChildren();
   const items=type==="emotions"?moods.map(m=>({name:m[1],emoji:m[0]})):activityCategories;
   const hidden=type==="emotions"?hiddenMoods:hiddenActivities;
-  items.forEach(item=>{
+  const removed=type==="emotions"?removedCustomMoods:removedCustomActivities;
+  items.filter(item=>!removed.some(x=>x.name===item.name)).forEach(item=>{
    const line=document.createElement("div");line.className="choice-manager-row";
    const name=document.createElement("span");name.textContent=item.emoji+"  "+item.name;
    const button=document.createElement("button");button.type="button";button.className="safe-secondary";
    button.textContent=hidden.includes(item.name)?"Show":"Hide";
    button.onclick=()=>{const list=type==="emotions"?hiddenMoods:hiddenActivities;const i=list.indexOf(item.name);if(i>=0)list.splice(i,1);else list.push(item.name);saveChoiceConfig()};
-   line.append(name,button);target.append(line);
+   line.append(name,button);
+   const isDefault=type==="emotions"?defaultMoods.some(d=>d[1]===item.name):defaultActivities.some(d=>d.name===item.name);
+   if(!isDefault){
+    const remove=document.createElement("button");remove.type="button";remove.className="safe-secondary";
+    remove.textContent="Remove";remove.setAttribute("aria-label","Remove custom choice "+item.name);
+    remove.onclick=()=>removePersonalChoice(type,item.name);
+    line.append(remove);
+   }
+   target.append(line);
   });
  }
+}
+function removePersonalChoice(type,name){
+ const items=type==="emotions"?moods.map(m=>({name:m[1],emoji:m[0]})):activityCategories;
+ const item=items.find(x=>x.name===name);
+ if(!item)return;
+ const archived=type==="emotions"?removedCustomMoods:removedCustomActivities;
+ if(!archived.some(x=>x.name===name))archived.push({name:item.name,emoji:item.emoji});
+ const hidden=type==="emotions"?hiddenMoods:hiddenActivities;
+ if(!hidden.includes(name))hidden.push(name);
+ saveChoiceConfig();
+ $("manageChoicesStatus").textContent=name+" removed from your choices. Existing journal entries and charts are preserved.";
 }
 function addPersonalChoice(type){
  const prefix=type==="emotions"?"Emotion":"Activity";
  const nameInput=$("new"+prefix+"Name"),emojiInput=$("new"+prefix+"Emoji"),status=$("manageChoicesStatus");
- const name=safeChoiceName(nameInput.value),emoji=emojiInput.value.trim().slice(0,12)|| (type==="emotions"?"💗":"🌿");
+ const name=safeChoiceName(nameInput.value),parts=emojiGraphemes(emojiInput.value);
+ if(parts.length>1||parts.some(x=>!isEmojiGrapheme(x))){status.textContent="Please choose just one emoji.";return}
+ const emoji=parts[0]||(type==="emotions"?"💗":"🌿");
  const names=type==="emotions"?moods.map(m=>m[1]):activityCategories.map(a=>a.name);
  if(!name){status.textContent="Please enter a name first.";return}
- if(names.some(n=>n.toLowerCase()===name.toLowerCase())){status.textContent="That choice already exists. You can show it again using the list above.";return}
+ if(names.some(n=>n.toLowerCase()===name.toLowerCase())){
+  const removed=type==="emotions"?removedCustomMoods:removedCustomActivities;
+  const existing=removed.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(existing){removed.splice(removed.indexOf(existing),1);existing.emoji=emoji;
+   if(type==="emotions"){const item=moods.find(m=>m[1]===existing.name);if(item)item[0]=emoji;hiddenMoods=hiddenMoods.filter(x=>x!==existing.name)}
+   else {const item=activityCategories.find(a=>a.name===existing.name);if(item){item.emoji=emoji;item.scene=emoji}hiddenActivities=hiddenActivities.filter(x=>x!==existing.name)}
+   nameInput.value="";emojiInput.value="";saveChoiceConfig();status.textContent=name+" added back to your choices.";return;
+  }
+  status.textContent="That choice already exists. You can show it again using the list above.";return
+ }
  if(names.length>=50){status.textContent="The maximum is 50 choices in each category.";return}
  if(type==="emotions")moods.push([emoji,name]);
  else activityCategories.push({name,emoji,scene:emoji,level:activityCategories.length+1,color:choicePalette[activityCategories.length%choicePalette.length]});
