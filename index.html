@@ -1152,6 +1152,14 @@ textarea {
 .journal-password-wrap:focus-within{outline:2px solid #d4a2ba}
 .journal-password-eye{border:0;background:#fce8ef;border-radius:9px;min-width:42px;height:38px;color:#795767;font-size:19px}
 .journal-password-error{min-height:18px;color:#a04465;font-size:12px;text-align:left;margin:5px 0 12px}
+
+/* TAP-TO-ENLARGE JOURNAL PHOTOGRAPHS */
+.photo-item img,.thumbnail-strip img{cursor:zoom-in}
+.photo-item img:focus-visible,.thumbnail-strip img:focus-visible{outline:3px solid #ae7795;outline-offset:3px}
+#journalPhotoZoom[hidden]{display:none!important}
+#journalPhotoZoom{position:fixed;inset:0;z-index:11000;background:rgba(35,22,32,.88);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+#journalPhotoZoom img{display:block;max-width:100%;max-height:calc(100dvh - 40px);width:auto;height:auto;object-fit:contain;border-radius:12px;box-shadow:0 10px 40px #0005}
+#journalPhotoZoom:focus-visible{outline:3px solid #fff;outline-offset:-7px}
 </style>
 </head>
 
@@ -1949,6 +1957,11 @@ textarea {
   </div>
  </form>
 </div>
+
+<!-- Full-screen photograph preview: tap again or press Escape to close -->
+<div id="journalPhotoZoom" hidden role="dialog" aria-modal="true" aria-label="Enlarged journal photograph" tabindex="-1" onclick="closeJournalPhotoZoom()">
+ <img id="journalPhotoZoomImage" alt="Enlarged journal photograph">
+</div>
 <script>
 
 /* CONFIGURATION */
@@ -2102,9 +2115,46 @@ const chartRenderRequests = {
 
 const chartResizeObservers = {};
 
+
+/* Enlarge photographs without changing or removing them. */
+let journalPhotoZoomPreviousFocus=null;
+function openJournalPhotoZoom(src,alt){
+ if(!src)return;
+ journalPhotoZoomPreviousFocus=document.activeElement;
+ const overlay=$("journalPhotoZoom");
+ const image=$("journalPhotoZoomImage");
+ image.src=src;
+ image.alt=alt||"Enlarged journal photograph";
+ overlay.hidden=false;
+ overlay.focus();
+}
+function closeJournalPhotoZoom(){
+ const overlay=$("journalPhotoZoom");
+ if(overlay.hidden)return;
+ overlay.hidden=true;
+ $("journalPhotoZoomImage").removeAttribute("src");
+ if(journalPhotoZoomPreviousFocus?.isConnected)journalPhotoZoomPreviousFocus.focus();
+ journalPhotoZoomPreviousFocus=null;
+}
+function makeJournalPhotoZoomable(image){
+ image.tabIndex=0;
+ image.setAttribute("role","button");
+ image.setAttribute("aria-label","Enlarge journal photograph");
+ image.addEventListener("click",()=>openJournalPhotoZoom(image.src,image.alt));
+ image.addEventListener("keydown",event=>{
+  if(event.key==="Enter"||event.key===" "){
+   event.preventDefault();openJournalPhotoZoom(image.src,image.alt);
+  }
+ });
+}
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape"&&!$("journalPhotoZoom").hidden)closeJournalPhotoZoom();
+});
+
 /* GENERAL HELPERS */
 
 function showPage(id) {
+ closeJournalPhotoZoom();
  document.querySelectorAll(".page").forEach(page => {
   page.classList.remove("active");
  });
@@ -2432,6 +2482,7 @@ function renderPhotos() {
 
   image.src = photo.url;
   image.alt = "Journal photo";
+  makeJournalPhotoZoomable(image);
 
   const remove = document.createElement("button");
 
@@ -3241,6 +3292,7 @@ function buildEntryPreview(entry) {
 
    image.src = url;
    image.alt = "Saved journal photo";
+   makeJournalPhotoZoomable(image);
 
    strip.append(image);
   });
