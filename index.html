@@ -1125,8 +1125,6 @@ textarea {
 .settings-accordion-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:72px;padding:20px;border:0;background:transparent;text-align:left;color:#8b6075;font-size:17px;font-weight:600;cursor:pointer}
 .settings-accordion-trigger:hover{background:#fff7fa}
 .settings-accordion-trigger:focus-visible{outline:3px solid #c789a6;outline-offset:-4px}
-.settings-chevron{font-size:27px;font-weight:400;color:#a56e88;transition:transform .2s ease;line-height:1}
-.settings-accordion-trigger[aria-expanded="true"] .settings-chevron{transform:rotate(180deg)}
 .settings-accordion-content{padding:0 19px 19px;border-top:1px solid #f2e1e8}
 .settings-accordion-content[hidden]{display:none!important}
 .settings-accordion-content > p:first-child{margin-top:16px}
@@ -1820,7 +1818,7 @@ textarea {
   <h2>Keep Your Memories Safe</h2>
   <p style="text-align:center">Your memories deserve a safe place to stay.</p>
   <section class="safe-card settings-accordion" data-settings-section="0">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>💛 Personalize My Journal</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>💛 Personalize My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
 
 
@@ -1839,25 +1837,25 @@ textarea {
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="1">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>↧ Backup My Journal</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>↧ Backup My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent1" role="region" aria-labelledby="settingsTrigger1" hidden>
 <p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button>
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="2">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>↥ Restore My Journal</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>↥ Restore My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent2" role="region" aria-labelledby="settingsTrigger2" hidden>
 <p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input accept=".json,application/json" id="restoreFile" style="display:block;max-width:100%;margin-bottom:10px" type="file"/><button class="safe-action" onclick="restoreJournal()">Restore Backup</button>
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="3">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>♧ Backup Reminder</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>♧ Backup Reminder</span></button>
    <div class="settings-accordion-content" id="settingsContent3" role="region" aria-labelledby="settingsTrigger3" hidden>
 <p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input id="backupReminderToggle" onchange="setBackupReminder(this.checked)" type="checkbox"/> Remind me every 30 days when I open Journal</label>
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="4">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger4" aria-expanded="false" aria-controls="settingsContent4" onclick="toggleSettingsSection(4)"><span>🔒 Journal PIN</span><span class="settings-chevron" aria-hidden="true">⌄</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger4" aria-expanded="false" aria-controls="settingsContent4" onclick="toggleSettingsSection(4)"><span>🔒 Journal PIN</span></button>
    <div class="settings-accordion-content" id="settingsContent4" role="region" aria-labelledby="settingsTrigger4" hidden>
 <p id="pinSettingsStatus">Protect Journal with a six-digit PIN when opening the app.</p><button class="safe-action" id="pinSetupButton" onclick="startPinSetup()">Set Up PIN</button><div class=""><button class="safe-secondary" id="pinChangeButton" onclick="changePin()">Change PIN</button><button class="safe-secondary" id="recoveryChangeButton" onclick="changeRecoveryQuestion()">Change Recovery Question</button><button class="safe-secondary" id="pinLockButton" onclick="lockJournal()">Lock Now</button><div style="margin-top:10px;padding-top:12px;border-top:1px solid #f0dce5"><button class="safe-secondary" id="pinRemoveButton" onclick="startRemovePin()" style="color:#a04465;border-color:#e4b5c4">Remove PIN</button><p class="safe-note">Removing your PIN turns off Journal's lock screen. Your entries and photos are not deleted.</p></div></div>
    </div>
