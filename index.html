@@ -1334,7 +1334,22 @@ body[data-contrast="true"] .settings-accordion-trigger[aria-expanded="true"]{
  #home .footer{margin-top:8px}
  #home>p:last-child{margin:3px 0 0}
 }
-/* Preserve scrolling on exceptionally short screens or enlarged accessibility text. */
+/* v10.13: lock the HOME viewport only, avoiding the small elastic scroll.
+   Other Journal pages remain independently scrollable as normal. */
+html:has(#home.active),body:has(#home.active){
+ height:100%;
+ overflow:hidden;
+ overscroll-behavior:none;
+}
+#home.active{
+ height:100vh;
+ height:100dvh;
+ min-height:0;
+ max-height:100dvh;
+ overflow:hidden;
+ overscroll-behavior:none;
+}
+
 </style>
 </head>
 
