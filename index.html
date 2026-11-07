@@ -1458,8 +1458,8 @@ html:has(#home.active),body:has(#home.active){
  #home.active > p:last-child{bottom:6px}
 }
 
-/* v10.19: fixed-size, responsive photo gallery with an ambient blurred copy
-   of the currently displayed image. The original always stays uncropped. */
+/* v10.20: fixed-size photo gallery with soft pastel backgrounds.
+   The original stays uncropped; no enlarged or blurred copies are displayed. */
 .journal-gallery-card{
  box-sizing:border-box;
  width:min(100%,440px);
@@ -1474,17 +1474,13 @@ html:has(#home.active),body:has(#home.active){
  position:relative;isolation:isolate;overflow:hidden;
  width:100%;flex:1 1 auto;min-height:0;
  border:2px solid #dda7be;border-radius:17px;
- background:#f4dce6;
+ background:linear-gradient(145deg,var(--photo-pastel-a,#fff1f5),var(--photo-pastel-b,#f6e3ef));
+ transition:background-color .2s ease;
  display:flex;align-items:center;justify-content:center;
-}
-.journal-gallery-ambient{
- position:absolute;inset:-28px;width:calc(100% + 56px);height:calc(100% + 56px);
- object-fit:cover;filter:blur(23px) saturate(.78) brightness(1.07);
- opacity:.86;pointer-events:none;user-select:none;
 }
 .journal-gallery-photo-frame::after{
  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
- background:linear-gradient(140deg,#fff1f022,#ffe8ef33);
+ background:radial-gradient(ellipse at 16% 12%,#ffffff8c,transparent 58%),radial-gradient(ellipse at 85% 90%,#ffffff70,transparent 58%);
 }
 .journal-gallery-photo{
  position:relative;z-index:2;max-width:100%;max-height:100%;width:auto;height:auto;
@@ -2463,7 +2459,6 @@ html:has(#home.active),body:has(#home.active){
   <p id="journalGalleryEntryDate" class="journal-gallery-entry-date" hidden></p>
   <p class="journal-gallery-subtitle">Photos &amp; Memories</p>
   <div id="journalGalleryPhotoFrame" class="journal-gallery-photo-frame">
-   <img id="journalGalleryAmbient" class="journal-gallery-ambient" alt="" aria-hidden="true" draggable="false">
    <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
   </div>
   <div id="journalGalleryCaptionArea" class="journal-gallery-caption-area">
@@ -2878,7 +2873,18 @@ function showJournalGalleryPhoto(){
  if(!photo)return;
  const image=$("journalPhotoZoomImage");
  image.src=photo.src;
- $("journalGalleryAmbient").src=photo.src;
+ // A gentle pastel changes with each photo, without sampling its colors.
+ const pastelPalettes=[
+  ["#fff4f8","#f7dfeb"], // blush
+  ["#f6f1ff","#e9e1fa"], // lavender
+  ["#fff4e9","#ffe5d9"], // peach
+  ["#edf9f4","#dff2e9"], // mint
+  ["#fff9e7","#f9edca"], // buttercream
+  ["#eff6ff","#dfeafa"]  // powder blue
+ ];
+ const [pastelA,pastelB]=pastelPalettes[journalGalleryIndex%pastelPalettes.length];
+ $("journalGalleryPhotoFrame").style.setProperty("--photo-pastel-a",pastelA);
+ $("journalGalleryPhotoFrame").style.setProperty("--photo-pastel-b",pastelB);
  image.alt=photo.alt||"Journal photograph";
  $("journalGalleryCounter").textContent=journalGalleryPhotos.length>1?`${journalGalleryIndex+1} of ${journalGalleryPhotos.length}`:"";
  $("journalGalleryCaptionText").textContent=photo.caption||"Add a caption to this memory";
@@ -2930,7 +2936,7 @@ function closeJournalPhotoZoom(){
  if(overlay.hidden)return;
  overlay.hidden=true;
  $("journalPhotoZoomImage").removeAttribute("src");
- $("journalGalleryAmbient").removeAttribute("src");
+
  journalGalleryPhotos=[];
  journalGalleryTouchStart=null;
  if(journalPhotoZoomPreviousFocus?.isConnected)journalPhotoZoomPreviousFocus.focus();
