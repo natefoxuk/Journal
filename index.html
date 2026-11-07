@@ -1374,7 +1374,7 @@ html:has(#home.active),body:has(#home.active){
  flex:0 1 auto;
  width:min(100%,160px);
  height:clamp(74px,17dvh,145px);
- min-height:58px;
+ min-height:0;
  margin:0 auto;
 }
 #home .sparkle{
@@ -1388,8 +1388,8 @@ html:has(#home.active),body:has(#home.active){
 }
 #home .footer{
  flex:none;
- margin: auto 0 0;
- padding-top:clamp(12px,2.3dvh,24px);
+ margin:clamp(8px,1.5dvh,15px) 0 0;
+ padding-top:0;
 }
 #home>p:last-child{flex:none;margin:clamp(5px,.9dvh,9px) 0 0;line-height:1.2}
 @media(max-height:650px){
@@ -1399,7 +1399,7 @@ html:has(#home.active),body:has(#home.active){
  #home .subtitle{margin:2px 0 7px}
  #home .home-artwork{height:clamp(55px,13dvh,90px);min-height:45px;width:min(100%,120px)}
  #home .sparkle{margin:5px 0 7px}
- #home .footer{padding-top:8px}
+ #home .footer{margin-top:6px;padding-top:0}
  #home>p:last-child{margin-top:3px}
 }
 </style>
