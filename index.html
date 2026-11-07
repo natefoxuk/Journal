@@ -1429,6 +1429,34 @@ html:has(#home.active),body:has(#home.active){
   #home.active > .footer{padding-top:3px}
   #home.active > p:last-child{margin-top:2px}
 }
+
+/* v10.18: truly anchor both closing elements to the bottom of the
+   visible home screen. They are removed from the flex flow so menu
+   spacing can no longer pull them up beneath Previous Entries. */
+#home.active{position:relative}
+#home.active > .footer{
+ position:absolute;
+ left:12px;
+ right:12px;
+ bottom:clamp(43px,6.3dvh,64px);
+ width:auto;
+ margin:0;
+ padding:0;
+ text-align:center;
+}
+#home.active > p:last-child{
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:clamp(9px,1.8dvh,18px);
+ width:auto;
+ margin:0;
+ text-align:center;
+}
+@media(max-height:650px){
+ #home.active > .footer{bottom:35px}
+ #home.active > p:last-child{bottom:6px}
+}
 </style>
 </head>
 
