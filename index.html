@@ -1892,6 +1892,13 @@ textarea {
   <div style="text-align:center">✧ ♡ ✧</div>
   <h2>Keep Your Memories Safe</h2>
   <p style="text-align:center">Your memories deserve a safe place to stay.</p>
+  <section class="safe-card settings-accordion" data-settings-section="6">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger6" aria-expanded="false" aria-controls="settingsContent6" onclick="toggleSettingsSection(6)"><span>📖 How to Use Journal</span></button>
+   <div class="settings-accordion-content" id="settingsContent6" role="region" aria-labelledby="settingsTrigger6" hidden>
+    <p>New to Journal, or looking for a little reminder? Explore a friendly guide to all the things you can do.</p>
+    <button type="button" class="safe-action" onclick="openJournalGuide()">Open My Journal Guide</button>
+   </div>
+  </section>
   <section class="safe-card settings-accordion" data-settings-section="0">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>💛 Personalize My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
@@ -1955,13 +1962,7 @@ textarea {
    </div>
   </section>
 
-  <section class="safe-card settings-accordion" data-settings-section="6">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger6" aria-expanded="false" aria-controls="settingsContent6" onclick="toggleSettingsSection(6)"><span>📖 How to Use Journal</span></button>
-   <div class="settings-accordion-content" id="settingsContent6" role="region" aria-labelledby="settingsTrigger6" hidden>
-    <p>New to Journal, or looking for a little reminder? Explore a friendly guide to all the things you can do.</p>
-    <button type="button" class="safe-action" onclick="openJournalGuide()">Open My Journal Guide</button>
-   </div>
-  </section>
+
   <p id="settingsStatus" class="safe-message" role="status"></p>
   <p class="safe-note">Your journal remains stored on this device. A PIN protects the app screen, not the underlying browser database. Backup files are encrypted separately with a password.</p>
  </div>
