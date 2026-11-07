@@ -1301,6 +1301,18 @@ input,select,textarea{font-size:max(16px,1em)}
 body[data-contrast="true"] .settings-accordion-trigger[aria-expanded="true"]{
  background:#f0c2d4!important;color:#542a3f!important;box-shadow:inset 0 0 0 3px #8e3b61!important;
 }
+
+/* v10.11: centered elegant home labels, with emojis retained on the right. */
+#home .menu{max-width:310px;width:100%;margin-inline:auto}
+#home .menu button{
+ display:grid;grid-template-columns:46px minmax(0,1fr) 46px;
+ align-items:center;gap:0;width:100%;box-sizing:border-box;
+ min-height:76px;padding:14px 15px;text-align:center;
+ font:italic 23px Georgia,serif;color:#a56e88;
+}
+#home .menu button .symbol{grid-column:3;grid-row:1;justify-self:end}
+#home .menu button .menu-label{grid-column:1 / 4;grid-row:1;justify-self:center;align-self:center;pointer-events:none;max-width:calc(100% - 86px);line-height:1.1}
+@media(max-width:370px){#home .menu{max-width:290px}#home .menu button{font-size:20px}}
 </style>
 </head>
 
@@ -1329,22 +1341,22 @@ body[data-contrast="true"] .settings-accordion-trigger[aria-expanded="true"]{
 
   <button onclick="openEntry()">
    <span class="symbol">✍️</span>
-   New Entry
+   <span class="menu-label">New Entry</span>
   </button>
 
   <button onclick="openTimeline('emotions')">
    <span class="symbol">💗</span>
-   Emotions
+   <span class="menu-label">Emotions</span>
   </button>
 
   <button onclick="openTimeline('exercise')">
    <span class="symbol">🌿</span>
-   Exercise
+   <span class="menu-label">Exercise</span>
   </button>
 
   <button onclick="openHistory()">
    <span class="symbol">📖</span>
-   Previous Entries
+   <span class="menu-label">Previous Entries</span>
   </button>
 
  </nav>
