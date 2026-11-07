@@ -1535,8 +1535,10 @@ html:has(#home.active),body:has(#home.active){
 
 /* v10.27 — quiet, read-only journal page; no change to the entry form. */
 #saved-entry .saved-entry-navigation{margin-bottom:17px}
-.saved-entry-heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 17px}
-.saved-entry-date{font:italic clamp(15px,3.7vw,21px) Georgia,serif;color:#a56e88;white-space:nowrap;min-width:0;letter-spacing:-.45px}
+.saved-entry-heading-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:0 0 17px}
+.saved-entry-title{grid-column:2;font:italic 23px Georgia,serif;color:#a56e88;text-align:center;margin:0;white-space:nowrap}
+.saved-entry-heading-row .saved-entry-edit{grid-column:3;justify-self:end}
+.saved-entry-date{font:italic clamp(15px,3.7vw,21px) Georgia,serif;color:#a56e88;min-width:0;letter-spacing:-.45px;margin:0 0 17px;overflow-wrap:anywhere}
 .saved-entry-edit{flex:0 0 auto;border:1px solid #dfb2c5;background:#fff7fb;border-radius:14px;color:#956b80;padding:9px 12px;font-size:13px;font-weight:600}
 .saved-entry-paper{background:linear-gradient(155deg,#fffdfa,#fff9f8);border:1px solid #ebcbd9;border-radius:23px;padding:20px 16px 24px;box-shadow:0 8px 28px #9c67851a;min-height:240px}
 .saved-entry-paper .saved-entry-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:24px}
@@ -2037,10 +2039,6 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
  <div class="entry-navigation saved-entry-navigation">
   <button class="back-button" type="button" onclick="returnFromSavedEntry()">Return to Calendar</button>
   <span class="entry-label">Saved Entry</span>
- </div>
- <div class="saved-entry-heading-row">
-  <h1 id="savedEntryDate" class="saved-entry-date"></h1>
-  <button class="saved-entry-edit" type="button" onclick="editFromSavedEntry()">✎ Edit</button>
  </div>
  <article id="savedEntryContent" class="saved-entry-paper" aria-label="Saved journal entry"></article>
 </main>
@@ -4482,8 +4480,13 @@ async function openSavedEntry(id){
  savedEntryId=id;
  clearSavedEntryPhotoUrls();
  const date=journalGalleryDateLabel(entry.date)||formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
- $("savedEntryDate").textContent=date;
  const card=$("savedEntryContent");card.replaceChildren();
+ const heading=savedEntryText("div","saved-entry-heading-row","");
+ const title=savedEntryText("h1","saved-entry-title","Journal Entry");
+ const editButton=savedEntryText("button","saved-entry-edit","✎ Edit");
+ editButton.type="button";editButton.addEventListener("click",editFromSavedEntry);
+ heading.append(title,editButton);
+ card.append(heading,savedEntryText("div","saved-entry-date",date));
  const choices=savedEntryText("div","saved-entry-cards","");
  const moodName=getEntryMood(entry)||"Not recorded";
  const mood=moods.find(item=>item[1]===moodName);
@@ -4497,7 +4500,7 @@ async function openSavedEntry(id){
   box.append(savedEntryText("span","saved-entry-emoji",emoji),savedEntryText("strong","",name),savedEntryText("small","",label));
   choices.append(box);
  }
- card.append(choices,savedEntryText("h2","","Journal Entry"),savedEntryText("p","saved-entry-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
+ card.append(choices,savedEntryText("p","saved-entry-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
  if(journalA11y.readAloud && entry.thoughts?.trim())card.append(makeSavedEntrySpeechButton("thoughts",entry.thoughts,"🔊 Read My Entry Aloud"));
  if(entry.isSpecialDay){
   const special=savedEntryText("section","saved-entry-special","");
