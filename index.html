@@ -1485,6 +1485,7 @@ html:has(#home.active),body:has(#home.active){
 .journal-gallery-photo{
  position:relative;z-index:2;max-width:100%;max-height:100%;width:auto;height:auto;
  object-fit:contain;border-radius:8px;box-shadow:0 4px 16px #38202e38;
+ touch-action:none;transform:scale(1);transition:transform 220ms ease-out;transform-origin:center center;will-change:transform;
 }
 .journal-gallery-caption-area{flex:0 0 auto;max-height:105px;overflow-y:auto;margin-top:12px}
 .journal-gallery-read-controls{flex:0 0 auto}
@@ -2776,6 +2777,8 @@ let journalGalleryPhotos=[];
 let journalGalleryIndex=0;
 let journalGalleryTouchStart=null;
 let journalGalleryIgnoreClick=false;
+let journalGalleryPinch=null;
+let journalGalleryPinchGuard=false;
 let journalCaptionTarget=null;
 let journalCaptionQueue=[];
 let journalCaptionPreviousFocus=null;
@@ -2867,7 +2870,18 @@ function toggleReadJournalCaption(){
  utterance.onend=utterance.onerror=()=>{if(journalSpeakingTarget==="caption")stopReadingJournalEntry();};
  window.speechSynthesis.speak(utterance);
 }
+function resetJournalGalleryPinch(){
+ journalGalleryPinch=null;
+ const image=$("journalPhotoZoomImage");
+ image.style.transition="transform 220ms ease-out";
+ image.style.transform="scale(1)";
+ image.style.transformOrigin="center center";
+}
+function journalPinchDistance(touches){
+ return Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
+}
 function showJournalGalleryPhoto(){
+ resetJournalGalleryPinch();
  if(journalSpeakingTarget==="caption")stopReadingJournalEntry();
  const photo=journalGalleryPhotos[journalGalleryIndex];
  if(!photo)return;
@@ -2910,6 +2924,7 @@ function openJournalPhotoZoom(image){
  }));
  journalGalleryIndex=Math.max(0,images.indexOf(image));
  journalGalleryIgnoreClick=false;
+ journalGalleryPinchGuard=false;
  const entryDate=image.dataset.journalDate || $("journalDate")?.value || "";
  const galleryDate=$("journalGalleryEntryDate");
  galleryDate.textContent=journalGalleryDateLabel(entryDate);
@@ -2927,6 +2942,8 @@ function closeJournalPhotoZoom(){
 
  journalGalleryPhotos=[];
  journalGalleryTouchStart=null;
+ journalGalleryPinchGuard=false;
+ resetJournalGalleryPinch();
  if(journalPhotoZoomPreviousFocus?.isConnected)journalPhotoZoomPreviousFocus.focus();
  journalPhotoZoomPreviousFocus=null;
 }
@@ -2937,7 +2954,7 @@ function journalGalleryMove(direction){
 }
 function journalGalleryImageClick(event){
  event.stopPropagation();
- if(journalGalleryIgnoreClick){journalGalleryIgnoreClick=false;return;}
+ if(journalGalleryPinchGuard||journalGalleryIgnoreClick){journalGalleryIgnoreClick=false;return;}
  closeJournalPhotoZoom();
 }
 function makeJournalPhotoZoomable(image){
@@ -2951,12 +2968,46 @@ function makeJournalPhotoZoomable(image){
   }
  });
 }
-$("journalPhotoZoomImage").addEventListener("touchstart",event=>{
- const touch=event.changedTouches[0];
+/* v10.26: temporary, image-only pinch zoom. The gallery frame stays fixed. */
+const journalPinchImage=$("journalPhotoZoomImage");
+journalPinchImage.addEventListener("touchstart",event=>{
+ if(event.touches.length>=2){
+  event.preventDefault();
+  const rect=journalPinchImage.getBoundingClientRect();
+  const midX=(event.touches[0].clientX+event.touches[1].clientX)/2;
+  const midY=(event.touches[0].clientY+event.touches[1].clientY)/2;
+  const x=Math.max(0,Math.min(100,(midX-rect.left)/rect.width*100));
+  const y=Math.max(0,Math.min(100,(midY-rect.top)/rect.height*100));
+  journalPinchImage.style.transition="none";
+  journalPinchImage.style.transformOrigin=`${x}% ${y}%`;
+  journalGalleryPinch={distance:Math.max(1,journalPinchDistance(event.touches))};
+  journalGalleryPinchGuard=true;
+  journalGalleryTouchStart=null;
+  journalGalleryIgnoreClick=true;
+  return;
+ }
+ if(journalGalleryPinchGuard)return;
+ const touch=event.touches[0];
  journalGalleryTouchStart={x:touch.clientX,y:touch.clientY};
-},{passive:true});
-$("journalPhotoZoomImage").addEventListener("touchend",event=>{
- if(!journalGalleryTouchStart)return;
+},{passive:false});
+journalPinchImage.addEventListener("touchmove",event=>{
+ if(!journalGalleryPinch||event.touches.length<2)return;
+ event.preventDefault();
+ const scale=Math.max(1,Math.min(4,journalPinchDistance(event.touches)/journalGalleryPinch.distance));
+ journalPinchImage.style.transform=`scale(${scale})`;
+},{passive:false});
+journalPinchImage.addEventListener("touchend",event=>{
+ if(journalGalleryPinch){
+  // Once either finger lifts, animate the photograph back to its normal size.
+  if(event.touches.length<2){
+   resetJournalGalleryPinch();
+   journalGalleryTouchStart=null;
+   // Suppress the click that browsers may emit after a pinch.
+   setTimeout(()=>{journalGalleryPinchGuard=false;journalGalleryIgnoreClick=false;},450);
+  }
+  return;
+ }
+ if(journalGalleryPinchGuard||!journalGalleryTouchStart)return;
  const touch=event.changedTouches[0];
  const dx=touch.clientX-journalGalleryTouchStart.x;
  const dy=touch.clientY-journalGalleryTouchStart.y;
@@ -2964,9 +3015,13 @@ $("journalPhotoZoomImage").addEventListener("touchend",event=>{
  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2&&journalGalleryPhotos.length>1){
   journalGalleryIgnoreClick=true;
   journalGalleryMove(dx<0?1:-1);
-  // A swipe may synthesize a click; ignore that click, then clear the guard.
   setTimeout(()=>{journalGalleryIgnoreClick=false;},350);
  }
+},{passive:true});
+journalPinchImage.addEventListener("touchcancel",()=>{
+ resetJournalGalleryPinch();
+ journalGalleryTouchStart=null;
+ setTimeout(()=>{journalGalleryPinchGuard=false;journalGalleryIgnoreClick=false;},450);
 },{passive:true});
 document.addEventListener("keydown",event=>{
  if(!$("journalCaptionOverlay").hidden){
