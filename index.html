@@ -1226,6 +1226,20 @@ body[data-touch="true"] :is(button,select,input[type="checkbox"],input[type="rad
 body[data-touch="true"] .settings-accordion-trigger{padding-top:20px;padding-bottom:20px}
 body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="true"] *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* About Journal uses the same gentle full-screen modal design as the guide. */
+#aboutJournalOverlay{position:fixed;inset:0;z-index:10005;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vw,24px);background:#37233099;backdrop-filter:blur(5px)}
+#aboutJournalOverlay[hidden]{display:none!important}
+.about-journal-window{width:min(100%,620px)}
+.about-journal-scroll{text-align:center;padding:24px clamp(22px,5vw,42px) 18px}
+.about-journal-heart{font-size:32px;margin:0 0 18px}
+.about-journal-scroll>p:not(.about-journal-copyright){font-size:14px;line-height:1.8;margin:0 0 20px}
+.about-journal-ending{border-top:1px solid #f0dce5;margin-top:25px;padding-top:23px;color:#a56e88}
+.about-journal-ending p{font:italic 18px Georgia,serif;margin:0;text-align:center}
+.about-journal-symbols{margin-top:12px;font-size:19px;letter-spacing:3px}
+.about-journal-copyright{text-align:right;font-size:10px;color:#a98b9a;margin:27px 0 0}
+body[data-text-size="large"] .about-journal-scroll>p:not(.about-journal-copyright){font-size:19px;line-height:1.65}
+body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyright){font-size:14px}
 </style>
 </head>
 
@@ -1279,10 +1293,6 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
  </p>
 
  <p>🌸</p>
-
- <p class="copyright">
-  &copy; 2026 Nate Fox. All Rights Reserved.
- </p>
 
 </main>
 
@@ -1450,10 +1460,6 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
   Every emotion is part of your journey.
   The chart shows the emotions you've recorded,
   not a ranking of good or bad feelings.
- </p>
-
- <p class="copyright">
-  &copy; 2026 Nate Fox. All Rights Reserved.
  </p>
 
 </main>
@@ -1640,10 +1646,6 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
   The chart shows activity types, not exercise intensity.
  </p>
 
- <p class="copyright">
-  &copy; 2026 Nate Fox. All Rights Reserved.
- </p>
-
 </main>
 
 <!-- PREVIOUS ENTRIES -->
@@ -1707,10 +1709,6 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
  </section>
 
  <section id="selectedDayArea"></section>
-
- <p class="copyright">
-  &copy; 2026 Nate Fox. All Rights Reserved.
- </p>
 
 </main>
 
@@ -1908,10 +1906,6 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
   class="status"
   role="status"></p>
 
- <p class="copyright">
-  &copy; 2026 Nate Fox. All Rights Reserved.
- </p>
-
 </main>
 
 
@@ -2007,6 +2001,14 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
   </section>
 
 
+  <section class="safe-card settings-accordion" data-settings-section="8">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger8" aria-expanded="false" aria-controls="settingsContent8" onclick="toggleSettingsSection(8)"><span>💛 About Journal</span></button>
+   <div class="settings-accordion-content" id="settingsContent8" role="region" aria-labelledby="settingsTrigger8" hidden>
+    <p>Learn a little more about Journal and the care behind it.</p>
+    <button type="button" class="safe-action" onclick="openAboutJournal()">About Journal</button>
+   </div>
+  </section>
+
   <p id="settingsStatus" class="safe-message" role="status"></p>
   <p class="safe-note">Your journal remains stored on this device. A PIN protects the app screen, not the underlying browser database. Backup files are encrypted separately with a password.</p>
  </div>
@@ -2036,6 +2038,28 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
    <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
    <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
    <div class="journal-guide-outro"><p>Every page is part of my journey</p><div class="journal-guide-outro-symbol" aria-hidden="true">✧ ♡ ✧</div></div>
+  </div>
+ </div>
+</div>
+
+<!-- ABOUT JOURNAL — full-screen themed popup -->
+<div id="aboutJournalOverlay" hidden role="presentation" onclick="if(event.target===this)closeAboutJournal()">
+ <div class="journal-guide-window about-journal-window" role="dialog" aria-modal="true" aria-labelledby="aboutJournalTitle" aria-describedby="aboutJournalSubtitle" tabindex="-1">
+  <header class="journal-guide-header">
+   <button class="journal-guide-close" type="button" onclick="closeAboutJournal()" aria-label="Close About Journal" title="Close About Journal">×</button>
+   <h2 id="aboutJournalTitle">Journal</h2>
+   <p id="aboutJournalSubtitle">A space for every part of your journey</p>
+  </header>
+  <div class="journal-guide-scroll about-journal-scroll" tabindex="0">
+   <div class="about-journal-heart" aria-hidden="true">💛</div>
+   <p>Journal was created with a simple belief: everyone deserves a quiet, personal space to express their thoughts, understand their emotions, and reflect on life's experiences.</p>
+   <p>Whether you're celebrating a beautiful moment, working through a difficult day, or simply taking time for yourself, Journal is here to help you capture what matters.</p>
+   <p>There's no right or wrong way to journal, no expectations, and no pressure. Just a place to be yourself, one entry at a time.</p>
+   <div class="about-journal-ending">
+    <p>Made with care, for every journey</p>
+    <div class="about-journal-symbols" aria-hidden="true">✧ ♡ ✧</div>
+   </div>
+   <p class="about-journal-copyright">© Nate Fox. All Rights Reserved.</p>
   </div>
  </div>
 </div>
@@ -5566,6 +5590,38 @@ document.addEventListener("keydown",event=>{
  if(event.key==="Escape"){event.preventDefault();closeJournalGuide();return;}
  if(event.key==="Tab"){
   const controls=[...document.querySelectorAll("#journalGuideOverlay button:not([disabled]),#journalGuideOverlay [tabindex='0']")];
+  const first=controls[0],last=controls[controls.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+ }
+});
+
+
+/* ABOUT JOURNAL */
+let aboutJournalPreviousFocus=null;
+function openAboutJournal(){
+ const overlay=document.getElementById("aboutJournalOverlay");
+ if(!overlay||!overlay.hidden)return;
+ aboutJournalPreviousFocus=document.activeElement;
+ overlay.querySelector(".about-journal-scroll").scrollTop=0;
+ overlay.hidden=false;
+ document.body.style.overflow="hidden";
+ overlay.querySelector(".journal-guide-close").focus();
+}
+function closeAboutJournal(){
+ const overlay=document.getElementById("aboutJournalOverlay");
+ if(!overlay||overlay.hidden)return;
+ overlay.hidden=true;
+ document.body.style.overflow="";
+ if(aboutJournalPreviousFocus?.isConnected)aboutJournalPreviousFocus.focus();
+ aboutJournalPreviousFocus=null;
+}
+document.addEventListener("keydown",event=>{
+ const overlay=document.getElementById("aboutJournalOverlay");
+ if(!overlay||overlay.hidden)return;
+ if(event.key==="Escape"){event.preventDefault();closeAboutJournal();return;}
+ if(event.key==="Tab"){
+  const controls=[...overlay.querySelectorAll("button:not([disabled]),[tabindex='0']")];
   const first=controls[0],last=controls[controls.length-1];
   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
