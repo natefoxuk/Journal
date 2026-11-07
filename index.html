@@ -2040,6 +2040,28 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
  </div>
 </div>
 
+<!-- Consistent Journal notice for validation, refresh and PIN-recovery messages -->
+<div id="journalNoticeDialog" class="journal-dialog-backdrop" hidden>
+ <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="journalNoticeTitle" aria-describedby="journalNoticeDescription">
+  <div class="journal-dialog-icon" id="journalNoticeIcon" aria-hidden="true">🌸</div>
+  <h2 id="journalNoticeTitle">A Gentle Reminder</h2>
+  <p id="journalNoticeDescription"></p>
+  <div class="journal-dialog-actions"><button type="button" class="journal-dialog-confirm" id="journalNoticeClose" onclick="closeJournalNotice()">Got It</button></div>
+ </div>
+</div>
+<!-- Journal-styled permanent deletion confirmation -->
+<div id="deleteEntryDialog" class="journal-dialog-backdrop" hidden>
+ <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="deleteEntryDialogTitle" aria-describedby="deleteEntryDialogDescription">
+  <div class="journal-dialog-icon" aria-hidden="true">🗑️</div>
+  <h2 id="deleteEntryDialogTitle">Delete This Entry?</h2>
+  <p id="deleteEntryDialogDescription">This will permanently delete this entry and its saved photographs. This cannot be undone. Consider creating a backup first.</p>
+  <div class="journal-dialog-actions">
+   <button type="button" class="journal-dialog-cancel" id="keepEntryButton" onclick="finishDeleteEntryDialog(false)">Keep Entry</button>
+   <button type="button" class="journal-dialog-confirm" id="deleteEntryConfirmButton" onclick="finishDeleteEntryDialog(true)">Delete Entry</button>
+  </div>
+ </div>
+</div>
+
 <!-- In-app confirmation: no browser website-name banner -->
 <div id="removePinDialog" class="journal-dialog-backdrop" role="presentation" hidden>
  <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="removePinDialogTitle" aria-describedby="removePinDialogDescription">
@@ -2586,6 +2608,53 @@ function toggleReadJournalEntry(target="entry"){
  };
  window.speechSynthesis.speak(utterance);
 }
+
+/* Unified in-app notices and confirmations — no browser-origin banners. */
+let journalNoticePreviousFocus=null;
+function showJournalNotice(message,title="A Gentle Reminder",icon="🌸"){
+ const dialog=$("journalNoticeDialog");
+ if(!dialog.hidden)return;
+ journalNoticePreviousFocus=document.activeElement;
+ $("journalNoticeTitle").textContent=title;
+ $("journalNoticeDescription").textContent=message;
+ $("journalNoticeIcon").textContent=icon;
+ dialog.hidden=false;
+ $("journalNoticeClose").focus();
+}
+function closeJournalNotice(){
+ $("journalNoticeDialog").hidden=true;
+ if(journalNoticePreviousFocus?.isConnected)journalNoticePreviousFocus.focus();
+ journalNoticePreviousFocus=null;
+}
+let deleteEntryPreviousFocus=null;
+function showDeleteEntryDialog(){
+ if(!$("deleteEntryDialog").hidden)return;
+ deleteEntryPreviousFocus=document.activeElement;
+ $("deleteEntryDialog").hidden=false;
+ $("keepEntryButton").focus();
+}
+async function finishDeleteEntryDialog(confirmed){
+ $("deleteEntryDialog").hidden=true;
+ if(deleteEntryPreviousFocus?.isConnected)deleteEntryPreviousFocus.focus();
+ deleteEntryPreviousFocus=null;
+ if(confirmed)await performDeleteCurrentEntry();
+}
+document.addEventListener("keydown",event=>{
+ const dialogs=[
+  {id:"journalNoticeDialog",first:"journalNoticeClose",last:"journalNoticeClose",cancel:closeJournalNotice},
+  {id:"deleteEntryDialog",first:"keepEntryButton",last:"deleteEntryConfirmButton",cancel:()=>finishDeleteEntryDialog(false)}
+ ];
+ for(const item of dialogs){
+  if($(item.id).hidden)continue;
+  if(event.key==="Escape"){event.preventDefault();item.cancel();}
+  else if(event.key==="Tab"){
+   const first=$(item.first),last=$(item.last);
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  }
+  break;
+ }
+});
 
 /* GENERAL HELPERS */
 
@@ -3267,7 +3336,7 @@ async function saveEntry() {
  const thoughts = $("journalText").value.trim();
 
  if (!date) {
-  alert("Please choose a journal date.");
+  showJournalNotice("Please choose a journal date before saving your entry.","Choose a Date","📅");
   return;
  }
 
@@ -3278,7 +3347,7 @@ async function saveEntry() {
   !photos.length &&
   !isSpecialDay
  ) {
-  alert("Please add something to your journal first.");
+  showJournalNotice("Add a thought, emotion, activity, photograph or special moment before saving your entry.","Your Entry Is Empty","✍️");
   return;
  }
 
@@ -3922,7 +3991,7 @@ async function returnToTimeline(type) {
  } catch (error) {
   console.error(error);
 
-  alert("Unable to refresh this page.");
+  showJournalNotice("This page could not be refreshed. Please try again.","Unable to Refresh","🌸");
  }
 }
 
@@ -5402,7 +5471,7 @@ async function handlePinComplete(value){
  pinDigits="";renderPin();$("pinError").textContent="Checking...";
  try{
   if(pinFlow==="unlock"){
-   if(await verifyPin(value)){journalUnlocked=true;hidePin();showBackupReminder();if(!recoveryRecord())setTimeout(()=>alert("For PIN recovery, please open Settings and set a security question before you forget your PIN."),250)}else $("pinError").textContent="Incorrect PIN. Please try again.";
+   if(await verifyPin(value)){journalUnlocked=true;hidePin();showBackupReminder();if(!recoveryRecord())setTimeout(()=>showJournalNotice("To help recover your PIN if you forget it, please open Settings and set a security question.","Protect Your Journal","🔒"),250)}else $("pinError").textContent="Incorrect PIN. Please try again.";
   }else if(pinFlow==="setup"||pinFlow==="new"){
    pendingPin=value;showPin("confirm","Enter your new PIN again to confirm.");
   }else if(pinFlow==="confirm"){
@@ -5663,7 +5732,10 @@ function showBackupReminder(){
 async function removeEntry(id){const db=await openDatabase();return new Promise((resolve,reject)=>{const tx=db.transaction("entries","readwrite");tx.objectStore("entries").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)})}
 async function deleteCurrentEntry(){
  if(!editingId)return;
- if(!confirm("Permanently delete this entry and its saved photographs? This cannot be undone. Please create a backup first if you might want it later."))return;
+ showDeleteEntryDialog();
+}
+async function performDeleteCurrentEntry(){
+ if(!editingId)return;
  const id=editingId,origin=entryOrigin;
  try{await removeEntry(id);clearPhotoPreviews();editingId=null;originalSnapshot=null;$("deleteEntryButton").style.display="none";
   if(timelines[origin])await returnToTimeline(origin);else await openHistory();
