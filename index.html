@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Journal</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#F9DCE7">
@@ -1248,6 +1248,19 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
 .about-journal-copyright{text-align:right;font-size:10px;color:#a98b9a;margin:27px 0 0}
 body[data-text-size="large"] .about-journal-scroll>p:not(.about-journal-copyright){font-size:19px;line-height:1.65}
 body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyright){font-size:14px}
+
+/* v10.7: quieter grouped settings */
+.settings-group-content{padding:4px 13px 14px;background:#fff9fc}
+.settings-group-intro{font-size:13px;line-height:1.6;color:#926e80;margin:12px 8px 16px}
+.settings-subaccordion{margin:10px 0!important;border:1px solid #f2dce5;border-radius:17px;background:#fff!important;box-shadow:none!important}
+.settings-subaccordion .settings-accordion-trigger{min-height:61px;padding:14px 16px;font-size:15px}
+.settings-subaccordion .settings-accordion-content{padding:0 14px 15px}
+.journal-gallery-entry-date{font:italic 14px Georgia,serif;color:#9a7888;letter-spacing:.2px;margin:8px 0 0;text-align:center}
+.journal-gallery-entry-date[hidden]{display:none!important}
+.journal-gallery-entry-date + .journal-gallery-subtitle{margin-top:7px}
+/* iOS zooms form fields below 16px; keep PIN recovery and all inputs readable. */
+input,select,textarea{font-size:max(16px,1em)}
+#recoveryPanel input,#recoveryPanel select{font-size:16px!important}
 </style>
 </head>
 
@@ -1931,21 +1944,12 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
     <button type="button" class="safe-action" onclick="openJournalGuide()">Open My Journal Guide</button>
    </div>
   </section>
-  <section class="safe-card settings-accordion" data-settings-section="7">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger7" aria-expanded="false" aria-controls="settingsContent7" onclick="toggleSettingsSection(7)"><span>💛 Accessibility</span></button>
-   <div class="settings-accordion-content" id="settingsContent7" role="region" aria-labelledby="settingsTrigger7" hidden>
-    <p>Make Journal more comfortable to read, navigate and enjoy. Your preferences are saved on this device.</p>
-    <div class="accessibility-option"><label for="a11yTextSize">Text size</label><select id="a11yTextSize" onchange="setJournalAccessibility('textSize',this.value)"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></div>
-    <label class="accessibility-toggle"><span>Gentle button sounds</span><input id="a11ySounds" type="checkbox" onchange="setJournalAccessibility('sounds',this.checked)"></label>
-    <label class="accessibility-toggle"><span>High contrast</span><input id="a11yContrast" type="checkbox" onchange="setJournalAccessibility('contrast',this.checked)"></label>
-    <label class="accessibility-toggle"><span>Larger touch targets</span><input id="a11yTouch" type="checkbox" onchange="setJournalAccessibility('touch',this.checked)"></label>
-    <label class="accessibility-toggle"><span>Reduce motion</span><input id="a11yMotion" type="checkbox" onchange="setJournalAccessibility('motion',this.checked)"></label>
-    <label class="accessibility-toggle"><span>Read My Entry Aloud</span><input id="a11yReadAloud" type="checkbox" onchange="setJournalAccessibility('readAloud',this.checked)"></label>
-    <p class="safe-note">When selected, Read My Entry Aloud buttons will appear beneath your journal entry and, if you've marked a special moment using the star, beneath that text box too. You can listen to either section separately or stop playback at any time. Speech uses your device's available voices and may vary depending on your browser.</p>
-   </div>
-  </section>
-  <section class="safe-card settings-accordion" data-settings-section="0">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>🖼️ Personalize My Journal</span></button>
+  <section class="safe-card settings-accordion settings-main-group" data-settings-section="9">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger9" aria-expanded="false" aria-controls="settingsContent9" onclick="toggleSettingsSection(9)"><span>🎨 Personalize My Journal</span></button>
+   <div class="settings-accordion-content settings-group-content" id="settingsContent9" role="region" aria-labelledby="settingsTrigger9" hidden>
+    <p class="settings-group-intro">Customize your homepage, emotions, activities and accessibility preferences.</p>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="0">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>🖼️ Homepage Appearance</span></button>
    <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
 
 
@@ -1972,8 +1976,8 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
 
    </div>
   </section>
-  <section class="safe-card settings-accordion" data-settings-section="5">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>🌸 My Emotions & Exercise</span></button>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="5">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>🌸 Emotions &amp; Exercise Personalization</span></button>
    <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
     <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Hiding preserves past selections, while removing a custom choice removes it from your insights without deleting your entries.</p>
     <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
@@ -1983,25 +1987,26 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
     <p id="manageChoicesStatus" class="safe-message" role="status"></p>
    </div>
   </section>
-  <section class="safe-card settings-accordion" data-settings-section="1">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>↧ Backup My Journal</span></button>
-   <div class="settings-accordion-content" id="settingsContent1" role="region" aria-labelledby="settingsTrigger1" hidden>
-<p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="7">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger7" aria-expanded="false" aria-controls="settingsContent7" onclick="toggleSettingsSection(7)"><span>💛 Accessibility</span></button>
+   <div class="settings-accordion-content" id="settingsContent7" role="region" aria-labelledby="settingsTrigger7" hidden>
+    <p>Make Journal more comfortable to read, navigate and enjoy. Your preferences are saved on this device.</p>
+    <div class="accessibility-option"><label for="a11yTextSize">Text size</label><select id="a11yTextSize" onchange="setJournalAccessibility('textSize',this.value)"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></div>
+    <label class="accessibility-toggle"><span>Gentle button sounds</span><input id="a11ySounds" type="checkbox" onchange="setJournalAccessibility('sounds',this.checked)"></label>
+    <label class="accessibility-toggle"><span>High contrast</span><input id="a11yContrast" type="checkbox" onchange="setJournalAccessibility('contrast',this.checked)"></label>
+    <label class="accessibility-toggle"><span>Larger touch targets</span><input id="a11yTouch" type="checkbox" onchange="setJournalAccessibility('touch',this.checked)"></label>
+    <label class="accessibility-toggle"><span>Reduce motion</span><input id="a11yMotion" type="checkbox" onchange="setJournalAccessibility('motion',this.checked)"></label>
+    <label class="accessibility-toggle"><span>Read My Entry Aloud</span><input id="a11yReadAloud" type="checkbox" onchange="setJournalAccessibility('readAloud',this.checked)"></label>
+    <p class="safe-note">When selected, Read My Entry Aloud buttons will appear beneath your journal entry and, if you've marked a special moment using the star, beneath that text box too. You can listen to either section separately or stop playback at any time. Speech uses your device's available voices and may vary depending on your browser.</p>
    </div>
   </section>
-  <section class="safe-card settings-accordion" data-settings-section="2">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>↥ Restore My Journal</span></button>
-   <div class="settings-accordion-content" id="settingsContent2" role="region" aria-labelledby="settingsTrigger2" hidden>
-<p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input accept=".json,application/json" id="restoreFile" style="display:block;max-width:100%;margin-bottom:10px" type="file"/><button class="safe-action" onclick="restoreJournal()">Restore Backup</button>
    </div>
   </section>
-  <section class="safe-card settings-accordion" data-settings-section="3">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>✧ Backup Reminder</span></button>
-   <div class="settings-accordion-content" id="settingsContent3" role="region" aria-labelledby="settingsTrigger3" hidden>
-<p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input id="backupReminderToggle" onchange="setBackupReminder(this.checked)" type="checkbox"/> Remind me every 30 days when I open Journal</label>
-   </div>
-  </section>
-  <section class="safe-card settings-accordion" data-settings-section="4">
+  <section class="safe-card settings-accordion settings-main-group" data-settings-section="10">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger10" aria-expanded="false" aria-controls="settingsContent10" onclick="toggleSettingsSection(10)"><span>🔐 Privacy &amp; Security</span></button>
+   <div class="settings-accordion-content settings-group-content" id="settingsContent10" role="region" aria-labelledby="settingsTrigger10" hidden>
+    <p class="settings-group-intro">Protect Journal with a PIN, and manage encrypted backups, restores and reminders.</p>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="4">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger4" aria-expanded="false" aria-controls="settingsContent4" onclick="toggleSettingsSection(4)"><span>🔒 Journal PIN</span></button>
    <div class="settings-accordion-content" id="settingsContent4" role="region" aria-labelledby="settingsTrigger4" hidden>
 <p id="pinSettingsStatus">Protect Journal with a six-digit PIN when opening the app.</p><button class="safe-action" id="pinSetupButton" onclick="startPinSetup()">Set Up PIN</button><div class=""><button class="safe-secondary" id="pinChangeButton" onclick="changePin()">Change PIN</button><button class="safe-secondary" id="recoveryChangeButton" onclick="changeRecoveryQuestion()">Change Recovery Question</button><button class="safe-secondary" id="pinLockButton" onclick="lockJournal()">Lock Now</button><div style="margin-top:10px;padding-top:12px;border-top:1px solid #f0dce5"><button class="safe-secondary" id="pinRemoveButton" onclick="startRemovePin()" style="color:#a04465;border-color:#e4b5c4">Remove PIN</button><p class="safe-note">Removing your PIN turns off Journal's lock screen. Your entries and photos are not deleted.</p></div></div>
@@ -2009,6 +2014,27 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
   </section>
 
 
+
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="1">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>↧ Backup My Journal</span></button>
+   <div class="settings-accordion-content" id="settingsContent1" role="region" aria-labelledby="settingsTrigger1" hidden>
+<p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button>
+   </div>
+  </section>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="2">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>↥ Restore My Journal</span></button>
+   <div class="settings-accordion-content" id="settingsContent2" role="region" aria-labelledby="settingsTrigger2" hidden>
+<p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input accept=".json,application/json" id="restoreFile" style="display:block;max-width:100%;margin-bottom:10px" type="file"/><button class="safe-action" onclick="restoreJournal()">Restore Backup</button>
+   </div>
+  </section>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="3">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>✧ Backup Reminder</span></button>
+   <div class="settings-accordion-content" id="settingsContent3" role="region" aria-labelledby="settingsTrigger3" hidden>
+<p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input id="backupReminderToggle" onchange="setBackupReminder(this.checked)" type="checkbox"/> Remind me every 30 days when I open Journal</label>
+   </div>
+  </section>
+   </div>
+  </section>
   <section class="safe-card settings-accordion" data-settings-section="8">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger8" aria-expanded="false" aria-controls="settingsContent8" onclick="toggleSettingsSection(8)"><span>ℹ️ About Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent8" role="region" aria-labelledby="settingsTrigger8" hidden>
@@ -2037,13 +2063,13 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
    <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
-   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>Tap a photograph to open <strong>Photos &amp; Memories</strong>. Swipe left or right to explore more photographs from that entry, then tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry, then tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
    <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
-   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → My Emotions &amp; Exercise</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
-   <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
-   <section class="journal-guide-section"><h3>💛 Accessibility</h3><p>In <strong>Settings → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement. You can also switch <strong>Read My Entry Aloud</strong> on or off.</p><p>When enabled, a read-aloud button appears beneath your written thoughts and beneath the special-moment text box when you tap the star. You can listen to either section separately, or tap <strong>Stop Reading</strong> to stop. Speech availability depends on your device and browser.</p></section>
-   <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
+   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Exercise Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
+   <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal → Homepage Appearance</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
+   <section class="journal-guide-section"><h3>💛 Accessibility</h3><p>In <strong>Settings → Personalize My Journal → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement. You can also switch <strong>Read My Entry Aloud</strong> on or off.</p><p>When enabled, a read-aloud button appears beneath your written thoughts and beneath the special-moment text box when you tap the star. You can listen to either section separately, or tap <strong>Stop Reading</strong> to stop. Speech availability depends on your device and browser.</p></section>
+   <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Open <strong>Settings → Privacy &amp; Security</strong> to find your PIN, backup, restore and reminder options.</p><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Privacy &amp; Security → Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Privacy &amp; Security → Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
    <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
    <div class="journal-guide-outro"><p>Every page is part of my journey</p><div class="journal-guide-outro-symbol" aria-hidden="true">✧ ♡ ✧</div></div>
   </div>
@@ -2184,6 +2210,7 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
 <div id="journalPhotoZoom" hidden role="dialog" aria-modal="true" aria-label="Journal Photos and Memories" tabindex="-1" onclick="if(event.target===this)closeJournalPhotoZoom()">
  <div class="journal-gallery-card">
   <h2 class="journal-gallery-title">Journal</h2>
+  <p id="journalGalleryEntryDate" class="journal-gallery-entry-date" hidden></p>
   <p class="journal-gallery-subtitle">Photos &amp; Memories</p>
   <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
   <div id="journalGalleryCounter" class="journal-gallery-counter" aria-live="polite"></div>
@@ -2486,6 +2513,22 @@ function showJournalGalleryPhoto(){
  $("journalGalleryCounter").textContent=journalGalleryPhotos.length>1?`${journalGalleryIndex+1} of ${journalGalleryPhotos.length}`:"";
  $("journalGalleryHint").textContent=journalGalleryPhotos.length>1?"Swipe for more memories · Tap photo to return":"Tap the photograph to return";
 }
+
+/* v10.7: prevent accidental pinch-zoom on supported touch browsers. */
+document.addEventListener("gesturestart",event=>event.preventDefault(),{passive:false});
+document.addEventListener("gesturechange",event=>event.preventDefault(),{passive:false});
+document.addEventListener("touchmove",event=>{if(event.touches.length>1)event.preventDefault()},{passive:false});
+
+function journalGalleryDateLabel(dateKey){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey||""))return "";
+ const date=dateFromKey(dateKey);
+ if(Number.isNaN(date.getTime()))return "";
+ const day=date.getDate();
+ const suffix=(day%100>=11&&day%100<=13)?"th":({1:"st",2:"nd",3:"rd"}[day%10]||"th");
+ const weekday=date.toLocaleDateString("en-GB",{weekday:"long"});
+ const month=date.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+ return `${weekday} ${day}${suffix} ${month}`;
+}
 function openJournalPhotoZoom(image){
  if(!image?.src)return;
  journalPhotoZoomPreviousFocus=document.activeElement;
@@ -2494,6 +2537,10 @@ function openJournalPhotoZoom(image){
  journalGalleryPhotos=images.filter(item=>item.src).map(item=>({src:item.src,alt:item.alt}));
  journalGalleryIndex=Math.max(0,images.indexOf(image));
  journalGalleryIgnoreClick=false;
+ const entryDate=image.dataset.journalDate || $("journalDate")?.value || "";
+ const galleryDate=$("journalGalleryEntryDate");
+ galleryDate.textContent=journalGalleryDateLabel(entryDate);
+ galleryDate.hidden=!galleryDate.textContent;
  showJournalGalleryPhoto();
  $("journalPhotoZoom").hidden=false;
  $("journalPhotoZoom").focus();
@@ -3028,6 +3075,7 @@ function renderPhotos() {
 
   image.src = photo.url;
   image.alt = "Journal photo";
+  image.dataset.journalDate = $("journalDate")?.value || "";
   makeJournalPhotoZoomable(image);
 
   const remove = document.createElement("button");
@@ -3868,6 +3916,7 @@ function buildEntryPreview(entry) {
 
    image.src = url;
    image.alt = "Saved journal photo";
+   image.dataset.journalDate = entry.date;
    makeJournalPhotoZoomable(image);
 
    strip.append(image);
@@ -5638,21 +5687,35 @@ document.addEventListener("keydown",event=>{
 
 function collapseSettingsSections(){
  document.querySelectorAll(".settings-accordion").forEach(section=>{
-  const trigger=section.querySelector(".settings-accordion-trigger");
-  const content=section.querySelector(".settings-accordion-content");
+  const trigger=section.querySelector(":scope > .settings-accordion-trigger");
+  const content=section.querySelector(":scope > .settings-accordion-content");
   if(trigger)trigger.setAttribute("aria-expanded","false");
   if(content)content.hidden=true;
  });
 }
 function toggleSettingsSection(index){
- document.querySelectorAll(".settings-accordion").forEach(section=>{
-  const i=Number(section.dataset.settingsSection);
-  const trigger=section.querySelector(".settings-accordion-trigger");
-  const content=section.querySelector(".settings-accordion-content");
-  const expand=i===index && trigger.getAttribute("aria-expanded")!=="true";
-  trigger.setAttribute("aria-expanded",String(expand));
-  content.hidden=!expand;
+ const target=document.querySelector(`.settings-accordion[data-settings-section="${index}"]`);
+ if(!target)return;
+ const isSub=target.classList.contains("settings-subaccordion");
+ const siblings=isSub
+  ? target.parentElement.querySelectorAll(":scope > .settings-subaccordion")
+  : document.querySelectorAll("#settings .safe-panel > .settings-accordion");
+ const trigger=target.querySelector(":scope > .settings-accordion-trigger");
+ const shouldExpand=trigger.getAttribute("aria-expanded")!=="true";
+ siblings.forEach(section=>{
+  const button=section.querySelector(":scope > .settings-accordion-trigger");
+  const content=section.querySelector(":scope > .settings-accordion-content");
+  if(button)button.setAttribute("aria-expanded","false");
+  if(content)content.hidden=true;
+  section.querySelectorAll(".settings-subaccordion").forEach(nested=>{
+   const nestedTrigger=nested.querySelector(":scope > .settings-accordion-trigger");
+   const nestedContent=nested.querySelector(":scope > .settings-accordion-content");
+   if(nestedTrigger)nestedTrigger.setAttribute("aria-expanded","false");
+   if(nestedContent)nestedContent.hidden=true;
+  });
  });
+ trigger.setAttribute("aria-expanded",String(shouldExpand));
+ target.querySelector(":scope > .settings-accordion-content").hidden=!shouldExpand;
 }
 function toggleRecoveryAnswerVisibility(){
  const field=$("recoveryAnswer"),button=$("recoveryAnswerEye"),show=field.type==="password";
@@ -5774,7 +5837,10 @@ function finishBackupReminderDialog(accepted){
   // Expand the Backup My Journal section to show the download button.
   if(typeof toggleSettingsSection==="function"){
    const panel=$("settingsContent1");
-   if(panel&&!panel.classList.contains("expanded")&&$("settingsTrigger1")?.getAttribute("aria-expanded")!=="true")toggleSettingsSection(1);
+   if(panel){
+    if($("settingsTrigger10")?.getAttribute("aria-expanded")!=="true")toggleSettingsSection(10);
+    if($("settingsTrigger1")?.getAttribute("aria-expanded")!=="true")toggleSettingsSection(1);
+   }
   }
  }
 }
