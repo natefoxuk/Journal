@@ -1474,13 +1474,13 @@ html:has(#home.active),body:has(#home.active){
  position:relative;isolation:isolate;overflow:hidden;
  width:100%;flex:1 1 auto;min-height:0;
  border:2px solid #dda7be;border-radius:17px;
- background:linear-gradient(145deg,#fbeaf1 0%,#edcbd9 52%,#f5dce7 100%);
+ background:radial-gradient(ellipse at center,#fff6fa 0%,#fce7f0 28%,#efc3d5 66%,#dca2bb 100%);
  transition:background-color .2s ease;
  display:flex;align-items:center;justify-content:center;
 }
 .journal-gallery-photo-frame::after{
  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
- background:radial-gradient(ellipse at 16% 12%,#ffffff8c,transparent 58%),radial-gradient(ellipse at 85% 90%,#ffffff70,transparent 58%);
+ background:radial-gradient(ellipse at center,#ffffff25 0%,transparent 57%);
 }
 .journal-gallery-photo{
  position:relative;z-index:2;max-width:100%;max-height:100%;width:auto;height:auto;
