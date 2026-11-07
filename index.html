@@ -1350,6 +1350,58 @@ html:has(#home.active),body:has(#home.active){
  overscroll-behavior:none;
 }
 
+
+/* v10.14: intentionally spaced home screen, still fixed to one viewport. */
+#home.active{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:flex-start;
+ padding:clamp(10px,1.8dvh,17px) 24px clamp(8px,1.4dvh,15px);
+}
+#home .settings-cog{top:clamp(10px,1.8dvh,17px);right:18px}
+#home .flowers{
+ flex:none;
+ height:44px;
+ line-height:44px;
+ margin:0 0 clamp(0px,.5dvh,5px);
+ font-size:clamp(23px,3.1dvh,28px);
+}
+#home h1{flex:none;font-size:clamp(45px,6.8dvh,62px);line-height:1.05;margin:0}
+#home .subtitle{flex:none;margin:clamp(3px,.65dvh,8px) 0 clamp(7px,1.3dvh,14px)}
+#home .home-artwork{
+ flex:0 1 auto;
+ width:min(100%,160px);
+ height:clamp(74px,17dvh,145px);
+ min-height:58px;
+ margin:0 auto;
+}
+#home .sparkle{
+ flex:none;
+ margin:clamp(7px,1.35dvh,13px) 0 clamp(8px,1.55dvh,16px);
+}
+#home .menu{
+ flex:none;
+ width:100%;
+ margin:0 auto;
+}
+#home .footer{
+ flex:none;
+ margin: auto 0 0;
+ padding-top:clamp(12px,2.3dvh,24px);
+}
+#home>p:last-child{flex:none;margin:clamp(5px,.9dvh,9px) 0 0;line-height:1.2}
+@media(max-height:650px){
+ #home.active{padding-block:8px}
+ #home .flowers{height:35px;line-height:35px;font-size:21px;margin:0}
+ #home h1{font-size:clamp(40px,7dvh,49px)}
+ #home .subtitle{margin:2px 0 7px}
+ #home .home-artwork{height:clamp(55px,13dvh,90px);min-height:45px;width:min(100%,120px)}
+ #home .sparkle{margin:5px 0 7px}
+ #home .footer{padding-top:8px}
+ #home>p:last-child{margin-top:3px}
+}
 </style>
 </head>
 
