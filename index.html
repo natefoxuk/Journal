@@ -1261,6 +1261,20 @@ body[data-text-size="small"] .about-journal-scroll>p:not(.about-journal-copyrigh
 /* iOS zooms form fields below 16px; keep PIN recovery and all inputs readable. */
 input,select,textarea{font-size:max(16px,1em)}
 #recoveryPanel input,#recoveryPanel select{font-size:16px!important}
+
+/* Optional photo captions: no changes to New Entry thumbnail layout. */
+.journal-gallery-caption-area{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:13px;min-height:30px;color:#86677a}
+#journalGalleryCaptionText{font:italic 14px/1.5 Georgia,serif;overflow-wrap:anywhere;white-space:pre-wrap}
+.journal-caption-edit{border:1px solid #edcfdb;border-radius:50%;background:#fff9fc;color:#996b82;width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;font-size:17px;cursor:pointer}
+#journalCaptionOverlay[hidden]{display:none!important}
+#journalCaptionOverlay{position:fixed;inset:0;z-index:14000;background:#382330a6;display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)}
+.journal-caption-dialog{width:min(100%,420px);background:linear-gradient(150deg,#fffafc,#ffedf4);border:1px solid #f1d6e1;border-radius:24px;box-shadow:0 16px 55px #35212f55;padding:25px 22px;text-align:center;color:#856478}
+.journal-caption-dialog h2{font:italic 27px Georgia,serif;margin:0 0 12px;color:#a56e88}
+.journal-caption-dialog p{font-size:14px;line-height:1.6}
+#journalCaptionInput{box-sizing:border-box;width:100%;min-height:85px;font-size:16px;line-height:1.5;border:1px solid #e8c6d6;border-radius:13px;padding:12px;background:white;color:#49333f;resize:vertical}
+.journal-caption-actions{display:flex;gap:10px;justify-content:center;margin-top:17px;flex-wrap:wrap}
+.journal-caption-actions button{border-radius:12px;border:1px solid #e5c2d2;padding:11px 15px;font-size:14px;cursor:pointer}
+.journal-caption-primary{background:#a76e89;color:white}.journal-caption-secondary{background:white;color:#875f74}
 </style>
 </head>
 
@@ -1949,7 +1963,7 @@ input,select,textarea{font-size:max(16px,1em)}
    <div class="settings-accordion-content settings-group-content" id="settingsContent9" role="region" aria-labelledby="settingsTrigger9" hidden>
     <p class="settings-group-intro">Customize your homepage, emotions, activities and accessibility preferences.</p>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="0">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>🖼️ Homepage Appearance</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>Homepage Appearance</span></button>
    <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
 
 
@@ -1977,7 +1991,7 @@ input,select,textarea{font-size:max(16px,1em)}
    </div>
   </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="5">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>🌸 Emotions &amp; Exercise Personalization</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>Emotions &amp; Exercise Personalization</span></button>
    <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
     <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Hiding preserves past selections, while removing a custom choice removes it from your insights without deleting your entries.</p>
     <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
@@ -1988,7 +2002,7 @@ input,select,textarea{font-size:max(16px,1em)}
    </div>
   </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="7">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger7" aria-expanded="false" aria-controls="settingsContent7" onclick="toggleSettingsSection(7)"><span>💛 Accessibility</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger7" aria-expanded="false" aria-controls="settingsContent7" onclick="toggleSettingsSection(7)"><span>Accessibility</span></button>
    <div class="settings-accordion-content" id="settingsContent7" role="region" aria-labelledby="settingsTrigger7" hidden>
     <p>Make Journal more comfortable to read, navigate and enjoy. Your preferences are saved on this device.</p>
     <div class="accessibility-option"><label for="a11yTextSize">Text size</label><select id="a11yTextSize" onchange="setJournalAccessibility('textSize',this.value)"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></div>
@@ -2016,19 +2030,19 @@ input,select,textarea{font-size:max(16px,1em)}
 
 
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="1">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>↧ Backup My Journal</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger1" aria-expanded="false" aria-controls="settingsContent1" onclick="toggleSettingsSection(1)"><span>Backup My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent1" role="region" aria-labelledby="settingsTrigger1" hidden>
 <p>Save your entries, emotions, activities and photographs in one password-encrypted backup file. Keep the password somewhere safe; it cannot be recovered.</p><button class="safe-action" onclick="backupJournal()">Download Encrypted Backup</button>
    </div>
   </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="2">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>↥ Restore My Journal</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>Restore My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent2" role="region" aria-labelledby="settingsTrigger2" hidden>
 <p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input accept=".json,application/json" id="restoreFile" style="display:block;max-width:100%;margin-bottom:10px" type="file"/><button class="safe-action" onclick="restoreJournal()">Restore Backup</button>
    </div>
   </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="3">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>✧ Backup Reminder</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger3" aria-expanded="false" aria-controls="settingsContent3" onclick="toggleSettingsSection(3)"><span>Backup Reminder</span></button>
    <div class="settings-accordion-content" id="settingsContent3" role="region" aria-labelledby="settingsTrigger3" hidden>
 <p id="backupReminderText">A gentle reminder when it's time to save another copy.</p><label><input id="backupReminderToggle" onchange="setBackupReminder(this.checked)" type="checkbox"/> Remind me every 30 days when I open Journal</label>
    </div>
@@ -2063,7 +2077,7 @@ input,select,textarea{font-size:max(16px,1em)}
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
    <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
-   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry, then tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
    <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Exercise Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
@@ -2213,8 +2227,24 @@ input,select,textarea{font-size:max(16px,1em)}
   <p id="journalGalleryEntryDate" class="journal-gallery-entry-date" hidden></p>
   <p class="journal-gallery-subtitle">Photos &amp; Memories</p>
   <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
+  <div id="journalGalleryCaptionArea" class="journal-gallery-caption-area">
+   <span id="journalGalleryCaptionText"></span>
+   <button id="journalGalleryCaptionEdit" class="journal-caption-edit" type="button" onclick="editGalleryCaption()" aria-label="Edit photo caption">✎</button>
+  </div>
   <div id="journalGalleryCounter" class="journal-gallery-counter" aria-live="polite"></div>
   <p id="journalGalleryHint" class="journal-gallery-hint">Tap the photograph to return</p>
+ </div>
+</div>
+<!-- Caption editor appears only when adding or viewing an image -->
+<div id="journalCaptionOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="journalCaptionHeading">
+ <div class="journal-caption-dialog">
+  <h2 id="journalCaptionHeading">A Little Memory</h2>
+  <p id="journalCaptionPrompt">Would you like to add a caption to this photograph?</p>
+  <textarea id="journalCaptionInput" rows="3" maxlength="240" placeholder="A little note about this moment…"></textarea>
+  <div class="journal-caption-actions">
+   <button type="button" class="journal-caption-secondary" onclick="finishJournalCaption(false)">Not Now</button>
+   <button type="button" class="journal-caption-primary" onclick="finishJournalCaption(true)">Save Caption</button>
+  </div>
  </div>
 </div>
 <script>
@@ -2504,6 +2534,68 @@ let journalGalleryPhotos=[];
 let journalGalleryIndex=0;
 let journalGalleryTouchStart=null;
 let journalGalleryIgnoreClick=false;
+let journalCaptionTarget=null;
+let journalCaptionQueue=[];
+let journalCaptionPreviousFocus=null;
+function showNextUploadCaption(){
+ if(journalCaptionTarget || !journalCaptionQueue.length)return;
+ const photo=journalCaptionQueue.shift();
+ if(!photos.includes(photo)){showNextUploadCaption();return;}
+ openJournalCaptionEditor({kind:"upload",photo});
+}
+function openJournalCaptionEditor(target){
+ journalCaptionTarget=target;
+ journalCaptionPreviousFocus=document.activeElement;
+ const existing=target.photo?.caption||"";
+ $("journalCaptionInput").value=existing;
+ $("journalCaptionHeading").textContent=target.kind==="upload"?"A Little Memory":"Photo Caption";
+ $("journalCaptionPrompt").textContent=target.kind==="upload"?"Would you like to add a caption to this photograph?":"Add or change the caption for this photograph.";
+ $("journalCaptionOverlay").hidden=false;
+ $("journalCaptionInput").focus();
+}
+async function finishJournalCaption(save){
+ const target=journalCaptionTarget;
+ if(!target)return;
+ const caption=$("journalCaptionInput").value.trim().slice(0,240);
+ const isUpload=target.kind==="upload";
+ const close=()=>{journalCaptionTarget=null;$("journalCaptionOverlay").hidden=true;
+  if(journalCaptionPreviousFocus?.isConnected)journalCaptionPreviousFocus.focus();
+  journalCaptionPreviousFocus=null;
+  if(isUpload)showNextUploadCaption();
+ };
+ if(save){
+  if(target.kind==="upload"||target.kind==="draft"){
+   if(target.photo)target.photo.caption=caption;
+  }else if(target.kind==="saved"){
+   try{
+    const entry=(await allEntries()).find(item=>item.id===target.entryId);
+    if(!entry)throw new Error("Entry not found.");
+    const list=Array.isArray(entry.photoCaptions)?entry.photoCaptions.slice():[];
+    list[target.index]=caption;
+    entry.photoCaptions=list;
+    await writeEntry(entry);
+   }catch(error){console.error("Unable to save caption",error);
+    $("journalCaptionPrompt").textContent="Unable to save the caption. Please try again.";
+    return;
+   }
+  }
+  if(target.kind!=="upload"&&journalGalleryPhotos[journalGalleryIndex])journalGalleryPhotos[journalGalleryIndex].caption=caption;
+  if(!isUpload){
+   showJournalGalleryPhoto();
+   document.querySelectorAll("#photoPreview img, .thumbnail-strip img").forEach(img=>{
+    if(target.kind==="saved" && img.dataset.entryId===target.entryId && Number(img.dataset.photoIndex)===target.index)img.dataset.caption=caption;
+    if(target.kind==="draft" && img.dataset.photoId===target.photo?.id)img.dataset.caption=caption;
+   });
+  }
+ }
+ close();
+}
+function editGalleryCaption(){
+ const photo=journalGalleryPhotos[journalGalleryIndex];
+ if(!photo)return;
+ openJournalCaptionEditor({kind:photo.entryId?"saved":"draft",photo:photo.draftPhoto||photo,entryId:photo.entryId,index:photo.photoIndex});
+}
+
 function showJournalGalleryPhoto(){
  const photo=journalGalleryPhotos[journalGalleryIndex];
  if(!photo)return;
@@ -2511,6 +2603,8 @@ function showJournalGalleryPhoto(){
  image.src=photo.src;
  image.alt=photo.alt||"Journal photograph";
  $("journalGalleryCounter").textContent=journalGalleryPhotos.length>1?`${journalGalleryIndex+1} of ${journalGalleryPhotos.length}`:"";
+ $("journalGalleryCaptionText").textContent=photo.caption||"Add a caption to this memory";
+ $("journalGalleryCaptionEdit").setAttribute("aria-label",photo.caption?"Edit photo caption":"Add photo caption");
  $("journalGalleryHint").textContent=journalGalleryPhotos.length>1?"Swipe for more memories · Tap photo to return":"Tap the photograph to return";
 }
 
@@ -2534,7 +2628,11 @@ function openJournalPhotoZoom(image){
  journalPhotoZoomPreviousFocus=document.activeElement;
  const group=image.closest(".thumbnail-strip, #photoPreview");
  const images=group?[...group.querySelectorAll("img")]:[image];
- journalGalleryPhotos=images.filter(item=>item.src).map(item=>({src:item.src,alt:item.alt}));
+ journalGalleryPhotos=images.filter(item=>item.src).map(item=>({
+  src:item.src,alt:item.alt,caption:item.dataset.caption||"",
+  entryId:item.dataset.entryId||"",photoIndex:Number(item.dataset.photoIndex||0),
+  draftPhoto:photos.find(photo=>photo.id===item.dataset.photoId)||null
+ }));
  journalGalleryIndex=Math.max(0,images.indexOf(image));
  journalGalleryIgnoreClick=false;
  const entryDate=image.dataset.journalDate || $("journalDate")?.value || "";
@@ -2594,6 +2692,10 @@ $("journalPhotoZoomImage").addEventListener("touchend",event=>{
  }
 },{passive:true});
 document.addEventListener("keydown",event=>{
+ if(!$("journalCaptionOverlay").hidden){
+  if(event.key==="Escape"){event.preventDefault();finishJournalCaption(false);}
+  return;
+ }
  if($( "journalPhotoZoom" ).hidden)return;
  if(event.key==="Escape")closeJournalPhotoZoom();
  else if(event.key==="ArrowRight")journalGalleryMove(1);
@@ -3048,17 +3150,16 @@ function toggleSpecialDay() {
 function addPhotos(event) {
  Array.from(event.target.files).forEach(file => {
   if (file.type.startsWith("image/")) {
-   photos.push({
-    id: createId(),
-    file,
-    url: URL.createObjectURL(file)
-   });
+   const photo={id:createId(),file,url:URL.createObjectURL(file),caption:""};
+   photos.push(photo);
+   journalCaptionQueue.push(photo);
   }
  });
 
  event.target.value = "";
 
  renderPhotos();
+ showNextUploadCaption();
 }
 
 function renderPhotos() {
@@ -3075,6 +3176,8 @@ function renderPhotos() {
 
   image.src = photo.url;
   image.alt = "Journal photo";
+  image.dataset.photoId=photo.id;
+  image.dataset.caption=photo.caption||"";
   image.dataset.journalDate = $("journalDate")?.value || "";
   makeJournalPhotoZoomable(image);
 
@@ -3105,6 +3208,7 @@ function clearPhotoPreviews() {
  });
 
  photos = [];
+ journalCaptionQueue=[];
 
  renderPhotos();
 }
@@ -3152,7 +3256,7 @@ function snapshot() {
   thoughts: $("journalText").value,
   starred: isSpecialDay,
   reason: $("specialDayReason").value,
-  photos: photos.map(photo => photo.id)
+  photos: photos.map(photo => [photo.id,photo.caption||""])
  });
 }
 
@@ -3480,6 +3584,7 @@ async function saveEntry() {
     ),
    thoughts,
    photos: storedPhotos,
+   photoCaptions: photos.map(photo=>photo.caption||""),
    isSpecialDay,
    specialDayReason: isSpecialDay
     ? $("specialDayReason").value.trim()
@@ -3907,7 +4012,7 @@ function buildEntryPreview(entry) {
 
   strip.className = "thumbnail-strip";
 
-  validPhotos.forEach(file => {
+  validPhotos.forEach((file,index) => {
    const url = URL.createObjectURL(file);
 
    previewUrls.push(url);
@@ -3916,6 +4021,9 @@ function buildEntryPreview(entry) {
 
    image.src = url;
    image.alt = "Saved journal photo";
+   image.dataset.entryId=entry.id;
+   image.dataset.photoIndex=String(index);
+   image.dataset.caption=(entry.photoCaptions||[])[index]||"";
    image.dataset.journalDate = entry.date;
    makeJournalPhotoZoomable(image);
 
@@ -4017,10 +4125,11 @@ function editSavedEntry(id) {
 
  photos = (entry.photos || [])
   .filter(file => file instanceof Blob)
-  .map(file => ({
+  .map((file,index) => ({
    id: createId(),
    file,
-   url: URL.createObjectURL(file)
+   url: URL.createObjectURL(file),
+   caption:(entry.photoCaptions||[])[index]||""
   }));
 
  renderPhotos();
