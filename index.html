@@ -1211,6 +1211,7 @@ textarea {
 .accessibility-option select{border:1px solid #d8b4c5;border-radius:12px;padding:11px;background:#fff9fc;color:inherit;min-width:135px}
 .accessibility-toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid #eedde5}
 .accessibility-toggle input{width:22px;height:22px;accent-color:#a56e88;flex-shrink:0}
+.read-entry-controls[hidden]{display:none!important}
 .read-entry-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0 18px}
 .read-entry-controls button{margin:0}
 body[data-text-size="small"] .page :is(p,li,label,button,input,select,textarea,span:not(.symbol),.safe-note),body[data-text-size="small"] .journal-guide-window :is(p,li,button){font-size:14px!important}
@@ -1868,8 +1869,8 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
   <textarea id="journalText"
    placeholder="A little space for whatever you're thinking or feeling..."></textarea>
 
-  <div class="read-entry-controls">
-   <button type="button" class="safe-secondary" id="readEntryButton" onclick="toggleReadJournalEntry()" aria-label="Read entry aloud">🔊 Read My Entry Aloud</button>
+  <div class="read-entry-controls" id="readEntryControls" hidden>
+   <button type="button" class="safe-secondary" id="readEntryButton" onclick="toggleReadJournalEntry('entry')" aria-label="Read entry aloud">🔊 Read My Entry Aloud</button>
    <span id="readEntryStatus" role="status" class="safe-note"></span>
   </div>
 
@@ -1882,6 +1883,10 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
 
    <textarea id="specialDayReason"
     placeholder="A little reminder of why this day matters..."></textarea>
+   <div class="read-entry-controls" id="readSpecialControls" hidden>
+    <button type="button" class="safe-secondary" id="readSpecialButton" onclick="toggleReadJournalEntry('special')" aria-label="Read special moment aloud">🔊 Read My Special Moment Aloud</button>
+    <span id="readSpecialStatus" role="status" class="safe-note"></span>
+   </div>
 
    <p class="special-day-help">
     A few words to help you remember this moment.
@@ -1933,6 +1938,7 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
     <label class="accessibility-toggle"><span>High contrast</span><input id="a11yContrast" type="checkbox" onchange="setJournalAccessibility('contrast',this.checked)"></label>
     <label class="accessibility-toggle"><span>Larger touch targets</span><input id="a11yTouch" type="checkbox" onchange="setJournalAccessibility('touch',this.checked)"></label>
     <label class="accessibility-toggle"><span>Reduce motion</span><input id="a11yMotion" type="checkbox" onchange="setJournalAccessibility('motion',this.checked)"></label>
+    <label class="accessibility-toggle"><span>Read My Entry Aloud</span><input id="a11yReadAloud" type="checkbox" onchange="setJournalAccessibility('readAloud',this.checked)"></label>
     <p class="safe-note">Read My Entry Aloud is available beside the writing area when viewing or editing an entry. Audio uses your device's speech voices and may vary by browser.</p>
    </div>
   </section>
@@ -2026,7 +2032,7 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
    <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → My Emotions &amp; Exercise</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Previously recorded emotions and activities remain in your entries. Hiding a choice keeps it in charts, while removing a custom choice also removes it from charts.</p></section>
    <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
-   <section class="journal-guide-section"><h3>♿ Accessibility</h3><p>In <strong>Settings → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement.</p><p>When you open an entry, choose <strong>Read My Entry Aloud</strong> to hear its written thoughts using your device's speech voice. Tap <strong>Stop Reading</strong> to stop. Speech availability depends on your device and browser.</p></section>
+   <section class="journal-guide-section"><h3>💛 Accessibility</h3><p>In <strong>Settings → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement. You can also switch <strong>Read My Entry Aloud</strong> on or off.</p><p>When enabled, a read-aloud button appears beneath your written thoughts and beneath the special-moment text box when you tap the star. You can listen to either section separately, or tap <strong>Stop Reading</strong> to stop. Speech availability depends on your device and browser.</p></section>
    <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
    <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
    <div class="journal-guide-outro"><p>Every page is part of my journey</p><div class="journal-guide-outro-symbol" aria-hidden="true">✧ ♡ ✧</div></div>
@@ -2479,7 +2485,7 @@ document.addEventListener("keydown",event=>{
 
 /* Journal accessibility — device-local preferences */
 const JOURNAL_A11Y_KEY="journal-accessibility-v1";
-const JOURNAL_A11Y_DEFAULTS={textSize:"medium",sounds:false,contrast:false,touch:false,motion:false};
+const JOURNAL_A11Y_DEFAULTS={textSize:"medium",sounds:false,contrast:false,touch:false,motion:false,readAloud:false};
 let journalA11y={...JOURNAL_A11Y_DEFAULTS};
 try{
  const stored=JSON.parse(localStorage.getItem(JOURNAL_A11Y_KEY)||"{}");
@@ -2493,7 +2499,11 @@ try{
 function applyJournalAccessibility(){
  document.body.dataset.textSize=journalA11y.textSize;
  for(const key of ["contrast","touch","motion"])document.body.dataset[key]=String(journalA11y[key]);
- const fields={textSize:"a11yTextSize",sounds:"a11ySounds",contrast:"a11yContrast",touch:"a11yTouch",motion:"a11yMotion"};
+ const fields={textSize:"a11yTextSize",sounds:"a11ySounds",contrast:"a11yContrast",touch:"a11yTouch",motion:"a11yMotion",readAloud:"a11yReadAloud"};
+ const main=document.getElementById("readEntryControls");
+ const special=document.getElementById("readSpecialControls");
+ if(main)main.hidden=!journalA11y.readAloud;
+ if(special)special.hidden=!journalA11y.readAloud || !document.getElementById("specialDayBox")?.classList.contains("visible");
  for(const [key,id] of Object.entries(fields)){
   const el=document.getElementById(id);
   if(el){if(key==="textSize")el.value=journalA11y[key];else el.checked=journalA11y[key];}
@@ -2504,6 +2514,7 @@ function setJournalAccessibility(key,value){
  if(key==="textSize"){if(!["small","medium","large"].includes(value))return;}
  else value=Boolean(value);
  journalA11y[key]=value;
+ if(key==="readAloud"&&!value)stopReadingJournalEntry();
  try{localStorage.setItem(JOURNAL_A11Y_KEY,JSON.stringify(journalA11y));}catch(e){}
  applyJournalAccessibility();
 }
@@ -2527,32 +2538,39 @@ document.addEventListener("click",event=>{
  }catch(e){}
 },true);
 let journalSpeaking=false;
+let journalSpeakingTarget=null;
 function stopReadingJournalEntry(){
  if("speechSynthesis" in window)window.speechSynthesis.cancel();
  journalSpeaking=false;
- const button=document.getElementById("readEntryButton");
- if(button)button.textContent="🔊 Read My Entry Aloud";
+ journalSpeakingTarget=null;
+ const main=document.getElementById("readEntryButton");
+ const special=document.getElementById("readSpecialButton");
+ if(main)main.textContent="🔊 Read My Entry Aloud";
+ if(special)special.textContent="🔊 Read My Special Moment Aloud";
 }
-function toggleReadJournalEntry(){
+function toggleReadJournalEntry(target="entry"){
+ if(!journalA11y.readAloud)return;
+ const special=target==="special";
+ const status=document.getElementById(special?"readSpecialStatus":"readEntryStatus");
+ const button=document.getElementById(special?"readSpecialButton":"readEntryButton");
+ if(journalSpeaking && journalSpeakingTarget===target){stopReadingJournalEntry();return;}
  if(!("speechSynthesis" in window)||!("SpeechSynthesisUtterance" in window)){
-  document.getElementById("readEntryStatus").textContent="Read aloud is not supported by this browser.";
+  if(status)status.textContent="Read aloud is not supported by this browser.";
   return;
  }
- if(journalSpeaking){stopReadingJournalEntry();return;}
- const thoughts=document.getElementById("journalText").value.trim();
- if(!thoughts){document.getElementById("readEntryStatus").textContent="There are no written thoughts to read yet.";return;}
- window.speechSynthesis.cancel();
+ const thoughts=document.getElementById(special?"specialDayReason":"journalText")?.value.trim()||"";
+ if(!thoughts){if(status)status.textContent=special?"Write about your special moment first.":"There are no written thoughts to read yet.";return;}
+ stopReadingJournalEntry();
  const utterance=new SpeechSynthesisUtterance(thoughts);
  utterance.lang=document.documentElement.lang||"en-GB";
  utterance.rate=.95;
- utterance.onend=utterance.onerror=()=>{
-  journalSpeaking=false;
-  const button=document.getElementById("readEntryButton");
-  if(button)button.textContent="🔊 Read My Entry Aloud";
- };
  journalSpeaking=true;
- document.getElementById("readEntryStatus").textContent="";
- document.getElementById("readEntryButton").textContent="■ Stop Reading";
+ journalSpeakingTarget=target;
+ if(status)status.textContent="";
+ if(button)button.textContent="■ Stop Reading";
+ utterance.onend=utterance.onerror=()=>{
+  if(journalSpeakingTarget===target)stopReadingJournalEntry();
+ };
  window.speechSynthesis.speak(utterance);
 }
 
@@ -2833,6 +2851,7 @@ function resetActivity() {
 /* SPECIAL DAYS */
 
 function setSpecialDay(value) {
+ if(!value && journalSpeakingTarget==="special")stopReadingJournalEntry();
  isSpecialDay = !!value;
 
  $("starButton").textContent =
@@ -2852,6 +2871,7 @@ function setSpecialDay(value) {
   "visible",
   isSpecialDay
  );
+ applyJournalAccessibility();
 }
 
 function toggleSpecialDay() {
