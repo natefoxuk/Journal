@@ -1457,6 +1457,60 @@ html:has(#home.active),body:has(#home.active){
  #home.active > .footer{bottom:35px}
  #home.active > p:last-child{bottom:6px}
 }
+
+/* v10.19: fixed-size, responsive photo gallery with an ambient blurred copy
+   of the currently displayed image. The original always stays uncropped. */
+.journal-gallery-card{
+ box-sizing:border-box;
+ width:min(100%,440px);
+ height:min(790px,calc(100dvh - 36px));
+ max-height:calc(100dvh - 36px);
+ overflow:hidden;
+ padding:clamp(12px,2.5dvh,24px) 18px 14px;
+}
+.journal-gallery-title{flex-shrink:0}
+.journal-gallery-entry-date,.journal-gallery-subtitle{flex-shrink:0}
+.journal-gallery-photo-frame{
+ position:relative;isolation:isolate;overflow:hidden;
+ width:100%;flex:1 1 auto;min-height:0;
+ border:2px solid #dda7be;border-radius:17px;
+ background:#f4dce6;
+ display:flex;align-items:center;justify-content:center;
+}
+.journal-gallery-ambient{
+ position:absolute;inset:-28px;width:calc(100% + 56px);height:calc(100% + 56px);
+ object-fit:cover;filter:blur(23px) saturate(.78) brightness(1.07);
+ opacity:.86;pointer-events:none;user-select:none;
+}
+.journal-gallery-photo-frame::after{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(140deg,#fff1f022,#ffe8ef33);
+}
+.journal-gallery-photo{
+ position:relative;z-index:2;max-width:100%;max-height:100%;width:auto;height:auto;
+ object-fit:contain;border-radius:8px;box-shadow:0 4px 16px #38202e38;
+}
+.journal-gallery-caption-area{flex:0 0 auto;max-height:105px;overflow-y:auto;margin-top:12px}
+.journal-gallery-read-controls{flex:0 0 auto}
+.journal-gallery-counter{flex:0 0 auto;margin-top:10px}
+.journal-gallery-hint{flex:0 0 auto;margin-top:5px}
+.journal-caption-position{font-size:12px!important;color:#9a7888;margin:0 0 10px!important}
+.journal-caption-preview-frame[hidden]{display:none!important}
+.journal-caption-preview-frame{
+ display:flex;align-items:center;justify-content:center;
+ width:100%;height:min(23dvh,185px);margin:12px 0 16px;
+ background:linear-gradient(135deg,#fff7f8,#f8e3ed);border:1px solid #e8bfd0;
+ border-radius:15px;overflow:hidden;
+}
+#journalCaptionPreview{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.journal-caption-dialog{box-sizing:border-box;max-height:calc(100dvh - 32px);overflow-y:auto}
+@media(max-height:650px){
+ .journal-gallery-card{padding:9px 12px 8px}
+ .journal-gallery-title{font-size:30px}
+ .journal-gallery-subtitle{margin-bottom:9px}
+ .journal-gallery-caption-area{padding:7px 9px;min-height:43px}
+ .journal-gallery-counter{margin-top:5px}
+}
 </style>
 </head>
 
@@ -2408,7 +2462,10 @@ html:has(#home.active),body:has(#home.active){
   <h2 class="journal-gallery-title">Journal</h2>
   <p id="journalGalleryEntryDate" class="journal-gallery-entry-date" hidden></p>
   <p class="journal-gallery-subtitle">Photos &amp; Memories</p>
-  <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
+  <div id="journalGalleryPhotoFrame" class="journal-gallery-photo-frame">
+   <img id="journalGalleryAmbient" class="journal-gallery-ambient" alt="" aria-hidden="true" draggable="false">
+   <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
+  </div>
   <div id="journalGalleryCaptionArea" class="journal-gallery-caption-area">
    <span id="journalGalleryCaptionText"></span>
    <button id="journalGalleryCaptionEdit" class="journal-caption-edit" type="button" onclick="editGalleryCaption()" aria-label="Edit photo caption">✎</button>
@@ -2426,6 +2483,10 @@ html:has(#home.active),body:has(#home.active){
  <div class="journal-caption-dialog">
   <h2 id="journalCaptionHeading">A Little Memory</h2>
   <p id="journalCaptionPrompt">Would you like to add a caption to this photograph?</p>
+  <p id="journalCaptionPosition" class="journal-caption-position" hidden></p>
+  <div id="journalCaptionPreviewFrame" class="journal-caption-preview-frame" hidden>
+   <img id="journalCaptionPreview" alt="Photograph being captioned">
+  </div>
   <textarea id="journalCaptionInput" rows="3" maxlength="240" placeholder="A little note about this moment…"></textarea>
   <div class="journal-caption-actions">
    <button type="button" class="journal-caption-secondary" onclick="finishJournalCaption(false)">Not Now</button>
@@ -2727,7 +2788,10 @@ function showNextUploadCaption(){
  if(journalCaptionTarget || !journalCaptionQueue.length)return;
  const photo=journalCaptionQueue.shift();
  if(!photos.includes(photo)){showNextUploadCaption();return;}
- openJournalCaptionEditor({kind:"upload",photo});
+ const batch=photo.captionBatch;
+ const position=batch?batch.photos.indexOf(photo)+1:0;
+ const total=batch?batch.photos.length:0;
+ openJournalCaptionEditor({kind:"upload",photo,position,total});
 }
 function openJournalCaptionEditor(target){
  journalCaptionTarget=target;
@@ -2736,6 +2800,14 @@ function openJournalCaptionEditor(target){
  $("journalCaptionInput").value=existing;
  $("journalCaptionHeading").textContent=target.kind==="upload"?"A Little Memory":"Photo Caption";
  $("journalCaptionPrompt").textContent=target.kind==="upload"?"Would you like to add a caption to this photograph?":"Add or change the caption for this photograph.";
+ const preview=$("journalCaptionPreview");
+ const source=target.photo?.url || target.photo?.src || "";
+ preview.removeAttribute("src");
+ $("journalCaptionPreviewFrame").hidden=!source;
+ if(source)preview.src=source;
+ const position=$("journalCaptionPosition");
+ position.hidden=!(target.kind==="upload" && target.total>1);
+ position.textContent=position.hidden?"":`Photo ${target.position} of ${target.total}`;
  $("journalCaptionOverlay").hidden=false;
  $("journalCaptionInput").focus();
 }
@@ -2806,6 +2878,7 @@ function showJournalGalleryPhoto(){
  if(!photo)return;
  const image=$("journalPhotoZoomImage");
  image.src=photo.src;
+ $("journalGalleryAmbient").src=photo.src;
  image.alt=photo.alt||"Journal photograph";
  $("journalGalleryCounter").textContent=journalGalleryPhotos.length>1?`${journalGalleryIndex+1} of ${journalGalleryPhotos.length}`:"";
  $("journalGalleryCaptionText").textContent=photo.caption||"Add a caption to this memory";
@@ -2857,6 +2930,7 @@ function closeJournalPhotoZoom(){
  if(overlay.hidden)return;
  overlay.hidden=true;
  $("journalPhotoZoomImage").removeAttribute("src");
+ $("journalGalleryAmbient").removeAttribute("src");
  journalGalleryPhotos=[];
  journalGalleryTouchStart=null;
  if(journalPhotoZoomPreviousFocus?.isConnected)journalPhotoZoomPreviousFocus.focus();
@@ -3361,10 +3435,12 @@ function toggleSpecialDay() {
 /* PHOTOS */
 
 function addPhotos(event) {
+ const batch={photos:[]};
  Array.from(event.target.files).forEach(file => {
   if (file.type.startsWith("image/")) {
-   const photo={id:createId(),file,url:URL.createObjectURL(file),caption:""};
+   const photo={id:createId(),file,url:URL.createObjectURL(file),caption:"",captionBatch:batch};
    photos.push(photo);
+   batch.photos.push(photo);
    journalCaptionQueue.push(photo);
   }
  });
