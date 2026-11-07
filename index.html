@@ -2054,6 +2054,19 @@ body[data-motion="true"] *,body[data-motion="true"] *::before,body[data-motion="
 </div>
 
 
+<!-- Journal-styled warning before leaving an unfinished entry -->
+<div id="leaveEntryDialog" class="journal-dialog-backdrop" hidden>
+ <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="leaveEntryTitle" aria-describedby="leaveEntryDescription">
+  <div class="journal-dialog-icon" aria-hidden="true">✍️</div>
+  <h2 id="leaveEntryTitle">Leave This Entry?</h2>
+  <p id="leaveEntryDescription">You have unsaved changes. If you leave now, those changes will be lost.</p>
+  <div class="journal-dialog-actions">
+   <button type="button" class="journal-dialog-cancel" id="stayEntryButton" onclick="finishLeaveEntryDialog(false)">Keep Writing</button>
+   <button type="button" class="journal-dialog-confirm" id="leaveEntryButton" onclick="finishLeaveEntryDialog(true)">Leave Entry</button>
+  </div>
+ </div>
+</div>
+
 <!-- Themed confirmation for removing the homepage photograph -->
 <div id="removeArtworkDialog" class="journal-dialog-backdrop" hidden>
  <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="removeArtworkTitle" aria-describedby="removeArtworkDescription">
@@ -3003,17 +3016,15 @@ function goBackFromEntry() {
    isSpecialDay
   );
 
- if (
-  changed &&
-  !confirm(
-   "Leave this page? Your unsaved changes will be lost."
-  )
- ) {
+ if (changed) {
+  showLeaveEntryDialog();
   return;
  }
+ completeEntryNavigation();
+}
 
+function completeEntryNavigation() {
  clearPhotoPreviews();
-
  if (editingId && timelines[entryOrigin]) {
   returnToTimeline(entryOrigin);
  } else if (editingId) {
@@ -3024,6 +3035,38 @@ function goBackFromEntry() {
   showPage("home");
  }
 }
+
+let leaveEntryPreviousFocus = null;
+function showLeaveEntryDialog() {
+ leaveEntryPreviousFocus = document.activeElement;
+ $("leaveEntryDialog").hidden = false;
+ $("stayEntryButton").focus();
+}
+function finishLeaveEntryDialog(leave) {
+ $("leaveEntryDialog").hidden = true;
+ if (leave) {
+  completeEntryNavigation();
+ } else if (leaveEntryPreviousFocus?.isConnected) {
+  leaveEntryPreviousFocus.focus();
+ }
+ leaveEntryPreviousFocus = null;
+}
+document.addEventListener("keydown", event => {
+ const dialog = $("leaveEntryDialog");
+ if (!dialog || dialog.hidden) return;
+ if (event.key === "Escape") {
+  event.preventDefault();
+  finishLeaveEntryDialog(false);
+ } else if (event.key === "Tab") {
+  const first = $("stayEntryButton"), last = $("leaveEntryButton");
+  if (event.shiftKey && document.activeElement === first) {
+   event.preventDefault(); last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+   event.preventDefault(); first.focus();
+  }
+ }
+});
+
 
 /* INDEXEDDB STORAGE */
 
