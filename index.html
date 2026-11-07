@@ -1413,6 +1413,30 @@ html:has(#home.active),body:has(#home.active){
  #home .subtitle,#home .home-artwork,#home .sparkle,#home .menu{top:4px}
 }
 
+/* Homepage rotating artwork: all supplied illustrations use a 277:236 landscape ratio.
+   Match the frame to the artwork so the full image fills it with no white bars. */
+#home .home-artwork {
+  width: min(100%, 205px);
+  height: auto;
+  aspect-ratio: 277 / 236;
+  flex: none;
+  min-height: 0;
+  background: transparent;
+}
+#home .home-artwork img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+@media (max-height: 700px) {
+  #home .home-artwork { width: min(100%, 150px); height: auto; min-height: 0; }
+}
+@media (max-height: 600px) {
+  #home .home-artwork { width: min(100%, 115px); }
+}
+
 /* v10.17: anchor the closing message and blossom at the bottom of the
    home screen, independently of the title/image/menu spacing above. */
 #home.active > .footer{
@@ -1509,12 +1533,10 @@ html:has(#home.active),body:has(#home.active){
  .journal-gallery-counter{margin-top:5px}
 }
 
-/* Saved entry layout — heading, edit, date and entry content inside the paper. */
+/* v10.27 — quiet, read-only journal page; no change to the entry form. */
 #saved-entry .saved-entry-navigation{margin-bottom:17px}
-.saved-entry-heading-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin:0 0 17px}
-.saved-entry-title{grid-column:2;font:italic 23px Georgia,serif;color:#a56e88;text-align:center;margin:0;white-space:nowrap}
-.saved-entry-heading-row .saved-entry-edit{grid-column:3;justify-self:end}
-.saved-entry-date{font:italic clamp(15px,3.7vw,21px) Georgia,serif;color:#a56e88;min-width:0;letter-spacing:-.45px;margin:0 0 17px;overflow-wrap:anywhere}
+.saved-entry-heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 17px}
+.saved-entry-date{font:italic clamp(15px,3.7vw,21px) Georgia,serif;color:#a56e88;white-space:nowrap;min-width:0;letter-spacing:-.45px}
 .saved-entry-edit{flex:0 0 auto;border:1px solid #dfb2c5;background:#fff7fb;border-radius:14px;color:#956b80;padding:9px 12px;font-size:13px;font-weight:600}
 .saved-entry-paper{background:linear-gradient(155deg,#fffdfa,#fff9f8);border:1px solid #ebcbd9;border-radius:23px;padding:20px 16px 24px;box-shadow:0 8px 28px #9c67851a;min-height:240px}
 .saved-entry-paper .saved-entry-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:24px}
@@ -1538,43 +1560,6 @@ body[data-contrast="true"] .saved-entry-paper{background:#fff;border-color:#7957
 body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved-entry-special{border:1px solid #795767}
 @media(max-width:360px){.saved-entry-date{font-size:clamp(13px,3.6vw,17px)}.saved-entry-edit{padding:8px 9px}}
 
-
-/* Journal discovery and storage */
-.journal-discovery{margin:0 0 20px;padding:18px;background:#fff9fc;border:1px solid #efdbe5;border-radius:20px}
-.journal-discovery label{display:block;font-weight:600;color:#95677d;margin-bottom:8px}
-.journal-discovery input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #dfc1d0;border-radius:12px;background:white;color:#654b59;font:inherit}
-.journal-discovery-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-.journal-discovery-tabs button{flex:1;min-width:110px;padding:11px 9px;border:1px solid #e6c9d8;border-radius:12px;background:#fff;color:#875b72;font:inherit;cursor:pointer}
-.journal-discovery-tabs button[aria-pressed="true"]{background:#f8dfeb;border-color:#c991ae;font-weight:bold}
-.journal-result{padding:13px 0;border-bottom:1px solid #f0dce5}
-.journal-result:last-child{border-bottom:0}
-.journal-result strong{display:block;color:#895b73;margin-bottom:5px}
-.journal-result p{margin:5px 0 10px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
-.journal-result button{border:1px solid #dfbfd0;background:#fff1f7;border-radius:10px;padding:9px 12px;color:#80566d;cursor:pointer}
-.journal-discovery-note{font-size:13px;color:#876d7b}
-.journal-storage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
-.journal-storage-grid div{background:#fff8fb;border:1px solid #efdce6;border-radius:12px;padding:13px;min-width:0}
-.journal-storage-grid strong{display:block;color:#8d5c75;font-size:18px;overflow-wrap:anywhere}
-.journal-storage-grid small{display:block;margin-top:5px;line-height:1.4}
-
-
-/* Homepage artwork: preserve the full square rotating illustrations. */
-#home .home-artwork {
-  flex: 0 0 auto;
-  width: min(100%, 175px);
-  height: auto;
-  aspect-ratio: 1 / 1;
-  min-height: 0;
-}
-#home .home-artwork img { object-fit: contain; }
-@media (max-height: 650px) {
-  #home .home-artwork {
-    width: min(100%, 125px);
-    height: auto;
-    min-height: 0;
-    aspect-ratio: 1 / 1;
-  }
-}
 </style>
 </head>
 
@@ -2010,16 +1995,6 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 
  </header>
 
- <section class="journal-discovery" aria-label="Find journal entries">
-  <label for="journalSearchInput">🔎 Search my journal</label>
-  <input id="journalSearchInput" type="search" placeholder="Search thoughts, special moments or dates…" oninput="renderJournalDiscovery()" autocomplete="off">
-  <div class="journal-discovery-tabs" role="group" aria-label="Journal collections">
-   <button id="journalTabAll" type="button" aria-pressed="true" onclick="setJournalCollection('all')">All Entries</button>
-   <button id="journalTabSpecial" type="button" aria-pressed="false" onclick="setJournalCollection('special')">⭐ Special Moments</button>
-  </div>
-  <p class="journal-discovery-note" id="journalDiscoveryCount" role="status"></p>
-  <div id="journalDiscoveryResults"></div>
- </section>
  <section class="section">
 
   <div class="calendar-header">
@@ -2062,6 +2037,10 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
  <div class="entry-navigation saved-entry-navigation">
   <button class="back-button" type="button" onclick="returnFromSavedEntry()">Return to Calendar</button>
   <span class="entry-label">Saved Entry</span>
+ </div>
+ <div class="saved-entry-heading-row">
+  <h1 id="savedEntryDate" class="saved-entry-date"></h1>
+  <button class="saved-entry-edit" type="button" onclick="editFromSavedEntry()">✎ Edit</button>
  </div>
  <article id="savedEntryContent" class="saved-entry-paper" aria-label="Saved journal entry"></article>
 </main>
@@ -2358,16 +2337,6 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger2" aria-expanded="false" aria-controls="settingsContent2" onclick="toggleSettingsSection(2)"><span>Restore My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent2" role="region" aria-labelledby="settingsTrigger2" hidden>
 <p>Restore entries and photos from a backup. Existing entries with different IDs are kept; matching IDs are updated only after confirmation.</p><input accept=".json,application/json" id="restoreFile" style="display:block;max-width:100%;margin-bottom:10px" type="file"/><button class="safe-action" onclick="restoreJournal()">Restore Backup</button>
-   </div>
-  </section>
-  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="11">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger11" aria-expanded="false" aria-controls="settingsContent11" onclick="toggleSettingsSection(11)"><span>💾 Storage Information</span></button>
-   <div class="settings-accordion-content" id="settingsContent11" role="region" aria-labelledby="settingsTrigger11" hidden>
-    <p>See how much space your memories may be using on this device.</p>
-    <button class="safe-secondary" type="button" onclick="refreshJournalStorage()">Refresh Storage Information</button>
-    <div id="journalStorageSummary" class="journal-storage-grid" aria-live="polite"></div>
-    <p class="safe-note" id="journalStorageExplanation">Journal data is saved in this browser on this device. Storage estimates can vary and are not a guarantee of available space.</p>
-    <p class="safe-note">For peace of mind, make regular encrypted backups. Clearing browser data or removing the app may erase local memories.</p>
    </div>
   </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="3">
@@ -4109,7 +4078,6 @@ async function openHistory() {
 
   renderCalendar();
   renderSelectedDate();
-  renderJournalDiscovery();
 
  } catch (error) {
   console.error(error);
@@ -4514,13 +4482,8 @@ async function openSavedEntry(id){
  savedEntryId=id;
  clearSavedEntryPhotoUrls();
  const date=journalGalleryDateLabel(entry.date)||formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ $("savedEntryDate").textContent=date;
  const card=$("savedEntryContent");card.replaceChildren();
- const heading=savedEntryText("div","saved-entry-heading-row","");
- const title=savedEntryText("h1","saved-entry-title","Journal Entry");
- const editButton=savedEntryText("button","saved-entry-edit","✎ Edit");
- editButton.type="button";editButton.addEventListener("click",editFromSavedEntry);
- heading.append(title,editButton);
- card.append(heading,savedEntryText("div","saved-entry-date",date));
  const choices=savedEntryText("div","saved-entry-cards","");
  const moodName=getEntryMood(entry)||"Not recorded";
  const mood=moods.find(item=>item[1]===moodName);
@@ -4534,7 +4497,7 @@ async function openSavedEntry(id){
   box.append(savedEntryText("span","saved-entry-emoji",emoji),savedEntryText("strong","",name),savedEntryText("small","",label));
   choices.append(box);
  }
- card.append(choices,savedEntryText("p","saved-entry-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
+ card.append(choices,savedEntryText("h2","","Journal Entry"),savedEntryText("p","saved-entry-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
  if(journalA11y.readAloud && entry.thoughts?.trim())card.append(makeSavedEntrySpeechButton("thoughts",entry.thoughts,"🔊 Read My Entry Aloud"));
  if(entry.isSpecialDay){
   const special=savedEntryText("section","saved-entry-special","");
@@ -6358,7 +6321,6 @@ function toggleSettingsSection(index){
  });
  trigger.setAttribute("aria-expanded",String(shouldExpand));
  target.querySelector(":scope > .settings-accordion-content").hidden=!shouldExpand;
- if(index===11&&shouldExpand)refreshJournalStorage();
 }
 function toggleRecoveryAnswerVisibility(){
  const field=$("recoveryAnswer"),button=$("recoveryAnswerEye"),show=field.type==="password";
@@ -6726,7 +6688,7 @@ async function renderHomeArtwork() {
  const old=artworkObjectUrl;
  artworkObjectUrl=newObjectUrl;
  img.src=next;
- img.style.transform=personal?"":"none";img.style.objectPosition="50% 50%";img.style.objectFit=personal?"cover":"contain";if(personal)artworkCropStyle(img);
+ img.style.transform=personal?"":"none";img.style.objectPosition="50% 50%";if(personal)artworkCropStyle(img);
  img.alt=personal?"Your chosen homepage photograph":"Peaceful pastel Journal illustration";
  const preview=$("personalArtworkPreview");
  preview.classList.toggle("hidden",!personal);
@@ -6824,90 +6786,6 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
-
-/* Search and starred memories: read-only views of the existing entry database. */
-let journalCollection="all";
-function setJournalCollection(which){
- journalCollection=which==="special"?"special":"all";
- renderJournalDiscovery();
-}
-function renderJournalDiscovery(){
- const container=$("journalDiscoveryResults");
- if(!container)return;
- const term=($("journalSearchInput")?.value||"").trim().toLocaleLowerCase();
- $("journalTabAll").setAttribute("aria-pressed",String(journalCollection==="all"));
- $("journalTabSpecial").setAttribute("aria-pressed",String(journalCollection==="special"));
- const entries=(historyEntries||[]).filter(entry=>{
-  if(journalCollection==="special"&&!entry.isSpecialDay)return false;
-  if(!term)return journalCollection==="special";
-  const haystack=[entry.date,formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"}),entry.thoughts,entry.specialDayReason,getEntryMood(entry),getEntryActivity(entry),...(entry.photoCaptions||[])].filter(Boolean).join(" ").toLocaleLowerCase();
-  return haystack.includes(term);
- }).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||"").localeCompare(a.createdAt||""));
- container.replaceChildren();
- const count=$("journalDiscoveryCount");
- if(!term&&journalCollection==="all"){
-  count.textContent="Use search to find an entry, or choose Special Moments to revisit starred days. Your calendar is below.";
-  return;
- }
- count.textContent=entries.length+" "+(entries.length===1?"entry":"entries")+" found";
- if(!entries.length){container.append(savedEntryText("p","journal-discovery-note",term?"No entries match that search.":"No special moments yet. Star an entry to see it here."));return;}
- for(const entry of entries){
-  const item=savedEntryText("div","journal-result","");
-  const heading=savedEntryText("strong","",(entry.isSpecialDay?"⭐ ":"")+formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"}));
-  const preview=(journalCollection==="special"&&entry.specialDayReason?entry.specialDayReason:entry.thoughts||entry.specialDayReason||"Emotion: "+(getEntryMood(entry)||"Not recorded")+" · Exercise: "+(getEntryActivity(entry)||"Not recorded"));
-  const summary=savedEntryText("p","",preview.length>190?preview.slice(0,190)+"…":preview);
-  const open=savedEntryText("button","","Open Full Entry");
-  open.type="button";open.addEventListener("click",()=>openSavedEntry(entry.id));
-  item.append(heading,summary,open);container.append(item);
- }
-}
-function journalFormatBytes(bytes){
- if(!Number.isFinite(bytes)||bytes<0)return "Unavailable";
- if(bytes<1024)return Math.round(bytes)+" B";
- const units=["KB","MB","GB","TB"];
- let value=bytes,unit=-1;
- do{value/=1024;unit++}while(value>=1024&&unit<units.length-1);
- return value.toLocaleString("en-GB",{maximumFractionDigits:1})+" "+units[unit];
-}
-function journalStorageTile(parent,value,label){
- const tile=document.createElement("div");
- tile.append(savedEntryText("strong","",value),savedEntryText("small","",label));
- parent.append(tile);
-}
-async function refreshJournalStorage(){
- const target=$("journalStorageSummary");
- if(!target)return;
- target.replaceChildren(savedEntryText("p","","Calculating storage…"));
- try{
-  const entries=await allEntries();
-  let photoBytes=0,photoCount=0;
-  for(const entry of entries){
-   for(const photo of entry.photos||[]){
-    photoCount++;
-    if(photo instanceof Blob)photoBytes+=photo.size;
-    else if(photo?.blob instanceof Blob)photoBytes+=photo.blob.size;
-    else if(typeof photo==="string")photoBytes+=new Blob([photo]).size;
-    else if(photo?.data&&typeof photo.data==="string")photoBytes+=new Blob([photo.data]).size;
-   }
-  }
-  // A rough serialized payload estimate; browser database overhead is not included.
-  const textBytes=new Blob([JSON.stringify(entries,(key,value)=>value instanceof Blob?"[photo]":value)]).size;
-  target.replaceChildren();
-  journalStorageTile(target,String(entries.length),"Saved entries");
-  journalStorageTile(target,String(photoCount),"Saved photographs");
-  journalStorageTile(target,journalFormatBytes(textBytes+photoBytes),"Approximate journal data size");
-  if(navigator.storage?.estimate){
-   const estimate=await navigator.storage.estimate();
-   journalStorageTile(target,journalFormatBytes(estimate.usage),"Total browser-origin storage used (includes other app data)");
-   journalStorageTile(target,journalFormatBytes(estimate.quota),"Browser-origin storage quota (not free device space)");
-  }
-  $("journalStorageExplanation").textContent="Journal size is an approximation based on saved entries and photos; database overhead may differ. Browser-origin figures are estimates and can include caches, artwork and other data on this origin. This is not your phone's total storage or a promise of available space.";
- }catch(error){
-  target.replaceChildren(savedEntryText("p","","Storage information could not be loaded. Your entries have not been changed."));
-  console.error(error);
- }
-}
-
 </script>
 
 </body>
