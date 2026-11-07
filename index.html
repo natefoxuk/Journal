@@ -1275,6 +1275,32 @@ input,select,textarea{font-size:max(16px,1em)}
 .journal-caption-actions{display:flex;gap:10px;justify-content:center;margin-top:17px;flex-wrap:wrap}
 .journal-caption-actions button{border-radius:12px;border:1px solid #e5c2d2;padding:11px 15px;font-size:14px;cursor:pointer}
 .journal-caption-primary{background:#a76e89;color:white}.journal-caption-secondary{background:white;color:#875f74}
+
+/* v10.10: soft golden photo-caption card, echoing Save Journal Entry. */
+.journal-gallery-caption-area{
+ box-sizing:border-box;width:100%;margin-top:15px;padding:11px 12px;min-height:53px;
+ background:linear-gradient(135deg,#fff5d9,#ffe9b8);border:1px solid #f1dca2;
+ border-radius:15px;box-shadow:0 3px 12px #bc93411a;color:#765b36;
+}
+#journalGalleryCaptionText{flex:1;min-width:0;text-align:center;color:#765b36}
+.journal-caption-edit{border-color:#d7b55b;background:#fff9df;color:#805e30}
+.journal-gallery-read-controls[hidden]{display:none!important}
+.journal-gallery-read-controls{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;margin-top:9px;width:100%}
+.journal-gallery-read-controls .safe-secondary{width:auto;min-height:38px;margin:0;padding:8px 15px;font-size:13px}
+#journalGalleryReadStatus{font-size:12px;color:#86677a}
+.settings-accordion > .settings-accordion-trigger[aria-expanded="true"]{
+ background:#f6d9e5;color:#78435e;
+ box-shadow:inset 0 0 0 2px #c57f9f;
+ border-radius:15px 15px 0 0;
+}
+.settings-subaccordion > .settings-accordion-trigger[aria-expanded="true"]{
+ background:#f5d9e5;color:#78435e;box-shadow:inset 0 0 0 2px #c57f9f;
+ border-radius:15px 15px 0 0;
+}
+.settings-accordion-trigger[aria-expanded="true"]:focus-visible{outline:3px solid #98526f;outline-offset:-4px}
+body[data-contrast="true"] .settings-accordion-trigger[aria-expanded="true"]{
+ background:#f0c2d4!important;color:#542a3f!important;box-shadow:inset 0 0 0 3px #8e3b61!important;
+}
 </style>
 </head>
 
@@ -2082,7 +2108,7 @@ input,select,textarea{font-size:max(16px,1em)}
    <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Exercise Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
    <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal → Homepage Appearance</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
-   <section class="journal-guide-section"><h3>💛 Accessibility</h3><p>In <strong>Settings → Personalize My Journal → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement. You can also switch <strong>Read My Entry Aloud</strong> on or off.</p><p>When enabled, a read-aloud button appears beneath your written thoughts and beneath the special-moment text box when you tap the star. You can listen to either section separately, or tap <strong>Stop Reading</strong> to stop. Speech availability depends on your device and browser.</p></section>
+   <section class="journal-guide-section"><h3>💛 Accessibility</h3><p>In <strong>Settings → Personalize My Journal → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement. You can also switch <strong>Read My Entry Aloud</strong> on or off.</p><p>When enabled, a read-aloud button appears beneath your written thoughts and beneath the special-moment text box when you tap the star. You can listen to either section separately, or tap <strong>Stop Reading</strong> to stop. Photo captions also have a Read Caption Aloud button beneath the caption when this setting is enabled. Speech availability depends on your device and browser.</p></section>
    <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Open <strong>Settings → Privacy &amp; Security</strong> to find your PIN, backup, restore and reminder options.</p><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Privacy &amp; Security → Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Privacy &amp; Security → Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
    <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
    <div class="journal-guide-outro"><p>Every page is part of my journey</p><div class="journal-guide-outro-symbol" aria-hidden="true">✧ ♡ ✧</div></div>
@@ -2230,6 +2256,10 @@ input,select,textarea{font-size:max(16px,1em)}
   <div id="journalGalleryCaptionArea" class="journal-gallery-caption-area">
    <span id="journalGalleryCaptionText"></span>
    <button id="journalGalleryCaptionEdit" class="journal-caption-edit" type="button" onclick="editGalleryCaption()" aria-label="Edit photo caption">✎</button>
+  </div>
+  <div id="journalGalleryReadControls" class="journal-gallery-read-controls" hidden>
+   <button id="journalGalleryReadButton" class="safe-secondary" type="button" onclick="toggleReadJournalCaption()">🔊 Read Caption Aloud</button>
+   <span id="journalGalleryReadStatus" role="status"></span>
   </div>
   <div id="journalGalleryCounter" class="journal-gallery-counter" aria-live="polite"></div>
   <p id="journalGalleryHint" class="journal-gallery-hint">Tap the photograph to return</p>
@@ -2596,7 +2626,26 @@ function editGalleryCaption(){
  openJournalCaptionEditor({kind:photo.entryId?"saved":"draft",photo:photo.draftPhoto||photo,entryId:photo.entryId,index:photo.photoIndex});
 }
 
+function toggleReadJournalCaption(){
+ if(!journalA11y.readAloud)return;
+ const button=$("journalGalleryReadButton"),status=$("journalGalleryReadStatus");
+ if(journalSpeaking && journalSpeakingTarget==="caption"){stopReadingJournalEntry();return;}
+ const caption=journalGalleryPhotos[journalGalleryIndex]?.caption?.trim();
+ if(!caption){status.textContent="Add a caption first to hear it read aloud.";return;}
+ if(!("speechSynthesis" in window)||!("SpeechSynthesisUtterance" in window)){
+  status.textContent="Read aloud is not supported by this browser.";return;
+ }
+ stopReadingJournalEntry();
+ const utterance=new SpeechSynthesisUtterance(caption);
+ utterance.lang=document.documentElement.lang||"en-GB";
+ utterance.rate=.95;
+ journalSpeaking=true;journalSpeakingTarget="caption";
+ status.textContent="";button.textContent="■ Stop Reading";
+ utterance.onend=utterance.onerror=()=>{if(journalSpeakingTarget==="caption")stopReadingJournalEntry();};
+ window.speechSynthesis.speak(utterance);
+}
 function showJournalGalleryPhoto(){
+ if(journalSpeakingTarget==="caption")stopReadingJournalEntry();
  const photo=journalGalleryPhotos[journalGalleryIndex];
  if(!photo)return;
  const image=$("journalPhotoZoomImage");
@@ -2605,6 +2654,9 @@ function showJournalGalleryPhoto(){
  $("journalGalleryCounter").textContent=journalGalleryPhotos.length>1?`${journalGalleryIndex+1} of ${journalGalleryPhotos.length}`:"";
  $("journalGalleryCaptionText").textContent=photo.caption||"Add a caption to this memory";
  $("journalGalleryCaptionEdit").setAttribute("aria-label",photo.caption?"Edit photo caption":"Add photo caption");
+ $("journalGalleryReadControls").hidden=!journalA11y.readAloud;
+ $("journalGalleryReadStatus").textContent="";
+ $("journalGalleryReadButton").textContent="🔊 Read Caption Aloud";
  $("journalGalleryHint").textContent=journalGalleryPhotos.length>1?"Swipe for more memories · Tap photo to return":"Tap the photograph to return";
 }
 
@@ -2644,6 +2696,7 @@ function openJournalPhotoZoom(image){
  $("journalPhotoZoom").focus();
 }
 function closeJournalPhotoZoom(){
+ if(journalSpeakingTarget==="caption")stopReadingJournalEntry();
  const overlay=$("journalPhotoZoom");
  if(overlay.hidden)return;
  overlay.hidden=true;
@@ -2724,6 +2777,8 @@ function applyJournalAccessibility(){
  const special=document.getElementById("readSpecialControls");
  if(main)main.hidden=!journalA11y.readAloud;
  if(special)special.hidden=!journalA11y.readAloud || !document.getElementById("specialDayBox")?.classList.contains("visible");
+ const galleryRead=document.getElementById("journalGalleryReadControls");
+ if(galleryRead)galleryRead.hidden=!journalA11y.readAloud;
  for(const [key,id] of Object.entries(fields)){
   const el=document.getElementById(id);
   if(el){if(key==="textSize")el.value=journalA11y[key];else el.checked=journalA11y[key];}
@@ -2767,6 +2822,8 @@ function stopReadingJournalEntry(){
  const special=document.getElementById("readSpecialButton");
  if(main)main.textContent="🔊 Read My Entry Aloud";
  if(special)special.textContent="🔊 Read My Special Moment Aloud";
+ const caption=document.getElementById("journalGalleryReadButton");
+ if(caption)caption.textContent="🔊 Read Caption Aloud";
 }
 function toggleReadJournalEntry(target="entry"){
  if(!journalA11y.readAloud)return;
