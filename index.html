@@ -1900,7 +1900,7 @@ textarea {
    </div>
   </section>
   <section class="safe-card settings-accordion" data-settings-section="0">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>💛 Personalize My Journal</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>🖼️ Personalize My Journal</span></button>
    <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
 
 
@@ -1918,6 +1918,7 @@ textarea {
  <label for="artworkX">Move left or right</label><input id="artworkX" type="range" min="0" max="100" value="50" oninput="updateArtworkCrop('x',this.value)">
  <label for="artworkY">Move up or down</label><input id="artworkY" type="range" min="0" max="100" value="50" oninput="updateArtworkCrop('y',this.value)">
  <button class="safe-secondary" onclick="resetArtworkCrop()">Reset Position</button>
+ <button type="button" class="safe-action" onclick="saveArtworkPositionAndReturn()">Save &amp; Return to Journal</button>
 </div>
 <button class="safe-secondary" onclick="removePersonalArtwork()">Remove My Photograph</button>
 </div>
@@ -1929,7 +1930,7 @@ textarea {
   <section class="safe-card settings-accordion" data-settings-section="5">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>🌸 My Emotions & Exercise</span></button>
    <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
-    <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Past entries and charts stay intact.</p>
+    <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Past entries stay intact; removed custom choices no longer appear in charts.</p>
     <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
     <div class="choice-add"><input id="newEmotionEmoji" aria-label="Emotion emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="💗"><input id="newEmotionName" aria-label="New emotion name" maxlength="35" placeholder="New emotion"><button class="safe-secondary" onclick="addPersonalChoice('emotions')">Add</button></div>
     <h3>🌿 My Exercise</h3><div id="manageActivities"></div>
@@ -1986,7 +1987,7 @@ textarea {
    <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>Tap a photograph to open <strong>Photos &amp; Memories</strong>. Swipe left or right to explore more photographs from that entry, then tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
    <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
-   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → My Emotions &amp; Exercise</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Previously recorded emotions and activities are kept in your entries and charts, even when you hide or remove a choice.</p></section>
+   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → My Emotions &amp; Exercise</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Previously recorded emotions and activities remain in your entries. Hiding a choice keeps it in charts, while removing a custom choice also removes it from charts.</p></section>
    <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
    <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
    <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
@@ -2008,6 +2009,19 @@ textarea {
  </div>
 </div>
 
+
+<!-- Themed confirmation for removing the homepage photograph -->
+<div id="removeArtworkDialog" class="journal-dialog-backdrop" hidden>
+ <div class="journal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="removeArtworkTitle" aria-describedby="removeArtworkDescription">
+  <div class="journal-dialog-icon" aria-hidden="true">🖼️</div>
+  <h2 id="removeArtworkTitle">Remove Your Photograph?</h2>
+  <p id="removeArtworkDescription">Your homepage will return to its rotating artwork. Your original photograph in your device's Gallery will not be affected.</p>
+  <div class="journal-dialog-actions">
+   <button type="button" class="journal-dialog-cancel" id="keepArtworkButton" onclick="finishRemoveArtworkDialog(false)">Keep Photograph</button>
+   <button type="button" class="journal-dialog-confirm" onclick="finishRemoveArtworkDialog(true)">Remove Photograph</button>
+  </div>
+ </div>
+</div>
 
 <!-- In-app restore confirmation, without a browser-origin popup -->
 <div id="restoreConfirmDialog" class="journal-dialog-backdrop" hidden>
@@ -2193,15 +2207,28 @@ function applyChoiceConfig(config){
  removedCustomMoods.forEach(x=>{if(!hiddenMoods.includes(x.name))hiddenMoods.push(x.name)});
  hiddenActivities=Array.isArray(config?.hiddenActivities)?config.hiddenActivities:[];
  removedCustomActivities.forEach(x=>{if(!hiddenActivities.includes(x.name))hiddenActivities.push(x.name)});
- emotionAxisOrder=moods.map(x=>x[1]);
- emotionLevels=Object.fromEntries(emotionAxisOrder.map((name,i)=>[name,emotionAxisOrder.length-i]));
+ refreshChoiceChartAxes();
  activityScenes=Object.fromEntries(activityCategories.map(a=>[a.name,a.scene]));
  emotionColors=Object.fromEntries(moods.map((m,i)=>[m[1],choicePalette[i%choicePalette.length]]));
+}
+function activeChartActivities(){return activityCategories.filter(a=>!removedCustomActivities.some(x=>x.name===a.name))}
+function refreshChoiceChartAxes(){
+ emotionAxisOrder=moods.filter(m=>!removedCustomMoods.some(x=>x.name===m[1])).map(m=>m[1]);
+ emotionLevels=Object.fromEntries(emotionAxisOrder.map((name,i)=>[name,emotionAxisOrder.length-i]));
+ const active=activeChartActivities();
+ active.forEach((a,i)=>{a.level=i+1});
+}
+function refreshChoiceCharts(){
+ refreshChoiceChartAxes();
+ for(const type of ["emotions","exercise"]){
+  if(typeof timelines!=="undefined"&&timelines[type])renderTimeline(type);
+ }
 }
 function saveChoiceConfig(){
  const data={emotions:moods.filter(m=>!defaultMoods.some(d=>d[1]===m[1])&&!removedCustomMoods.some(x=>x.name===m[1])).map(m=>({name:m[1],emoji:m[0]})),activities:activityCategories.filter(a=>!defaultActivities.some(d=>d.name===a.name)&&!removedCustomActivities.some(x=>x.name===a.name)).map(a=>({name:a.name,emoji:a.emoji})),removedEmotions:removedCustomMoods,removedActivities:removedCustomActivities,hiddenEmotions:hiddenMoods,hiddenActivities:hiddenActivities};
  localStorage.setItem(CHOICES_KEY,JSON.stringify(data));
  renderChoiceManagers();renderActivityOptions();renderMoods();
+ refreshChoiceCharts();
 }
 function renderActivityOptions(){
  const select=$("activity");const previous=select.value;
@@ -2244,7 +2271,7 @@ function removePersonalChoice(type,name){
  const hidden=type==="emotions"?hiddenMoods:hiddenActivities;
  if(!hidden.includes(name))hidden.push(name);
  saveChoiceConfig();
- $("manageChoicesStatus").textContent=name+" removed from your choices. Existing journal entries and charts are preserved.";
+ $("manageChoicesStatus").textContent=name+" removed from your choices. Existing journal entries are preserved; the choice is removed from graphs.";
 }
 function addPersonalChoice(type){
  const prefix=type==="emotions"?"Emotion":"Activity";
@@ -2267,7 +2294,7 @@ function addPersonalChoice(type){
  if(names.length>=50){status.textContent="The maximum is 50 choices in each category.";return}
  if(type==="emotions")moods.push([emoji,name]);
  else activityCategories.push({name,emoji,scene:emoji,level:activityCategories.length+1,color:choicePalette[activityCategories.length%choicePalette.length]});
- emotionAxisOrder=moods.map(x=>x[1]);emotionLevels=Object.fromEntries(emotionAxisOrder.map((n,i)=>[n,emotionAxisOrder.length-i]));
+ refreshChoiceChartAxes();
  activityScenes=Object.fromEntries(activityCategories.map(a=>[a.name,a.scene]));
  emotionColors=Object.fromEntries(moods.map((m,i)=>[m[1],choicePalette[i%choicePalette.length]]));
  nameInput.value="";emojiInput.value="";saveChoiceConfig();status.textContent=name+" added to your Journal choices.";
@@ -2415,6 +2442,7 @@ document.addEventListener("keydown",event=>{
 
 function showPage(id) {
  closeJournalPhotoZoom();
+ if(id!=="settings")collapseSettingsSections();
  document.querySelectorAll(".page").forEach(page => {
   page.classList.remove("active");
  });
@@ -3861,7 +3889,7 @@ function buildTimelineGroup(type, start, end, label) {
   entries.forEach(entry => {
    const activity = getKnownActivity(entry);
 
-   if (activity) {
+   if (activity && !removedCustomActivities.some(x=>x.name===activity.name)) {
     counts[activity.name] =
      (counts[activity.name] || 0) + 1;
    }
@@ -4147,8 +4175,8 @@ function getChartScale(type) {
 
  return {
   minimum: 1,
-  maximum: Math.max(2,activityCategories.length),
-  levels: Array.from({length:Math.max(2,activityCategories.length)},(_,i)=>Math.max(2,activityCategories.length)-i)
+  maximum: Math.max(2,activeChartActivities().length),
+  levels: Array.from({length:Math.max(2,activeChartActivities().length)},(_,i)=>Math.max(2,activeChartActivities().length)-i)
  };
 }
 
@@ -4193,7 +4221,7 @@ function renderFrozenAxis(
   chartYPosition(type, score, top, bottom);
 
  if (isExercise) {
-  [...activityCategories]
+  [...activeChartActivities()]
    .reverse()
    .forEach(activity => {
     const y = yPosition(activity.level);
@@ -4283,7 +4311,7 @@ function getChartDimensions(type, count) {
 
  const top = 25;
 
- const axisItems=isExercise?activityCategories.length:emotionAxisOrder.length;
+ const axisItems=isExercise?activeChartActivities().length:emotionAxisOrder.length;
  const bottom = Math.max(isExercise?207:345,25+(axisItems-1)*36);
 
  const height = bottom+(isExercise?49:48);
@@ -5289,6 +5317,14 @@ document.addEventListener("keydown",event=>{
  }
 });
 
+function collapseSettingsSections(){
+ document.querySelectorAll(".settings-accordion").forEach(section=>{
+  const trigger=section.querySelector(".settings-accordion-trigger");
+  const content=section.querySelector(".settings-accordion-content");
+  if(trigger)trigger.setAttribute("aria-expanded","false");
+  if(content)content.hidden=true;
+ });
+}
 function toggleSettingsSection(index){
  document.querySelectorAll(".settings-accordion").forEach(section=>{
   const i=Number(section.dataset.settingsSection);
@@ -5358,7 +5394,7 @@ async function submitRecovery(){
  finally{recoveryBusy=false;$("recoverySubmit").disabled=false}
 }
 function lockJournal(){if(!pinRecord())return;journalUnlocked=false;showPage("home");showPin("unlock","Welcome back. Enter your six-digit PIN.")}
-function openSettings(){renderChoiceManagers();updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
+function openSettings(){collapseSettingsSections();renderChoiceManagers();updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
 /* A 30-day in-app reminder, counted from opt-in, backup, or the last reminder. */
 const JOURNAL_REMINDER_START_KEY="journal-reminder-start-v2";
 const JOURNAL_REMINDER_SHOWN_KEY="journal-reminder-shown-v2";
@@ -5697,8 +5733,25 @@ async function savePersonalArtwork(event) {
   status.textContent="Couldn't save this picture. Please try a JPG or PNG. "+(error.message||"");
  } finally {input.value=""}
 }
-async function removePersonalArtwork() {
- if(!confirm("Remove your homepage photograph and return to rotating artwork? Your original Gallery photo won't be affected."))return;
+function saveArtworkPositionAndReturn(){
+ // Sliders and dragging already save each adjustment immediately.
+ showPage("home");
+}
+let removeArtworkDialogPending=false;
+function showRemoveArtworkDialog(){
+ const dialog=$("removeArtworkDialog");
+ removeArtworkDialogPending=true;
+ dialog.hidden=false;
+ $("keepArtworkButton").focus();
+}
+function finishRemoveArtworkDialog(approved){
+ if(!removeArtworkDialogPending)return;
+ removeArtworkDialogPending=false;
+ $("removeArtworkDialog").hidden=true;
+ if(approved)performRemovePersonalArtwork();
+}
+function removePersonalArtwork(){showRemoveArtworkDialog()}
+async function performRemovePersonalArtwork() {
  try {
   await artworkStore("delete");
   localStorage.setItem(ARTWORK_MODE_KEY,"rotate");
