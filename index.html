@@ -1202,7 +1202,7 @@ textarea {
 .journal-guide-section p{font-size:13px;margin:7px 0}
 .journal-guide-section ul{margin:8px 0 0;padding-left:19px;font-size:13px}
 .journal-guide-section li{margin:5px 0}
-.journal-guide-outro{text-align:center;font:italic 17px Georgia,serif;color:#a56e88;padding:10px 0}
+.journal-guide-outro{text-align:center;color:#a56e88;padding:10px 0}.journal-guide-outro p{margin:0;font:italic 17px Georgia,serif;text-align:center}.journal-guide-outro-symbol{margin-top:9px;text-align:center;font-size:18px;letter-spacing:3px}
 .journal-guide-close:focus-visible,.journal-guide-window:focus-visible{outline:3px solid #c789a6;outline-offset:-3px}
 @media(max-width:480px){.journal-guide-header{padding:19px 53px 13px}.journal-guide-header h2{font-size:31px}.journal-guide-close{right:11px;top:13px}.journal-guide-section{padding:14px}}
 </style>
@@ -1981,15 +1981,15 @@ textarea {
   </header>
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
-   <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
+   <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
    <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>Tap a photograph to open <strong>Photos &amp; Memories</strong>. Swipe left or right to explore more photographs from that entry, then tap the enlarged photo to return.</p></section>
-   <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions, view the graphs and open related journal entries to understand the moments behind them.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
-   <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns, and you can open related entries to see what was happening on those days.</p></section>
+   <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
+   <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → My Emotions &amp; Exercise</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Previously recorded emotions and activities are kept in your entries and charts, even when you hide or remove a choice.</p></section>
    <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
    <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
    <section class="journal-guide-section"><h3>💛 A Gentle Reminder</h3><p>You don't have to journal every day, find the perfect words, or feel a certain way. Some days you might write pages; other days, just a sentence. Journal is here whenever you need somewhere to pause, reflect and unpack what's on your mind.</p></section>
-   <p class="journal-guide-outro">Every page is part of my journey. ✧ ♡ ✧</p>
+   <div class="journal-guide-outro"><p>Every page is part of my journey</p><div class="journal-guide-outro-symbol" aria-hidden="true">✧ ♡ ✧</div></div>
   </div>
  </div>
 </div>
@@ -4653,13 +4653,13 @@ function renderTimelineChart(type) {
     svgElement("circle", {
      cx: point.x,
      cy: point.y,
-     r: 17,
+     r: 20,
      fill: "transparent"
     }),
     svgElement("circle", {
      cx: point.x,
      cy: point.y,
-     r: selected ? 8 : 5.5,
+     r: selected ? 10 : 7.5,
      fill: selected
       ? "#a56e88"
       : "#e5b1c9",
