@@ -1508,6 +1508,34 @@ html:has(#home.active),body:has(#home.active){
  .journal-gallery-caption-area{padding:7px 9px;min-height:43px}
  .journal-gallery-counter{margin-top:5px}
 }
+
+/* v10.27 — quiet, read-only journal page; no change to the entry form. */
+#saved-entry .saved-entry-navigation{margin-bottom:17px}
+.saved-entry-heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 17px}
+.saved-entry-date{font:italic clamp(15px,3.7vw,21px) Georgia,serif;color:#a56e88;white-space:nowrap;min-width:0;letter-spacing:-.45px}
+.saved-entry-edit{flex:0 0 auto;border:1px solid #dfb2c5;background:#fff7fb;border-radius:14px;color:#956b80;padding:9px 12px;font-size:13px;font-weight:600}
+.saved-entry-paper{background:linear-gradient(155deg,#fffdfa,#fff9f8);border:1px solid #ebcbd9;border-radius:23px;padding:20px 16px 24px;box-shadow:0 8px 28px #9c67851a;min-height:240px}
+.saved-entry-paper .saved-entry-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:24px}
+.saved-entry-paper .saved-entry-choice{border-radius:16px;background:#fce9f1;padding:13px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.saved-entry-paper .saved-entry-choice.exercise{background:#fff3dd}
+.saved-entry-choice .saved-entry-emoji{font-size:28px;line-height:1.35}
+.saved-entry-choice strong{font-size:13px;overflow-wrap:anywhere}
+.saved-entry-choice small{font-size:11px;color:#9d7d8d}
+.saved-entry-paper h2{font:italic 23px Georgia,serif;color:#a56e88;margin:0 0 12px}
+.saved-entry-thoughts{font-size:15px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 24px;color:#694e5c}
+.saved-entry-special{background:#fff7e3;border:1px solid #ead6a3;border-radius:15px;padding:15px;margin:0 0 24px}
+.saved-entry-special h3{font-size:15px;color:#987538;margin:0 0 8px}
+.saved-entry-special p{white-space:pre-wrap;line-height:1.65;overflow-wrap:anywhere;margin:0}
+.saved-entry-photos{margin-top:4px}
+.saved-entry-photos .thumbnail-strip{padding:6px 0 8px}
+.saved-entry-photos .thumbnail-strip img{width:92px;height:82px}
+.saved-entry-read-controls{margin:-9px 0 22px}
+.saved-entry-read-controls button{border:1px solid #e7bfd1;background:#fff2f7;border-radius:12px;padding:10px 13px;color:#8c6278;font-size:13px}
+.saved-entry-read-controls p{font-size:12px;margin:6px 0 0}
+body[data-contrast="true"] .saved-entry-paper{background:#fff;border-color:#795767}
+body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved-entry-special{border:1px solid #795767}
+@media(max-width:360px){.saved-entry-date{font-size:clamp(13px,3.6vw,17px)}.saved-entry-edit{padding:8px 9px}}
+
 </style>
 </head>
 
@@ -1980,6 +2008,19 @@ html:has(#home.active),body:has(#home.active){
 
 </main>
 
+<!-- READ-ONLY SAVED ENTRY -->
+<main id="saved-entry" class="page">
+ <div class="entry-navigation saved-entry-navigation">
+  <button class="back-button" type="button" onclick="returnFromSavedEntry()">Return to Calendar</button>
+  <span class="entry-label">Saved Entry</span>
+ </div>
+ <div class="saved-entry-heading-row">
+  <h1 id="savedEntryDate" class="saved-entry-date"></h1>
+  <button class="saved-entry-edit" type="button" onclick="editFromSavedEntry()">✎ Edit</button>
+ </div>
+ <article id="savedEntryContent" class="saved-entry-paper" aria-label="Saved journal entry"></article>
+</main>
+
 <!-- NEW / EDIT JOURNAL ENTRY -->
 
 <main id="new-entry" class="page">
@@ -2310,7 +2351,7 @@ html:has(#home.active),body:has(#home.active){
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
    <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
-   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu to look back at what you've written. Open an entry to read it in full, revisit your selections and see its photographs.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu and select a date. Tap <strong>Open Full Entry</strong> to read your memory on a dedicated journal page, including your emotion, exercise, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to change the entry using the familiar form; saving returns to the reading page. The optional Read Aloud accessibility setting also works on saved entries.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
    <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Exercise Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
@@ -3620,6 +3661,7 @@ function goBackFromEntry() {
 
 function completeEntryNavigation() {
  clearPhotoPreviews();
+ if(editingId && entryOrigin==="saved-entry"){openSavedEntry(editingId);return;}
  if (editingId && timelines[entryOrigin]) {
   returnToTimeline(entryOrigin);
  } else if (editingId) {
@@ -3955,7 +3997,9 @@ async function saveEntry() {
   editingId = null;
   originalSnapshot = null;
 
-  if (wasEditing && timelines[returnOrigin]) {
+  if (wasEditing && returnOrigin==="saved-entry") {
+   await openSavedEntry(entry.id);
+  } else if (wasEditing && timelines[returnOrigin]) {
    await returnToTimeline(returnOrigin);
   } else if (wasEditing) {
    historyEntries = await allEntries();
@@ -4335,7 +4379,7 @@ function buildEntryPreview(entry) {
  open.textContent = "Open Full Entry ›";
 
  open.onclick = () => {
-  editSavedEntry(entry.id);
+  openSavedEntry(entry.id);
  };
 
  header.append(open);
@@ -4383,6 +4427,96 @@ function buildEntryPreview(entry) {
  wrap.append(photoSection);
 
  return wrap;
+}
+
+
+/* v10.27: reading a memory is separate from writing or editing it. */
+let savedEntryId=null;
+let savedEntryPhotoUrls=[];
+function clearSavedEntryPhotoUrls(){
+ for(const url of savedEntryPhotoUrls)URL.revokeObjectURL(url);
+ savedEntryPhotoUrls=[];
+}
+function savedEntryText(tag,cls,value){
+ const el=document.createElement(tag);if(cls)el.className=cls;
+ el.textContent=value;return el;
+}
+function returnFromSavedEntry(){
+ stopReadingJournalEntry();clearSavedEntryPhotoUrls();
+ showPage("previous-entries");renderCalendar();renderSelectedDate();
+}
+function editFromSavedEntry(){
+ if(!savedEntryId)return;
+ stopReadingJournalEntry();editSavedEntry(savedEntryId);
+ entryOrigin="saved-entry";
+ $("entryBack").textContent="Back to Saved Entry";
+ $("entryLabel").textContent="Edit Entry";
+}
+async function openSavedEntry(id){
+ const entry=(await allEntries()).find(item=>item.id===id);
+ if(!entry){showJournalNotice("This journal entry could not be found.","Entry Unavailable");return;}
+ savedEntryId=id;
+ clearSavedEntryPhotoUrls();
+ const date=journalGalleryDateLabel(entry.date)||formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ $("savedEntryDate").textContent=date;
+ const card=$("savedEntryContent");card.replaceChildren();
+ const choices=savedEntryText("div","saved-entry-cards","");
+ const moodName=getEntryMood(entry)||"Not recorded";
+ const mood=moods.find(item=>item[1]===moodName);
+ const activityName=getEntryActivity(entry)||"Not recorded";
+ const activity=getKnownActivity(entry);
+ for(const [kind,emoji,name,label] of [
+  ["emotion",mood?.[0]||"♡",moodName,"Emotion"],
+  ["exercise",activity?.scene||"🌿",activityName,"Exercise"]
+ ]){
+  const box=savedEntryText("div","saved-entry-choice "+kind,"");
+  box.append(savedEntryText("span","saved-entry-emoji",emoji),savedEntryText("strong","",name),savedEntryText("small","",label));
+  choices.append(box);
+ }
+ card.append(choices,savedEntryText("h2","","Journal Entry"),savedEntryText("p","saved-entry-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
+ if(journalA11y.readAloud && entry.thoughts?.trim())card.append(makeSavedEntrySpeechButton("thoughts",entry.thoughts,"🔊 Read My Entry Aloud"));
+ if(entry.isSpecialDay){
+  const special=savedEntryText("section","saved-entry-special","");
+  special.append(savedEntryText("h3","","★ A Special Moment"));
+  if(entry.specialDayReason?.trim())special.append(savedEntryText("p","",entry.specialDayReason));
+  card.append(special);
+  if(journalA11y.readAloud && entry.specialDayReason?.trim())card.append(makeSavedEntrySpeechButton("special",entry.specialDayReason,"🔊 Read My Special Moment Aloud"));
+ }
+ const validPhotos=(entry.photos||[]).filter(file=>file instanceof Blob);
+ if(validPhotos.length){
+  const section=savedEntryText("section","saved-entry-photos","");
+  section.append(savedEntryText("h2","","Photos & Memories"));
+  const strip=savedEntryText("div","thumbnail-strip","");
+  validPhotos.forEach((file,index)=>{
+   const url=URL.createObjectURL(file);savedEntryPhotoUrls.push(url);
+   const img=document.createElement("img");img.src=url;img.alt="Saved journal photograph "+(index+1);
+   img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);
+   img.dataset.caption=(entry.photoCaptions||[])[index]||"";
+   img.dataset.journalDate=entry.date;
+   makeJournalPhotoZoomable(img);strip.append(img);
+  });
+  section.append(strip);card.append(section);
+ }
+ showPage("saved-entry");
+}
+function makeSavedEntrySpeechButton(target,content,label){
+ const wrap=savedEntryText("div","saved-entry-read-controls","");
+ const button=document.createElement("button");button.type="button";button.textContent=label;
+ const status=savedEntryText("p","","");status.setAttribute("role","status");
+ button.onclick=()=>{
+  if(journalSpeaking && journalSpeakingTarget==="saved-"+target){stopReadingJournalEntry();button.textContent=label;return;}
+  if(!("speechSynthesis" in window)||!("SpeechSynthesisUtterance" in window)){
+   status.textContent="Read aloud is not supported by this browser.";return;
+  }
+  stopReadingJournalEntry();
+  const utterance=new SpeechSynthesisUtterance(content);
+  utterance.lang=document.documentElement.lang||"en-GB";utterance.rate=.95;
+  journalSpeaking=true;journalSpeakingTarget="saved-"+target;button.textContent="■ Stop Reading";
+  status.textContent="";
+  utterance.onend=utterance.onerror=()=>{if(journalSpeakingTarget==="saved-"+target){stopReadingJournalEntry();button.textContent=label;}};
+  window.speechSynthesis.speak(utterance);
+ };
+ wrap.append(button,status);return wrap;
 }
 
 /* EDIT EXISTING ENTRY */
