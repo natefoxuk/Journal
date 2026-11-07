@@ -1402,6 +1402,16 @@ html:has(#home.active),body:has(#home.active){
  #home .footer{margin-top:6px;padding-top:0}
  #home>p:last-child{margin-top:3px}
 }
+
+/* v10.16: give the title more breathing room while keeping the closing
+   message and bottom blossom exactly where they were in v10.15. */
+#home .subtitle,
+#home .home-artwork,
+#home .sparkle,
+#home .menu{position:relative;top:clamp(5px,.85dvh,8px)}
+@media(max-height:650px){
+ #home .subtitle,#home .home-artwork,#home .sparkle,#home .menu{top:4px}
+}
 </style>
 </head>
 
