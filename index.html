@@ -1412,6 +1412,23 @@ html:has(#home.active),body:has(#home.active){
 @media(max-height:650px){
  #home .subtitle,#home .home-artwork,#home .sparkle,#home .menu{top:4px}
 }
+
+/* v10.17: anchor the closing message and blossom at the bottom of the
+   home screen, independently of the title/image/menu spacing above. */
+#home.active > .footer{
+  margin-top:auto;
+  padding-top:clamp(7px,1.2dvh,12px);
+  flex-shrink:0;
+}
+#home.active > p:last-child{
+  flex-shrink:0;
+  margin-top:clamp(4px,.7dvh,7px);
+  margin-bottom:0;
+}
+@media(max-height:650px){
+  #home.active > .footer{padding-top:3px}
+  #home.active > p:last-child{margin-top:2px}
+}
 </style>
 </head>
 
