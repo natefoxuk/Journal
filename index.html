@@ -3494,7 +3494,7 @@ function renderJournalDateStrip(){
  }
  requestAnimationFrame(()=>{const center=strip.children[183];if(center)strip.scrollLeft=center.offsetLeft-strip.offsetLeft-(strip.clientWidth-center.clientWidth)/2});
  let settle;
- strip.onscroll=()=>{clearTimeout(settle);settle=setTimeout(()=>{const center=strip.scrollLeft+strip.clientWidth/2;let closest=null,dist=Infinity;for(const item of strip.children){const delta=Math.abs(item.offsetLeft-strip.offsetLeft+item.clientWidth/2-center);if(delta<dist){dist=delta;closest=item}}if(closest){const date=dateFromKey(closest.dataset.date);$("journalReaderMonth").textContent=date.toLocaleDateString("en-GB",{month:"short",year:"2-digit"})}},90)};
+ strip.onscroll=()=>{if(journalBookAnimating)return;clearTimeout(settle);settle=setTimeout(()=>{const center=strip.scrollLeft+strip.clientWidth/2;let closest=null,dist=Infinity;for(const item of strip.children){const delta=Math.abs(item.offsetLeft-strip.offsetLeft+item.clientWidth/2-center);if(delta<dist){dist=delta;closest=item}}if(closest){const date=dateFromKey(closest.dataset.date);$("journalReaderMonth").textContent=date.toLocaleDateString("en-GB",{month:"short",year:"2-digit"})}},90)};
 }
 let journalFlipGesture=null,journalFlipFrame=null;
 function journalFlipReset(){
@@ -3513,9 +3513,22 @@ function journalFlipPrepare(target,direction){
  const paper=$("journalReaderPaper"),stage=$("journalFlipStage"),front=$("journalFlipFront"),back=$("journalFlipBack");
  // Clone the outgoing page before replacing the stationary layer with the incoming page.
  front.replaceChildren(...Array.from(paper.childNodes,child=>child.cloneNode(true)));
+ // Cloning an element does not copy its scroll position. Preserve the exact
+ // seven dates visible on the outgoing page throughout the 3D animation.
+ const sourceStrip=paper.querySelector("#journalDateStrip");
+ const outgoingStrip=front.querySelector("#journalDateStrip");
+ if(sourceStrip&&outgoingStrip){
+  outgoingStrip.removeAttribute("id");
+  outgoingStrip.style.scrollSnapType="none";
+  outgoingStrip.style.overflowX="hidden";
+  outgoingStrip.scrollLeft=sourceStrip.scrollLeft;
+  requestAnimationFrame(()=>{if(outgoingStrip.isConnected)outgoingStrip.scrollLeft=sourceStrip.scrollLeft});
+ }
  back.replaceChildren();
  const watermark=document.createElement("div");watermark.style.cssText="position:absolute;inset:35% 10%;text-align:center;font:italic 26px Georgia,serif;color:#d8b5bb;opacity:.55";watermark.textContent="Journal";back.append(watermark);
  journalBookSelected=target;renderJournalBookPage();
+ // Prepare the incoming page's dates before it is revealed, not after the flip.
+ renderJournalDateStrip();
  stage.classList.add("flipping");$("journalFlipSheet").style.transition="none";
  journalFlipDraw(0,direction);
 }
