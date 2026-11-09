@@ -732,7 +732,7 @@ textarea {
  padding: 28px 12px;
 }
 
-/* EMOTIONS AND EXERCISE */
+/* EMOTIONS AND ACTIVITY */
 
 .period-selector {
  display: flex;
@@ -1706,6 +1706,11 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 #journal-book .journal-date-mark{height:8px;line-height:8px;font-size:8px}
 #journal-book .journal-reader-date{text-align:right;font-size:clamp(12px,3vw,15px);line-height:1.3;margin:4px 0 12px}
 
+
+/* Separate photo memories section on the book page, matching the special-moment divider. */
+.journal-reader-photo-section{border-top:1px solid #ecd8d5;padding-top:14px;margin-top:18px;color:#9a7181}
+.journal-reader-photo-section>strong{display:block;font-size:14px;color:#9a7181}
+.journal-reader-photo-section .journal-reader-photos{margin-top:10px}
 </style>
 </head>
 
@@ -1744,7 +1749,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 
   <button onclick="openTimeline('exercise')">
    <span class="symbol">🌿</span>
-   <span class="menu-label">Exercise</span>
+   <span class="menu-label">Activity</span>
   </button>
 
   <button onclick="openHistory()">
@@ -1958,7 +1963,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 
 </main>
 
-<!-- EXERCISE -->
+<!-- ACTIVITY -->
 
 <main id="exercise" class="page">
 
@@ -1970,14 +1975,14 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
   </button>
 
   <span class="entry-label">
-   Exercise
+   Activity
   </span>
 
  </div>
 
  <header class="page-title">
 
-  <h1>My Exercise</h1>
+  <h1>My Activity</h1>
 
   <p>
    A gentle look at how I've been moving
@@ -2065,7 +2070,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
      class="chart-svg"
      xmlns="http://www.w3.org/2000/svg"
      role="group"
-     aria-label="Exercise activity chart"></svg>
+     aria-label="Activity activity chart"></svg>
 
    </div>
 
@@ -2137,7 +2142,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
  <p class="timeline-explanation">
   Rest is an important part of looking after yourself.
   Days without a recorded activity aren't counted as rest days.
-  The chart shows activity types, not exercise intensity.
+  The chart shows activity types, not workout intensity.
  </p>
 
 </main>
@@ -2296,7 +2301,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
     <option>Rest day</option>
     <option>Short walk</option>
     <option>Long walk</option>
-    <option>Exercise / workout</option>
+    <option value="Exercise / workout">Workout</option>
     <option>Day out / exploring</option>
 
    </select>
@@ -2459,13 +2464,13 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
    </div>
   </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="5">
-   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>Emotions &amp; Exercise Personalization</span></button>
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>Emotions &amp; Activity Personalization</span></button>
    <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
     <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Hiding preserves past selections, while removing a custom choice removes it from your insights without deleting your entries.</p>
     <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
     <div class="choice-add"><input id="newEmotionEmoji" aria-label="Emotion emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="💗"><input id="newEmotionName" aria-label="New emotion name" maxlength="35" placeholder="New emotion"><button class="safe-secondary" onclick="addPersonalChoice('emotions')">Add</button></div>
-    <h3>🌿 My Exercise</h3><div id="manageActivities"></div>
-    <div class="choice-add"><input id="newActivityEmoji" aria-label="Exercise emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="🌿"><input id="newActivityName" aria-label="New activity name" maxlength="35" placeholder="New activity"><button class="safe-secondary" onclick="addPersonalChoice('activities')">Add</button></div>
+    <h3>🌿 My Activity</h3><div id="manageActivities"></div>
+    <div class="choice-add"><input id="newActivityEmoji" aria-label="Activity emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="🌿"><input id="newActivityName" aria-label="New activity name" maxlength="35" placeholder="New activity"><button class="safe-secondary" onclick="addPersonalChoice('activities')">Add</button></div>
     <p id="manageChoicesStatus" class="safe-message" role="status"></p>
    </div>
   </section>
@@ -2544,11 +2549,11 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
   </header>
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
-   <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any exercise or activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
-   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu and select a date. Tap <strong>Open Full Entry</strong> to read your memory on a dedicated journal page, including your emotion, exercise, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to change the entry using the familiar form; saving returns to the reading page.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu and select a date. Tap <strong>Open Full Entry</strong> to read your memory on a dedicated journal page, including your emotion, activity, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to change the entry using the familiar form; saving returns to the reading page.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
-   <section class="journal-guide-section"><h3>🌿 Exploring My Exercise</h3><p>Choose <strong>Exercise</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
-   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Exercise Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
+   <section class="journal-guide-section"><h3>🌿 Exploring My Activity</h3><p>Choose <strong>Activity</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
+   <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Activity Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
    <section class="journal-guide-section"><h3>🖼️ Personalizing Your Homepage</h3><p>In <strong>Settings → Personalize My Journal → Homepage Appearance</strong>, choose between rotating pastel artwork and your own photograph. If you use a photograph, adjust its zoom and position until it feels just right.</p><p>Your homepage photograph is stored on this device, so keep a separate copy of the original.</p></section>
    <section class="journal-guide-section"><h3>💛 Accessibility</h3><p>In <strong>Settings → Personalize My Journal → Accessibility</strong>, choose Small, Medium or Large text, enable gentle button sounds, turn on high contrast, make touch targets larger or reduce movement. You can also switch <strong>Read My Entry Aloud</strong> on or off.</p><p>When enabled, a read-aloud button appears beneath your written thoughts and beneath the special-moment text box when you tap the star. You can listen to either section separately, or tap <strong>Stop Reading</strong> to stop. Photo captions also have a Read Caption Aloud button beneath the caption when this setting is enabled. Speech availability depends on your device and browser.</p></section>
    <section class="journal-guide-section"><h3>🔒 Keeping Your Memories Safe</h3><p>Open <strong>Settings → Privacy &amp; Security</strong> to find your PIN, backup, restore and reminder options.</p><p>Your entries and photographs are stored locally on the device and browser you're using. Journal doesn't automatically synchronize them between devices.</p><ul><li><strong>Privacy &amp; Security → Backup My Journal:</strong> download a password-encrypted copy of your entries and photographs. Keep both the file and its password safe.</li><li><strong>Restore My Journal:</strong> choose a previous backup and enter its password to recover your saved memories.</li><li><strong>✧ Backup Reminder:</strong> opt in to a gentle reminder about every 30 days when you open Journal.</li><li><strong>Privacy &amp; Security → Journal PIN:</strong> set a six-digit lock and recovery question to help keep the app screen private on this device.</li></ul><p>The PIN protects the app screen, not the underlying browser storage. The encrypted backup password is separate from your PIN.</p></section>
@@ -3540,11 +3545,11 @@ function renderJournalBookPage(){
  entries.forEach((entry,i)=>{
   if(i)paper.append(document.createElement("hr"));
   const choices=make("div","journal-reader-choices");const moodName=getEntryMood(entry)||"Not recorded",mood=moods.find(m=>m[1]===moodName),activityName=getEntryActivity(entry)||"Not recorded",activity=getKnownActivity(entry);
-  for(const [emoji,name,label] of [[mood?.[0]||"♡",moodName,"Emotion"],[activity?.scene||"🌿",activityName,"Exercise"]]){const box=make("div","journal-reader-choice");box.append(make("span","emoji",emoji),make("strong","",name),make("small","",label));choices.append(box)}paper.append(choices);
+  for(const [emoji,name,label] of [[mood?.[0]||"♡",moodName,"Emotion"],[activity?.scene||"🌿",activityName,"Activity"]]){const box=make("div","journal-reader-choice");box.append(make("span","emoji",emoji),make("strong","",name),make("small","",label));choices.append(box)}paper.append(choices);
   paper.append(make("p","journal-reader-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
   if(journalA11y.readAloud&&entry.thoughts?.trim())paper.append(makeSavedEntrySpeechButton("book-thoughts-"+i,entry.thoughts,"🔊 Read My Entry Aloud"));
   if(entry.isSpecialDay){const special=make("section","journal-reader-special");special.append(make("strong","","★ A Special Moment"),make("p","",entry.specialDayReason?.trim()||"A day worth remembering"));paper.append(special);if(journalA11y.readAloud&&entry.specialDayReason?.trim())paper.append(makeSavedEntrySpeechButton("book-star-"+i,entry.specialDayReason,"🔊 Read My Special Moment Aloud"))}
-  const photos=(entry.photos||[]).filter(f=>f instanceof Blob);if(photos.length){const strip=make("div","journal-reader-photos");photos.forEach((file,index)=>{const url=URL.createObjectURL(file);journalBookPhotoUrls.push(url);const img=document.createElement("img");img.src=url;img.alt="Journal photo "+(index+1);img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);img.dataset.caption=(entry.photoCaptions||[])[index]||"";img.dataset.journalDate=entry.date;makeJournalPhotoZoomable(img);strip.append(img)});paper.append(strip)}
+  const photos=(entry.photos||[]).filter(f=>f instanceof Blob);if(photos.length){const photoSection=make("section","journal-reader-photo-section");photoSection.append(make("strong","","📷 Photos & Memories"));const strip=make("div","journal-reader-photos");photos.forEach((file,index)=>{const url=URL.createObjectURL(file);journalBookPhotoUrls.push(url);const img=document.createElement("img");img.src=url;img.alt="Journal photo "+(index+1);img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);img.dataset.caption=(entry.photoCaptions||[])[index]||"";img.dataset.journalDate=entry.date;makeJournalPhotoZoomable(img);strip.append(img)});photoSection.append(strip);paper.append(photoSection)}
   const edit=make("button","journal-reader-edit","Open full entry / Edit ›");edit.type="button";edit.onclick=()=>{journalLibraryReturnPage="journal-book";openSavedEntry(entry.id)};paper.append(edit);
  });
 }
@@ -4840,7 +4845,7 @@ async function openSavedEntry(id){
  const activity=getKnownActivity(entry);
  for(const [kind,emoji,name,label] of [
   ["emotion",mood?.[0]||"♡",moodName,"Emotion"],
-  ["exercise",activity?.scene||"🌿",activityName,"Exercise"]
+  ["exercise",activity?.scene||"🌿",activityName,"Activity"]
  ]){
   const box=savedEntryText("div","saved-entry-choice "+kind,"");
   box.append(savedEntryText("span","saved-entry-emoji",emoji),savedEntryText("strong","",name),savedEntryText("small","",label));
@@ -4922,7 +4927,7 @@ function editSavedEntry(id) {
   entryOrigin === "emotions"
    ? "Back to Emotions"
    : entryOrigin === "exercise"
-    ? "Back to Exercise"
+    ? "Back to Activity"
     : "Back to Calendar";
 
  $("entryLabel").textContent = "Saved Entry";
@@ -5492,9 +5497,9 @@ function renderFrozenAxis(
 
  axis.replaceChildren();
 
- const isExercise = type === "exercise";
+ const isActivity = type === "exercise";
 
- const width = isExercise ? 94 : 92;
+ const width = isActivity ? 94 : 92;
 
  axis.setAttribute(
   "viewBox",
@@ -5510,7 +5515,7 @@ function renderFrozenAxis(
  const yPosition = score =>
   chartYPosition(type, score, top, bottom);
 
- if (isExercise) {
+ if (isActivity) {
   [...activeChartActivities()]
    .reverse()
    .forEach(activity => {
@@ -5588,7 +5593,7 @@ function renderFrozenAxis(
 */
 
 function getChartDimensions(type, count) {
- const isExercise = type === "exercise";
+ const isActivity = type === "exercise";
 
  const scrollArea = $(type + "Scroll");
 
@@ -5601,10 +5606,10 @@ function getChartDimensions(type, count) {
 
  const top = 25;
 
- const axisItems=isExercise?activeChartActivities().length:emotionAxisOrder.length;
- const bottom = Math.max(isExercise?207:345,25+(axisItems-1)*36);
+ const axisItems=isActivity?activeChartActivities().length:emotionAxisOrder.length;
+ const bottom = Math.max(isActivity?207:345,25+(axisItems-1)*36);
 
- const height = bottom+(isExercise?49:48);
+ const height = bottom+(isActivity?49:48);
 
  const padding = 22;
 
@@ -5642,7 +5647,7 @@ function getChartDimensions(type, count) {
   height,
   width,
   padding,
-  isExercise
+  isActivity
  };
 }
 
