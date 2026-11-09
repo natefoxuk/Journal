@@ -1563,24 +1563,54 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 @media(max-width:360px){.saved-entry-date{font-size:clamp(13px,3.6vw,17px)}.saved-entry-edit{padding:8px 9px}}
 
 
-/* Journal bookshelf addition: deliberately isolated from existing home layout. */
+/* JOURNAL COLLECTION — isolated from home layout */
 #home .journal-book-launch{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(80px,11.2dvh,111px);z-index:3;border:0;background:transparent;padding:3px 12px;font-size:clamp(25px,4dvh,33px);line-height:1;cursor:pointer;filter:drop-shadow(0 2px 2px #e8c6d4)}
 #home .journal-book-launch:focus-visible{outline:2px solid #a56e88;border-radius:10px}
+#journal-library,#journal-book,#starred-moments{padding:22px 18px 32px}
 .journal-library-wrap{max-width:620px;margin:0 auto;text-align:center}
-.journal-library-title{font:italic clamp(32px,7vw,46px) Georgia,serif;color:#a56e88;margin:24px 0 8px}
-.journal-library-subtitle{color:#9b798b;margin:0 0 25px;font-size:14px}
-.journal-library-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.journal-library-option{min-height:220px;border:1px solid #edcddc;border-radius:23px;background:linear-gradient(155deg,#fffafc,#f9e9f0);box-shadow:0 6px 20px #b57e9620;padding:20px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#926b80;cursor:pointer}
-.journal-library-option .library-symbol{font-size:clamp(56px,13vw,88px);line-height:1.15}
-.journal-library-option strong{font:italic clamp(17px,4.3vw,22px) Georgia,serif}
-.journal-library-option small{font-size:12px;line-height:1.5}
+.journal-library-title{font:italic clamp(29px,7vw,40px) Georgia,serif;color:#a56e88;margin:15px 0 8px}
+.journal-library-subtitle{color:#9b798b;margin:0 0 16px;font-size:13px}
+.journal-library-options{display:flex;flex-direction:column;gap:14px;min-height:calc(100dvh - 145px)}
+.journal-library-option{flex:1;min-height:245px;border:1px solid #edcddc;border-radius:23px;background:linear-gradient(155deg,#fffafc,#f9e9f0);box-shadow:0 6px 20px #b57e9620;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#926b80;cursor:pointer}
+.journal-library-option strong{font:italic 22px Georgia,serif}.journal-library-option small{font-size:12px}
+.journal-cover-art{position:relative;width:128px;height:174px;border-radius:4px 11px 11px 4px;background:linear-gradient(90deg,#bf879d 0%,#e5b9c8 9%,#f4d4d9 20%,#f5d9dc 88%,#e1b6c4 100%);border:2px solid #b98e9b;box-shadow:5px 6px 0 #f9f2e6,8px 9px 0 #d9bdc0,11px 13px 14px #9673854d;display:flex;align-items:center;justify-content:center;color:#9a6e77;flex-direction:column;gap:10px;transform:translateZ(0);backface-visibility:hidden}
+.journal-cover-art:before{content:"";position:absolute;inset:9px 10px 9px 13px;border:1px solid #c79b81;outline:1px solid #c79b81;outline-offset:3px;border-radius:1px 6px 6px 1px}
+.journal-cover-art:after{content:"";position:absolute;left:8px;top:0;bottom:0;border-left:2px solid #b4879a;box-shadow:3px 0 5px #a57b8740}
+.journal-cover-flower{font-size:26px;line-height:1}.journal-cover-name{font:italic 26px Georgia,serif}.journal-cover-small{font:italic 9px Georgia,serif;max-width:95px;line-height:1.4}
+.journal-cover-art.large{width:min(62vw,235px);height:min(83vw,320px);gap:17px}.journal-cover-art.large .journal-cover-name{font-size:36px}.journal-cover-art.large .journal-cover-small{font-size:12px;max-width:160px}.journal-cover-art.large .journal-cover-flower{font-size:34px}
+.journal-star-art{font-size:clamp(92px,24vw,145px);line-height:1;color:#f1d37c;text-shadow:0 2px 0 #caa65d,0 6px 15px #d9b87380}
 .journal-library-list{display:grid;gap:14px;margin-top:24px;text-align:left}
 .journal-library-card{width:100%;text-align:left;border:1px solid #eed2df;background:#fff9fc;border-radius:18px;padding:18px;color:#725565;box-shadow:0 4px 12px #b57e9614;cursor:pointer}
 .journal-library-card .library-date{font:italic 18px Georgia,serif;color:#a56e88;display:block;margin-bottom:9px}
 .journal-library-card .library-preview{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
 .journal-library-card .library-open{display:block;text-align:right;margin-top:10px;color:#9b6885;font-size:12px}
 .journal-library-empty{color:#947788;text-align:center;background:#fff8fb;border:1px solid #eed2df;border-radius:18px;padding:28px 16px;margin-top:24px;line-height:1.6}
-@media(max-width:380px){.journal-library-options{gap:9px}.journal-library-option{min-height:190px;padding:14px 7px}}
+.journal-book-cover-stage{display:flex;align-items:center;justify-content:center;min-height:calc(100dvh - 150px);perspective:950px}
+.journal-book-cover-button{border:0;background:transparent;padding:15px 25px;cursor:pointer;transform-style:preserve-3d}
+.journal-book-cover-button .journal-cover-art{transform-origin:left center;transition:transform .85s cubic-bezier(.22,.7,.25,1),opacity .75s}
+.journal-book-cover-button.opening .journal-cover-art{transform:rotateY(-155deg);opacity:.2}
+.journal-reader{display:none}.journal-reader.visible{display:block;animation:readerAppear .4s ease both}
+@keyframes readerAppear{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.journal-reader-month{text-align:center;font:italic 22px Georgia,serif;color:#a56e88;margin:13px 0 11px}
+.journal-date-strip{display:flex;gap:7px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;padding:4px 0 12px;touch-action:pan-x;}
+.journal-date-strip::-webkit-scrollbar{display:none}
+.journal-date-cell{flex:0 0 calc((100% - 42px)/7);min-width:0;scroll-snap-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:1px solid #ebcbd7;background:#fff9fa;border-radius:12px;padding:9px 1px;color:#956d80;font-size:11px}
+.journal-date-cell b{font-size:15px}.journal-date-cell.selected{background:#eec9d8;border-color:#bb849f;color:#704b61}
+.journal-date-mark{font-size:11px;height:13px;color:#e1a1bc}.journal-date-mark.starred{color:#d3a143}
+.journal-reader-paper-wrap{perspective:1200px;overflow:hidden;border-radius:9px}
+.journal-reader-paper{background:linear-gradient(90deg,#e9d5ca 0,#fffaf1 6%,#fffdf8 100%);border:1px solid #e6cfc7;border-left:8px solid #dfbdc2;box-shadow:0 8px 18px #8e65742b;min-height:56dvh;padding:20px 18px 26px;transform-origin:left center;touch-action:pan-y;overflow-wrap:anywhere}
+.journal-reader-paper.turn-next{animation:pageNext .42s ease-in-out}.journal-reader-paper.turn-prev{animation:pagePrev .42s ease-in-out}
+@keyframes pageNext{0%{transform:rotateY(0);opacity:1}48%{transform:rotateY(-65deg);opacity:.45}100%{transform:rotateY(0);opacity:1}}
+@keyframes pagePrev{0%{transform:rotateY(0);opacity:1}48%{transform:rotateY(65deg);opacity:.45}100%{transform:rotateY(0);opacity:1}}
+.journal-reader-date{font:italic 19px Georgia,serif;color:#9d7184;text-align:center;margin:0 0 16px}
+.journal-reader-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.journal-reader-choice{background:#f9eef0;border:1px solid #edd8df;border-radius:13px;padding:10px 5px;text-align:center;display:grid;gap:5px;font-size:12px}
+.journal-reader-choice .emoji{font-size:27px}.journal-reader-thoughts{white-space:pre-wrap;line-height:1.75;font-size:15px;margin:14px 0;color:#705762}
+.journal-reader-special{border-top:1px solid #ecd8d5;padding-top:14px;margin-top:18px;color:#9a7181}.journal-reader-special strong{color:#b58b43}
+.journal-reader-photos{display:flex;gap:8px;overflow-x:auto;margin-top:15px}.journal-reader-photos img{width:72px;height:72px;object-fit:cover;border-radius:8px;flex:none}
+.journal-reader-edit{display:block;margin:16px 0 0 auto;border:1px solid #dcb9c9;border-radius:14px;padding:10px 14px;background:#fceef3;color:#926b80}
+.journal-reader-hint{text-align:center;color:#a48693;font-size:12px;margin:12px 0 0}
+@media(prefers-reduced-motion:reduce){.journal-book-cover-button .journal-cover-art{transition:none!important}.journal-reader.visible,.journal-reader-paper.turn-next,.journal-reader-paper.turn-prev{animation:none!important}}
 
 </style>
 </head>
@@ -1641,23 +1671,29 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 </main>
 
 
-<!-- PERSONAL JOURNAL LIBRARY -->
+<!-- PERSONAL JOURNAL COLLECTION -->
 <main id="journal-library" class="page">
- <div class="entry-navigation"><button class="back-button" onclick="showPage('home')">Back to Journal</button><span class="entry-label">My Journal Library</span></div>
- <div class="journal-library-wrap"><h1 class="journal-library-title">My Journal Library</h1><p class="journal-library-subtitle">A little collection of my story</p>
+ <div class="entry-navigation"><button class="back-button" onclick="showPage('home')">Back to Journal</button><span class="entry-label">My Collection</span></div>
+ <div class="journal-library-wrap">
   <div class="journal-library-options">
-   <button class="journal-library-option" onclick="openJournalBook()"><span class="library-symbol" aria-hidden="true">📖</span><strong>My Journal</strong><small>Turn back through my memories</small></button>
-   <button class="journal-library-option" onclick="openStarredMoments()"><span class="library-symbol" aria-hidden="true">⭐</span><strong>My Starred Moments</strong><small>Moments worth remembering</small></button>
+   <button class="journal-library-option" onclick="openJournalBook()" aria-label="Open My Journal book">
+    <span class="journal-cover-art" aria-hidden="true"><span class="journal-cover-flower">🌸</span><span class="journal-cover-name">Journal</span><span class="journal-cover-small">A little space just for me</span></span>
+    <strong>My Journal</strong><small>Open the pages of my journey</small>
+   </button>
+   <button class="journal-library-option" onclick="openStarredMoments()" aria-label="Open My Starred Moments">
+    <span class="journal-star-art" aria-hidden="true">★</span><strong>My Starred Moments</strong><small>The memories that shine brightest</small>
+   </button>
   </div>
  </div>
 </main>
 <main id="journal-book" class="page">
- <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Library</button><span class="entry-label">My Journal</span></div>
- <div class="journal-library-wrap"><h1 class="journal-library-title">My Journal</h1><p class="journal-library-subtitle">The pages of my journey</p><div id="journalBookEntries" class="journal-library-list"></div></div>
+ <div class="entry-navigation"><button class="back-button" onclick="closeJournalBook()">Back to Collection</button><span class="entry-label">My Journal</span></div>
+ <div id="journalCoverStage" class="journal-book-cover-stage"><button id="journalCoverButton" class="journal-book-cover-button" onclick="unfoldJournalBook()" aria-label="Tap to open your journal"><span class="journal-cover-art large" aria-hidden="true"><span class="journal-cover-flower">🌸</span><span class="journal-cover-name">Journal</span><span class="journal-cover-small">A little space just for me</span></span></button></div>
+ <div id="journalReader" class="journal-reader"><h2 id="journalReaderMonth" class="journal-reader-month"></h2><div id="journalDateStrip" class="journal-date-strip" aria-label="Swipe through journal dates"></div><div class="journal-reader-paper-wrap"><article id="journalReaderPaper" class="journal-reader-paper" aria-live="polite"></article></div><p class="journal-reader-hint">Swipe the page to turn · Swipe the dates to explore</p></div>
 </main>
 <main id="starred-moments" class="page">
- <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Library</button><span class="entry-label">My Starred Moments</span></div>
- <div class="journal-library-wrap"><h1 class="journal-library-title">⭐ My Starred Moments</h1><p class="journal-library-subtitle">The memories that shine a little brighter</p><div id="journalStarredEntries" class="journal-library-list"></div></div>
+ <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Collection</button><span class="entry-label">My Starred Moments</span></div>
+ <div class="journal-library-wrap"><h1 class="journal-library-title">★ My Starred Moments</h1><p class="journal-library-subtitle">The memories that shine a little brighter</p><div id="journalStarredEntries" class="journal-library-list"></div></div>
 </main>
 
 <!-- EMOTIONS -->
@@ -3283,8 +3319,9 @@ document.addEventListener("keydown",event=>{
 });
 
 
-/* Personal library: read-only views of the existing entries database. */
+/* Journal collection: uses existing IndexedDB entries; does not modify them. */
 let journalLibraryReturnPage=null;
+let journalBookEntries=[],journalBookSelected=todayLocal(),journalBookPhotoUrls=[],journalBookAnimating=false;
 function openJournalLibrary(){showPage("journal-library")}
 async function renderJournalLibraryEntries(target,starredOnly){
  const host=$(target);host.replaceChildren();
@@ -3293,14 +3330,65 @@ async function renderJournalLibraryEntries(target,starredOnly){
   if(!entries.length){const empty=document.createElement("p");empty.className="journal-library-empty";empty.textContent=starredOnly?"Your starred moments will appear here when you mark a special day in a journal entry.":"Your journal pages will appear here once you save your first entry.";host.append(empty);return;}
   for(const entry of entries){
    const card=document.createElement("button");card.type="button";card.className="journal-library-card";
-   const date=document.createElement("span");date.className="library-date";date.textContent=(starredOnly?"⭐ ":"")+formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+   const date=document.createElement("span");date.className="library-date";date.textContent=(starredOnly?"★ ":"")+formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
    const preview=document.createElement("span");preview.className="library-preview";preview.textContent=starredOnly?(entry.specialDayReason?.trim()||"A special day"):(entry.thoughts?.trim()||"A page of my journey");
    const open=document.createElement("span");open.className="library-open";open.textContent="Open full entry ›";
    card.append(date,preview,open);card.addEventListener("click",()=>{journalLibraryReturnPage=starredOnly?"starred-moments":"journal-book";openSavedEntry(entry.id)});host.append(card);
   }
  }catch(error){console.error(error);host.textContent="Unable to load your entries. Please try again.";}
 }
-function openJournalBook(){showPage("journal-book");renderJournalLibraryEntries("journalBookEntries",false)}
+async function openJournalBook(){
+ showPage("journal-book");$("journalCoverStage").style.display="flex";$("journalReader").classList.remove("visible");$("journalCoverButton").classList.remove("opening");
+ try{journalBookEntries=(await allEntries()).sort((a,b)=>String(a.date).localeCompare(String(b.date)));journalBookSelected=journalBookEntries.length?journalBookEntries[journalBookEntries.length-1].date:todayLocal();}
+ catch(e){console.error(e);journalBookEntries=[];journalBookSelected=todayLocal()}
+}
+function closeJournalBook(){journalBookPhotoUrls.forEach(url=>URL.revokeObjectURL(url));journalBookPhotoUrls=[];openJournalLibrary()}
+function unfoldJournalBook(){
+ if(journalBookAnimating)return;journalBookAnimating=true;
+ $("journalCoverButton").classList.add("opening");
+ const delay=window.matchMedia("(prefers-reduced-motion: reduce)").matches?0:780;
+ setTimeout(()=>{$("journalCoverStage").style.display="none";$("journalReader").classList.add("visible");renderJournalDateStrip();renderJournalBookPage();journalBookAnimating=false;},delay);
+}
+function journalBookMonthLabel(){const d=dateFromKey(journalBookSelected);return d.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}
+function renderJournalDateStrip(){
+ const strip=$("journalDateStrip");strip.replaceChildren();$("journalReaderMonth").textContent=journalBookMonthLabel();
+ const selected=dateFromKey(journalBookSelected);const dates=new Set(journalBookEntries.map(e=>e.date));const starred=new Set(journalBookEntries.filter(e=>e.isSpecialDay).map(e=>e.date));
+ for(let offset=-183;offset<=183;offset++){
+  const d=addDays(selected,offset),key=dateToKey(d),button=document.createElement("button");button.type="button";button.className="journal-date-cell"+(offset===0?" selected":"");button.dataset.date=key;
+  const day=document.createElement("span");day.textContent=d.toLocaleDateString("en-GB",{weekday:"short"});const number=document.createElement("b");number.textContent=d.getDate();const mark=document.createElement("span");mark.className="journal-date-mark"+(starred.has(key)?" starred":"");mark.textContent=starred.has(key)?"★":dates.has(key)?"●":"";
+  button.append(day,number,mark);button.setAttribute("aria-label",formatDate(key,{weekday:"long",day:"numeric",month:"long",year:"numeric"})+(dates.has(key)?", journal entry":""));button.setAttribute("aria-pressed",String(offset===0));button.onclick=()=>selectJournalBookDate(key);strip.append(button);
+ }
+ requestAnimationFrame(()=>{const center=strip.children[183];if(center)strip.scrollLeft=center.offsetLeft-strip.offsetLeft-(strip.clientWidth-center.clientWidth)/2});
+ let settle;
+ strip.onscroll=()=>{clearTimeout(settle);settle=setTimeout(()=>{const center=strip.scrollLeft+strip.clientWidth/2;let closest=null,dist=Infinity;for(const item of strip.children){const delta=Math.abs(item.offsetLeft-strip.offsetLeft+item.clientWidth/2-center);if(delta<dist){dist=delta;closest=item}}if(closest){const date=dateFromKey(closest.dataset.date);$("journalReaderMonth").textContent=date.toLocaleDateString("en-GB",{month:"long",year:"numeric"})}},90)};
+}
+function selectJournalBookDate(key,direction){
+ if(journalBookAnimating||key===journalBookSelected)return;
+ journalBookAnimating=true;const paper=$("journalReaderPaper");const next=direction||((key>journalBookSelected)?"next":"prev");const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ if(!reduced)paper.classList.add("turn-"+next);
+ setTimeout(()=>{journalBookSelected=key;renderJournalBookPage();renderJournalDateStrip();paper.classList.remove("turn-next","turn-prev");journalBookAnimating=false;},reduced?0:380);
+}
+function renderJournalBookPage(){
+ const paper=$("journalReaderPaper");paper.replaceChildren();journalBookPhotoUrls.forEach(url=>URL.revokeObjectURL(url));journalBookPhotoUrls=[];
+ const make=(tag,cls,content)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(content!==undefined)el.textContent=content;return el};
+ paper.append(make("h2","journal-reader-date",formatDate(journalBookSelected,{weekday:"long",day:"numeric",month:"long",year:"numeric"})));
+ const entries=journalBookEntries.filter(e=>e.date===journalBookSelected);
+ if(!entries.length){paper.append(make("p","journal-reader-thoughts","A blank page, waiting for a new memory."));return;}
+ entries.forEach((entry,i)=>{
+  if(i)paper.append(document.createElement("hr"));
+  const choices=make("div","journal-reader-choices");const moodName=getEntryMood(entry)||"Not recorded",mood=moods.find(m=>m[1]===moodName),activityName=getEntryActivity(entry)||"Not recorded",activity=getKnownActivity(entry);
+  for(const [emoji,name,label] of [[mood?.[0]||"♡",moodName,"Emotion"],[activity?.scene||"🌿",activityName,"Exercise"]]){const box=make("div","journal-reader-choice");box.append(make("span","emoji",emoji),make("strong","",name),make("small","",label));choices.append(box)}paper.append(choices);
+  paper.append(make("p","journal-reader-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
+  if(journalA11y.readAloud&&entry.thoughts?.trim())paper.append(makeSavedEntrySpeechButton("book-thoughts-"+i,entry.thoughts,"🔊 Read My Entry Aloud"));
+  if(entry.isSpecialDay){const special=make("section","journal-reader-special");special.append(make("strong","","★ A Special Moment"),make("p","",entry.specialDayReason?.trim()||"A day worth remembering"));paper.append(special);if(journalA11y.readAloud&&entry.specialDayReason?.trim())paper.append(makeSavedEntrySpeechButton("book-star-"+i,entry.specialDayReason,"🔊 Read My Special Moment Aloud"))}
+  const photos=(entry.photos||[]).filter(f=>f instanceof Blob);if(photos.length){const strip=make("div","journal-reader-photos");photos.forEach((file,index)=>{const url=URL.createObjectURL(file);journalBookPhotoUrls.push(url);const img=document.createElement("img");img.src=url;img.alt="Journal photo "+(index+1);img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);img.dataset.caption=(entry.photoCaptions||[])[index]||"";img.dataset.journalDate=entry.date;makeJournalPhotoZoomable(img);strip.append(img)});paper.append(strip)}
+  const edit=make("button","journal-reader-edit","Open full entry / Edit ›");edit.type="button";edit.onclick=()=>{journalLibraryReturnPage="journal-book";openSavedEntry(entry.id)};paper.append(edit);
+ });
+}
+(function initJournalBookSwipe(){let startX=0,startY=0;
+ document.addEventListener("touchstart",e=>{if(!e.target.closest("#journalReaderPaper"))return;startX=e.touches[0].clientX;startY=e.touches[0].clientY},{passive:true});
+ document.addEventListener("touchend",e=>{if(!e.target.closest("#journalReaderPaper")||!$("journalReader").classList.contains("visible"))return;const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.3)return;selectJournalBookDate(dateToKey(addDays(dateFromKey(journalBookSelected),dx<0?1:-1)),dx<0?"next":"prev")},{passive:true});
+})();
 function openStarredMoments(){showPage("starred-moments");renderJournalLibraryEntries("journalStarredEntries",true)}
 
 /* GENERAL HELPERS */
