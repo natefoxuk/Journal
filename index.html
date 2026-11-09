@@ -3474,7 +3474,14 @@ function unfoldJournalBook(){
  if(journalBookAnimating)return;journalBookAnimating=true;
  $("journalCoverButton").classList.add("opening");
  const delay=window.matchMedia("(prefers-reduced-motion: reduce)").matches?0:850;
- setTimeout(()=>{$("journalCoverStage").style.display="none";journalBookAnimating=false;},delay);
+ setTimeout(()=>{
+  $("journalCoverStage").style.display="none";
+  journalBookAnimating=false;
+  // The date strip must be laid out AFTER the cover is gone. On Android,
+  // its first render can otherwise retain scrollLeft=0 (six months earlier).
+  renderJournalDateStrip();
+  requestAnimationFrame(()=>requestAnimationFrame(positionJournalDateStrip));
+},delay);
 }
 
 /* Drag the full-sized hardback cover to the left to reveal the reader. */
@@ -3516,17 +3523,17 @@ function positionJournalDateStrip(){
  const strip=$("journalDateStrip"),tile=strip?.querySelector(".journal-date-cell.selected");
  if(!tile||!strip.clientWidth||!tile.clientWidth)return;
  journalDateStripPositioning=true;
- const previousBehavior=strip.style.scrollBehavior;
- const previousSnap=strip.style.scrollSnapType;
+ const oldBehavior=strip.style.scrollBehavior,oldSnap=strip.style.scrollSnapType;
  strip.style.scrollBehavior="auto";
  strip.style.scrollSnapType="none";
- // Both elements share a coordinate system through their bounding rectangles.
- const left=tile.getBoundingClientRect().left-strip.getBoundingClientRect().left+strip.scrollLeft;
- strip.scrollLeft=left-(strip.clientWidth-tile.clientWidth)/2;
- strip.style.scrollSnapType=previousSnap;
- strip.style.scrollBehavior=previousBehavior;
+ // offsetLeft is relative to the date strip itself: no transformed viewport
+ // coordinates, and no browser smooth scrolling during initial positioning.
+ const tileLeft=tile.offsetLeft-strip.offsetLeft;
+ strip.scrollLeft=tileLeft-(strip.clientWidth-tile.clientWidth)/2;
+ strip.style.scrollSnapType=oldSnap;
+ strip.style.scrollBehavior=oldBehavior;
  $("journalReaderMonth").textContent=journalBookMonthLabel();
- requestAnimationFrame(()=>{journalDateStripPositioning=false;$("journalReaderMonth").textContent=journalBookMonthLabel()});
+ requestAnimationFrame(()=>{journalDateStripPositioning=false});
 }
 function renderJournalDateStrip(){
  const strip=$("journalDateStrip");strip.replaceChildren();$("journalReaderMonth").textContent=journalBookMonthLabel();
