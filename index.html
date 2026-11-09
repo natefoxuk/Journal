@@ -1562,6 +1562,26 @@ body[data-contrast="true"] .saved-entry-paper{background:#fff;border-color:#7957
 body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved-entry-special{border:1px solid #795767}
 @media(max-width:360px){.saved-entry-date{font-size:clamp(13px,3.6vw,17px)}.saved-entry-edit{padding:8px 9px}}
 
+
+/* Journal bookshelf addition: deliberately isolated from existing home layout. */
+#home .journal-book-launch{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(80px,11.2dvh,111px);z-index:3;border:0;background:transparent;padding:3px 12px;font-size:clamp(25px,4dvh,33px);line-height:1;cursor:pointer;filter:drop-shadow(0 2px 2px #e8c6d4)}
+#home .journal-book-launch:focus-visible{outline:2px solid #a56e88;border-radius:10px}
+.journal-library-wrap{max-width:620px;margin:0 auto;text-align:center}
+.journal-library-title{font:italic clamp(32px,7vw,46px) Georgia,serif;color:#a56e88;margin:24px 0 8px}
+.journal-library-subtitle{color:#9b798b;margin:0 0 25px;font-size:14px}
+.journal-library-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.journal-library-option{min-height:220px;border:1px solid #edcddc;border-radius:23px;background:linear-gradient(155deg,#fffafc,#f9e9f0);box-shadow:0 6px 20px #b57e9620;padding:20px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#926b80;cursor:pointer}
+.journal-library-option .library-symbol{font-size:clamp(56px,13vw,88px);line-height:1.15}
+.journal-library-option strong{font:italic clamp(17px,4.3vw,22px) Georgia,serif}
+.journal-library-option small{font-size:12px;line-height:1.5}
+.journal-library-list{display:grid;gap:14px;margin-top:24px;text-align:left}
+.journal-library-card{width:100%;text-align:left;border:1px solid #eed2df;background:#fff9fc;border-radius:18px;padding:18px;color:#725565;box-shadow:0 4px 12px #b57e9614;cursor:pointer}
+.journal-library-card .library-date{font:italic 18px Georgia,serif;color:#a56e88;display:block;margin-bottom:9px}
+.journal-library-card .library-preview{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.journal-library-card .library-open{display:block;text-align:right;margin-top:10px;color:#9b6885;font-size:12px}
+.journal-library-empty{color:#947788;text-align:center;background:#fff8fb;border:1px solid #eed2df;border-radius:18px;padding:28px 16px;margin-top:24px;line-height:1.6}
+@media(max-width:380px){.journal-library-options{gap:9px}.journal-library-option{min-height:190px;padding:14px 7px}}
+
 </style>
 </head>
 
@@ -1610,12 +1630,34 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 
  </nav>
 
+ <button type="button" class="journal-book-launch" onclick="openJournalLibrary()" aria-label="Open my journal library" title="My Journal and Starred Moments">📖</button>
+
  <p class="footer">
   Every page is part of my journey
  </p>
 
  <p>🌸</p>
 
+</main>
+
+
+<!-- PERSONAL JOURNAL LIBRARY -->
+<main id="journal-library" class="page">
+ <div class="entry-navigation"><button class="back-button" onclick="showPage('home')">Back to Journal</button><span class="entry-label">My Journal Library</span></div>
+ <div class="journal-library-wrap"><h1 class="journal-library-title">My Journal Library</h1><p class="journal-library-subtitle">A little collection of my story</p>
+  <div class="journal-library-options">
+   <button class="journal-library-option" onclick="openJournalBook()"><span class="library-symbol" aria-hidden="true">📖</span><strong>My Journal</strong><small>Turn back through my memories</small></button>
+   <button class="journal-library-option" onclick="openStarredMoments()"><span class="library-symbol" aria-hidden="true">⭐</span><strong>My Starred Moments</strong><small>Moments worth remembering</small></button>
+  </div>
+ </div>
+</main>
+<main id="journal-book" class="page">
+ <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Library</button><span class="entry-label">My Journal</span></div>
+ <div class="journal-library-wrap"><h1 class="journal-library-title">My Journal</h1><p class="journal-library-subtitle">The pages of my journey</p><div id="journalBookEntries" class="journal-library-list"></div></div>
+</main>
+<main id="starred-moments" class="page">
+ <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Library</button><span class="entry-label">My Starred Moments</span></div>
+ <div class="journal-library-wrap"><h1 class="journal-library-title">⭐ My Starred Moments</h1><p class="journal-library-subtitle">The memories that shine a little brighter</p><div id="journalStarredEntries" class="journal-library-list"></div></div>
 </main>
 
 <!-- EMOTIONS -->
@@ -3240,6 +3282,27 @@ document.addEventListener("keydown",event=>{
  }
 });
 
+
+/* Personal library: read-only views of the existing entries database. */
+let journalLibraryReturnPage=null;
+function openJournalLibrary(){showPage("journal-library")}
+async function renderJournalLibraryEntries(target,starredOnly){
+ const host=$(target);host.replaceChildren();
+ try{
+  const entries=(await allEntries()).filter(e=>!starredOnly||e.isSpecialDay).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  if(!entries.length){const empty=document.createElement("p");empty.className="journal-library-empty";empty.textContent=starredOnly?"Your starred moments will appear here when you mark a special day in a journal entry.":"Your journal pages will appear here once you save your first entry.";host.append(empty);return;}
+  for(const entry of entries){
+   const card=document.createElement("button");card.type="button";card.className="journal-library-card";
+   const date=document.createElement("span");date.className="library-date";date.textContent=(starredOnly?"⭐ ":"")+formatDate(entry.date,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+   const preview=document.createElement("span");preview.className="library-preview";preview.textContent=starredOnly?(entry.specialDayReason?.trim()||"A special day"):(entry.thoughts?.trim()||"A page of my journey");
+   const open=document.createElement("span");open.className="library-open";open.textContent="Open full entry ›";
+   card.append(date,preview,open);card.addEventListener("click",()=>{journalLibraryReturnPage=starredOnly?"starred-moments":"journal-book";openSavedEntry(entry.id)});host.append(card);
+  }
+ }catch(error){console.error(error);host.textContent="Unable to load your entries. Please try again.";}
+}
+function openJournalBook(){showPage("journal-book");renderJournalLibraryEntries("journalBookEntries",false)}
+function openStarredMoments(){showPage("starred-moments");renderJournalLibraryEntries("journalStarredEntries",true)}
+
 /* GENERAL HELPERS */
 
 function showPage(id) {
@@ -4061,6 +4124,7 @@ async function saveEntry() {
 /* PREVIOUS ENTRIES */
 
 async function openHistory() {
+ journalLibraryReturnPage=null;
  showPage("previous-entries");
 
  $("selectedDayArea").replaceChildren();
@@ -4465,6 +4529,7 @@ function savedEntryText(tag,cls,value){
 }
 function returnFromSavedEntry(){
  stopReadingJournalEntry();clearSavedEntryPhotoUrls();
+ if(journalLibraryReturnPage){const page=journalLibraryReturnPage;journalLibraryReturnPage=null;if(page==="journal-book")openJournalBook();else openStarredMoments();return;}
  showPage("previous-entries");renderCalendar();renderSelectedDate();
 }
 function editFromSavedEntry(){
