@@ -3492,7 +3492,16 @@ function renderJournalDateStrip(){
   const day=document.createElement("span");day.textContent=d.toLocaleDateString("en-GB",{weekday:"short"});const number=document.createElement("b");number.textContent=d.getDate();const mark=document.createElement("span");mark.className="journal-date-mark"+(starred.has(key)?" starred":"");mark.textContent=starred.has(key)?"★":dates.has(key)?"●":"";
   button.append(day,number,mark);button.setAttribute("aria-label",formatDate(key,{weekday:"long",day:"numeric",month:"long",year:"numeric"})+(dates.has(key)?", journal entry":""));button.setAttribute("aria-pressed",String(offset===0));button.onclick=()=>selectJournalBookDate(key);strip.append(button);
  }
- requestAnimationFrame(()=>{const center=strip.children[183];if(center)strip.scrollLeft=center.offsetLeft-strip.offsetLeft-(strip.clientWidth-center.clientWidth)/2});
+ // Position the seven visible dates immediately, before either page is painted.
+ // A deferred animation-frame scroll made the incoming page briefly show
+ // dates from the beginning of the 367-day strip during a 3D page turn.
+ const centerTile=strip.children[183];
+ if(centerTile){
+  const previousSnap=strip.style.scrollSnapType;
+  strip.style.scrollSnapType="none";
+  strip.scrollLeft=centerTile.offsetLeft-strip.offsetLeft-(strip.clientWidth-centerTile.clientWidth)/2;
+  strip.style.scrollSnapType=previousSnap;
+ }
  let settle;
  strip.onscroll=()=>{if(journalBookAnimating)return;clearTimeout(settle);settle=setTimeout(()=>{const center=strip.scrollLeft+strip.clientWidth/2;let closest=null,dist=Infinity;for(const item of strip.children){const delta=Math.abs(item.offsetLeft-strip.offsetLeft+item.clientWidth/2-center);if(delta<dist){dist=delta;closest=item}}if(closest){const date=dateFromKey(closest.dataset.date);$("journalReaderMonth").textContent=date.toLocaleDateString("en-GB",{month:"short",year:"2-digit"})}},90)};
 }
@@ -3513,16 +3522,25 @@ function journalFlipPrepare(target,direction){
  const paper=$("journalReaderPaper"),stage=$("journalFlipStage"),front=$("journalFlipFront"),back=$("journalFlipBack");
  // Clone the outgoing page before replacing the stationary layer with the incoming page.
  front.replaceChildren(...Array.from(paper.childNodes,child=>child.cloneNode(true)));
- // Cloning an element does not copy its scroll position. Preserve the exact
- // seven dates visible on the outgoing page throughout the 3D animation.
+ // A static seven-tile snapshot is used for the turning sheet.
+ // Cloning a long horizontally scrollable strip makes browsers reflow it
+ // during 3D transforms, causing different dates to appear mid-turn.
  const sourceStrip=paper.querySelector("#journalDateStrip");
  const outgoingStrip=front.querySelector("#journalDateStrip");
  if(sourceStrip&&outgoingStrip){
+  const visibleCenter=sourceStrip.scrollLeft+sourceStrip.clientWidth/2;
+  let closestIndex=183,smallestDistance=Infinity;
+  Array.from(sourceStrip.children).forEach((tile,index)=>{
+   const tileCenter=tile.offsetLeft-sourceStrip.offsetLeft+tile.clientWidth/2;
+   const distance=Math.abs(tileCenter-visibleCenter);
+   if(distance<smallestDistance){smallestDistance=distance;closestIndex=index}
+  });
+  const first=Math.max(0,Math.min(sourceStrip.children.length-7,closestIndex-3));
+  const seven=Array.from(sourceStrip.children).slice(first,first+7).map(tile=>tile.cloneNode(true));
   outgoingStrip.removeAttribute("id");
-  outgoingStrip.style.scrollSnapType="none";
-  outgoingStrip.style.overflowX="hidden";
-  outgoingStrip.scrollLeft=sourceStrip.scrollLeft;
-  requestAnimationFrame(()=>{if(outgoingStrip.isConnected)outgoingStrip.scrollLeft=sourceStrip.scrollLeft});
+  outgoingStrip.replaceChildren(...seven);
+  outgoingStrip.style.cssText+=";overflow:hidden!important;scroll-snap-type:none!important;";
+  outgoingStrip.scrollLeft=0;
  }
  back.replaceChildren();
  const watermark=document.createElement("div");watermark.style.cssText="position:absolute;inset:35% 10%;text-align:center;font:italic 26px Georgia,serif;color:#d8b5bb;opacity:.55";watermark.textContent="Journal";back.append(watermark);
