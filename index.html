@@ -1711,6 +1711,33 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 .journal-reader-photo-section{border-top:1px solid #ecd8d5;padding-top:14px;margin-top:18px;color:#9a7181}
 .journal-reader-photo-section>strong{display:block;font-size:14px;color:#9a7181}
 .journal-reader-photo-section .journal-reader-photos{margin-top:10px}
+
+/* During a 3D page turn, replace the entire interactive date navigation with
+   a calm, static title. Both the turning sheet and incoming paper share this
+   state; their real date navigation returns as soon as the flip finishes. */
+#journal-book #journalFlipStage.flipping .journal-reader-page-heading{
+  position:relative;
+  min-height:87px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 4px 12px;
+  margin-bottom:11px;
+  overflow:hidden;
+}
+#journal-book #journalFlipStage.flipping .journal-reader-page-heading > *{
+  display:none!important;
+}
+#journal-book #journalFlipStage.flipping .journal-reader-page-heading::after{
+  content:"Journal Entry";
+  display:block;
+  font:normal clamp(25px,7vw,35px) Georgia,serif;
+  line-height:1.2;
+  color:#865d72;
+  text-align:center;
+  white-space:nowrap;
+}
 </style>
 </head>
 
