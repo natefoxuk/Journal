@@ -1857,6 +1857,18 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 #journal-book .journal-book-cover-button .journal-custom-turn-cover::after {
   content:none!important;
 }
+
+/* Optional personalised name, overlaid without changing the cover artwork. */
+#journal-book .journal-cover-personal-name{
+ position:absolute;z-index:2;top:24%;left:9%;width:82%;
+ display:block;text-align:center;white-space:nowrap;overflow:hidden;
+ font-family:Georgia,"Times New Roman",serif;font-style:italic;font-weight:400;
+ font-size:clamp(36px,10vw,70px);line-height:1.2;color:#762b38;
+ pointer-events:none;text-shadow:0 1px 1px #f5c5c566;
+}
+#journal-book .journal-cover-personal-name:empty{display:none}
+.journal-cover-name-setting{display:block;width:100%;box-sizing:border-box;padding:12px 14px;
+ border:1px solid #dfbdcc;border-radius:12px;background:#fff;color:#76445b;font-size:16px}
 </style>
 </head>
 
@@ -1928,7 +1940,7 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 </main>
 <main id="journal-book" class="page">
  <div class="entry-navigation"><button class="back-button" onclick="closeJournalBook()">Back to Collection</button><span class="entry-label">My Journal</span></div>
- <div class="journal-book-reading-area"><div id="journalCoverStage" class="journal-book-cover-stage"><button id="journalCoverButton" class="journal-book-cover-button" type="button" onclick="unfoldJournalBook()" aria-label="Open your journal: tap or swipe the cover to the left"><span class="journal-cover-art large journal-custom-turn-cover" aria-hidden="true"></span><span class="journal-cover-reverse" aria-hidden="true"></span></button></div>
+ <div class="journal-book-reading-area"><div id="journalCoverStage" class="journal-book-cover-stage"><button id="journalCoverButton" class="journal-book-cover-button" type="button" onclick="unfoldJournalBook()" aria-label="Open your journal: tap or swipe the cover to the left"><span class="journal-cover-art large journal-custom-turn-cover" aria-hidden="true"><span id="journalCoverPersonalName" class="journal-cover-personal-name"></span></span><span class="journal-cover-reverse" aria-hidden="true"></span></button></div>
  <div id="journalReader" class="journal-reader"><div class="journal-reader-paper-wrap" id="journalFlipStage"><article id="journalReaderPaper" class="journal-reader-paper" aria-live="polite"><div class="journal-reader-page-heading"><div class="journal-reader-title-row"><span id="journalReaderMonth" class="journal-reader-month"></span><h2 class="journal-reader-title">Journal Entry</h2><span aria-hidden="true"></span></div><button type="button" class="journal-find-trigger" onclick="openJournalFind()" aria-label="Find an entry" title="Find an entry"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m16 16 5 5"/></svg></button><div id="journalDateStrip" class="journal-date-strip" aria-label="Swipe through journal dates"></div><p class="journal-reader-swipe-note">Swipe to turn page · Swipe dates to explore</p></div></article><div id="journalFlipSheet" class="journal-flip-sheet" aria-hidden="true"><div id="journalFlipFront" class="journal-flip-face journal-flip-front"></div><div id="journalFlipBack" class="journal-flip-face journal-flip-back"></div></div><div id="journalFlipShade" class="journal-flip-shade"></div></div><p class="journal-reader-hint">Swipe the page to turn · Swipe the dates to explore</p></div></div>
 </main>
 <main id="starred-moments" class="page">
@@ -2511,7 +2523,16 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
   <section class="safe-card settings-accordion settings-main-group" data-settings-section="9">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger9" aria-expanded="false" aria-controls="settingsContent9" onclick="toggleSettingsSection(9)"><span>🎨 Personalize My Journal</span></button>
    <div class="settings-accordion-content settings-group-content" id="settingsContent9" role="region" aria-labelledby="settingsTrigger9" hidden>
-    <p class="settings-group-intro">Customize your homepage, emotions, activities and accessibility preferences.</p>
+    <p class="settings-group-intro">Customize your homepage, journal cover, emotions, activities and accessibility preferences.</p>
+  <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="10">
+   <button type="button" class="settings-accordion-trigger" id="settingsTrigger10" aria-expanded="false" aria-controls="settingsContent10" onclick="toggleSettingsSection(10)"><span>Journal Cover Name</span></button>
+   <div class="settings-accordion-content" id="settingsContent10" role="region" aria-labelledby="settingsTrigger10" hidden>
+    <p>Choose a name to appear above the flower on your journal cover. Leave this blank to keep the original cover.</p>
+    <label for="journalCoverNameSetting">Name on cover</label>
+    <input class="journal-cover-name-setting" id="journalCoverNameSetting" type="text" maxlength="35" autocomplete="off" placeholder="Enter a name or nickname" oninput="updateJournalCoverName(this.value)"/>
+    <p class="safe-note">Your choice is saved automatically on this device.</p>
+   </div>
+  </section>
   <section class="safe-card settings-accordion settings-subaccordion" data-settings-section="0">
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger0" aria-expanded="false" aria-controls="settingsContent0" onclick="toggleSettingsSection(0)"><span>Homepage Appearance</span></button>
    <div class="settings-accordion-content" id="settingsContent0" role="region" aria-labelledby="settingsTrigger0" hidden>
@@ -3513,7 +3534,27 @@ async function renderJournalLibraryEntries(target,starredOnly){
   }
  }catch(error){console.error(error);host.textContent="Unable to load your entries. Please try again.";}
 }
+const JOURNAL_COVER_NAME_KEY="journal-cover-personal-name-v1";
+function updateJournalCoverName(value){
+ const name=String(value||"").replace(/\s+/g," ").trim();
+ try{if(name)localStorage.setItem(JOURNAL_COVER_NAME_KEY,name);else localStorage.removeItem(JOURNAL_COVER_NAME_KEY)}catch(error){console.warn("Unable to save cover name",error)}
+ renderJournalCoverName();
+}
+function renderJournalCoverName(){
+ let name="";
+ try{name=localStorage.getItem(JOURNAL_COVER_NAME_KEY)||""}catch(error){}
+ const label=$("journalCoverPersonalName");
+ if(label){
+  label.textContent=name;
+  // Preserve the full-sized title for short names, scaling only when necessary.
+  const length=Array.from(name).length;
+  label.style.fontSize=length>17?"clamp(19px,5vw,36px)":length>11?"clamp(25px,7vw,48px)":"clamp(36px,10vw,70px)";
+ }
+ const field=$("journalCoverNameSetting");
+ if(field&&document.activeElement!==field)field.value=name;
+}
 async function openJournalBook(){
+ renderJournalCoverName();
  showPage("journal-book");$("journalCoverStage").style.display="block";$("journalReader").classList.remove("visible");$("journalCoverButton").classList.remove("opening");
  try{journalBookEntries=(await allEntries()).sort((a,b)=>String(a.date).localeCompare(String(b.date)));journalBookSelected=journalBookEntries.length?journalBookEntries[journalBookEntries.length-1].date:todayLocal();}
  catch(e){console.error(e);journalBookEntries=[];journalBookSelected=todayLocal()}
@@ -6715,7 +6756,7 @@ async function submitRecovery(){
  finally{recoveryBusy=false;$("recoverySubmit").disabled=false}
 }
 function lockJournal(){if(!pinRecord())return;journalUnlocked=false;showPage("home");showPin("unlock","Welcome back. Enter your six-digit PIN.")}
-function openSettings(){collapseSettingsSections();renderChoiceManagers();updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
+function openSettings(){renderJournalCoverName();collapseSettingsSections();renderChoiceManagers();updateArtworkSettings();updatePinSettings();$("backupReminderToggle").checked=localStorage.getItem(JOURNAL_REMINDER_KEY)==="yes";updateBackupReminderText();$("settingsStatus").textContent="";showPage("settings")}
 /* A 30-day in-app reminder, counted from opt-in, backup, or the last reminder. */
 const JOURNAL_REMINDER_START_KEY="journal-reminder-start-v2";
 const JOURNAL_REMINDER_SHOWN_KEY="journal-reminder-shown-v2";
