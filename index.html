@@ -1564,7 +1564,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 
 
 /* JOURNAL COLLECTION — isolated from home layout */
-#home .journal-book-launch{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(80px,11.2dvh,111px);z-index:3;border:0;background:transparent;padding:3px 12px;font-size:clamp(25px,4dvh,33px);line-height:1;cursor:pointer;filter:drop-shadow(0 2px 2px #e8c6d4)}
+#home .journal-book-launch{position:absolute;left:50%;top:75%;transform:translate(-50%,-50%);z-index:3;border:0;background:transparent;padding:0;font-size:132px;line-height:1;cursor:pointer;filter:drop-shadow(0 2px 2px #e8c6d4)}
 #home .journal-book-launch:focus-visible{outline:2px solid #a56e88;border-radius:10px}
 #journal-library,#journal-book,#starred-moments{padding:22px 18px 32px}
 .journal-library-wrap{max-width:620px;margin:0 auto;text-align:center}
@@ -3742,6 +3742,25 @@ function renderJournalBookPage(){
 })();
 function openStarredMoments(){showPage("starred-moments");renderJournalLibraryEntries("journalStarredEntries",true)}
 
+/* Position the enlarged book only in the unused space; never affect home layout. */
+function positionHomeJournalBook(){
+ const home=document.getElementById("home");
+ const icon=home?.querySelector(".journal-book-launch");
+ const activity=home?.querySelector(".menu button:last-child");
+ const footer=home?.querySelector(".footer");
+ if(!home?.classList.contains("active")||!icon||!activity||!footer)return;
+ const homeBox=home.getBoundingClientRect();
+ const activityBottom=activity.getBoundingClientRect().bottom;
+ const footerTop=footer.getBoundingClientRect().top;
+ const space=Math.max(0,footerTop-activityBottom);
+ const size=Math.max(0,Math.min(132,space-10));
+ icon.style.fontSize=size+"px";
+ icon.style.top=((activityBottom+footerTop)/2-homeBox.top)+"px";
+ icon.style.visibility=size>=22?"visible":"hidden";
+}
+window.addEventListener("resize",()=>requestAnimationFrame(positionHomeJournalBook));
+window.addEventListener("load",()=>requestAnimationFrame(positionHomeJournalBook));
+
 /* GENERAL HELPERS */
 
 function showPage(id) {
@@ -3753,6 +3772,7 @@ function showPage(id) {
  });
 
  $(id).classList.add("active");
+ if(id==="home")requestAnimationFrame(positionHomeJournalBook);
 
  window.scrollTo(0, 0);
 }
