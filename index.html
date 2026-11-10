@@ -3283,14 +3283,14 @@ function journalGalleryDateLabel(dateKey){
 function openJournalPhotoZoom(image){
  if(!image?.src)return;
  journalPhotoZoomPreviousFocus=document.activeElement;
- const group=image.closest(".thumbnail-strip, #photoPreview");
+ const group=image.closest(".thumbnail-strip, #photoPreview, .journal-reader-photos");
  const images=group?[...group.querySelectorAll("img")]:[image];
  journalGalleryPhotos=images.filter(item=>item.src).map(item=>({
   src:item.src,alt:item.alt,caption:item.dataset.caption||"",
   entryId:item.dataset.entryId||"",photoIndex:Number(item.dataset.photoIndex||0),
   draftPhoto:photos.find(photo=>photo.id===item.dataset.photoId)||null
  }));
- journalGalleryIndex=Math.max(0,images.indexOf(image));
+ journalGalleryIndex=Math.max(0,images.filter(item=>item.src).indexOf(image));
  journalGalleryIgnoreClick=false;
  journalGalleryPinchGuard=false;
  const entryDate=image.dataset.journalDate || $("journalDate")?.value || "";
