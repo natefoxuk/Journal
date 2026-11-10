@@ -1880,11 +1880,6 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
    <span class="menu-label">Activity</span>
   </button>
 
-  <button onclick="openHistory()">
-   <span class="symbol">📖</span>
-   <span class="menu-label">Previous Entries</span>
-  </button>
-
  </nav>
 
  <button type="button" class="journal-book-launch" onclick="openJournalLibrary()" aria-label="Open my journal library" title="My Journal and Starred Moments">📖</button>
@@ -2275,74 +2270,10 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 
 </main>
 
-<!-- PREVIOUS ENTRIES -->
-
-<main id="previous-entries" class="page">
-
- <div class="entry-navigation">
-
-  <button class="back-button"
-   onclick="showPage('home')">
-   Back to Journal
-  </button>
-
-  <span class="entry-label">
-   Previous Entries
-  </span>
-
- </div>
-
- <header class="page-title">
-
-  <h1>Previous Entries</h1>
-
-  <p>A collection of my moments</p>
-
-  <div class="sparkle">✧ ♡ ✧</div>
-
- </header>
-
- <section class="section">
-
-  <div class="calendar-header">
-
-   <button class="month-arrow"
-    onclick="moveMonth(-1)">‹</button>
-
-   <strong id="calendarMonth"></strong>
-
-   <button class="month-arrow"
-    onclick="moveMonth(1)">›</button>
-
-  </div>
-
-  <div id="calendarGrid"
-   class="calendar-grid"></div>
-
-  <div class="calendar-key">
-
-   <span>
-    <span class="pink">●</span>
-    Journal entry
-   </span>
-
-   <span>
-    <span class="gold">★</span>
-    Meaningful day
-   </span>
-
-  </div>
-
- </section>
-
- <section id="selectedDayArea"></section>
-
-</main>
-
 <!-- READ-ONLY SAVED ENTRY -->
 <main id="saved-entry" class="page">
  <div class="entry-navigation saved-entry-navigation">
-  <button class="back-button" type="button" onclick="returnFromSavedEntry()">Return to Calendar</button>
+  <button class="back-button" type="button" onclick="returnFromSavedEntry()">Back to Journal</button>
   <span class="entry-label">Saved Entry</span>
  </div>
  <article id="savedEntryContent" class="saved-entry-paper" aria-label="Saved journal entry"></article>
@@ -2678,7 +2609,7 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
    <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
-   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu and select a date. Tap <strong>Open Full Entry</strong> to read your memory on a dedicated journal page, including your emotion, activity, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to change the entry using the familiar form; saving returns to the reading page.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photo Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Journal Entries</h3><p>Open the book from the main menu to revisit your journal entries. Turn pages to explore your memories, or tap the magnifying glass to find an entry using the calendar or search. Entries appear in the journal book with your emotion, activity, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to make changes; saving returns you to the journal book.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photo Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
    <section class="journal-guide-section"><h3>🌿 Exploring My Activity</h3><p>Choose <strong>Activity</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Activity Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
@@ -4259,9 +4190,7 @@ function completeEntryNavigation() {
  if (editingId && timelines[entryOrigin]) {
   returnToTimeline(entryOrigin);
  } else if (editingId) {
-  showPage("previous-entries");
-  renderCalendar();
-  renderSelectedDate();
+  openJournalBook();
  } else {
   showPage("home");
  }
@@ -4598,20 +4527,7 @@ async function saveEntry() {
   } else if (wasEditing && timelines[returnOrigin]) {
    await returnToTimeline(returnOrigin);
   } else if (wasEditing) {
-   historyEntries = await allEntries();
-
-   const [year, month] = savedDate
-    .split("-")
-    .map(Number);
-
-   calendarYear = year;
-   calendarMonth = month - 1;
-   selectedDate = savedDate;
-
-   showPage("previous-entries");
-
-   renderCalendar();
-   renderSelectedDate();
+   await returnToJournalBookEntry(entry.id);
   } else {
    resetEntry();
    showPage("home");
@@ -4630,205 +4546,6 @@ async function saveEntry() {
 
   $("saveButton").disabled = false;
  }
-}
-
-/* PREVIOUS ENTRIES */
-
-async function openHistory() {
- journalLibraryReturnPage=null;
- showPage("previous-entries");
-
- $("selectedDayArea").replaceChildren();
-
- try {
-  historyEntries = await allEntries();
-
-  const now = new Date();
-
-  calendarYear = now.getFullYear();
-  calendarMonth = now.getMonth();
-  selectedDate = null;
-
-  renderCalendar();
-  renderSelectedDate();
-
- } catch (error) {
-  console.error(error);
-
-  $("selectedDayArea").textContent =
-   "Unable to load saved entries.";
- }
-}
-
-function moveMonth(amount) {
- const date = new Date(
-  calendarYear,
-  calendarMonth + amount,
-  1
- );
-
- calendarYear = date.getFullYear();
- calendarMonth = date.getMonth();
- selectedDate = null;
-
- renderCalendar();
- renderSelectedDate();
-}
-
-function renderCalendar() {
- const grid = $("calendarGrid");
-
- grid.replaceChildren();
-
- $("calendarMonth").textContent =
-  new Date(calendarYear, calendarMonth, 1)
-   .toLocaleDateString("en-GB", {
-    month: "long",
-    year: "numeric"
-   });
-
- ["M", "T", "W", "T", "F", "S", "S"].forEach(day => {
-  grid.append(
-   textElement("span", "weekday", day)
-  );
- });
-
- const offset =
-  (
-   new Date(
-    calendarYear,
-    calendarMonth,
-    1
-   ).getDay() + 6
-  ) % 7;
-
- for (let i = 0; i < offset; i++) {
-  grid.append(document.createElement("span"));
- }
-
- const count = new Date(
-  calendarYear,
-  calendarMonth + 1,
-  0
- ).getDate();
-
- for (let day = 1; day <= count; day++) {
-  const date = dateKey(
-   calendarYear,
-   calendarMonth,
-   day
-  );
-
-  const matches = historyEntries.filter(
-   entry => entry.date === date
-  );
-
-  const starred = matches.some(
-   entry => entry.isSpecialDay
-  );
-
-  const button = document.createElement("button");
-
-  button.className = "calendar-day";
-
-  if (selectedDate === date) {
-   button.classList.add("selected");
-  }
-
-  if (date === todayLocal()) {
-   button.classList.add("today");
-  }
-
-  button.append(
-   textElement("span", "", day),
-   textElement(
-    "span",
-    "calendar-mark" +
-     (matches.length && !starred ? " dot" : ""),
-    starred
-     ? "★"
-     : matches.length
-      ? "●"
-      : " "
-   )
-  );
-
-  button.onclick = () => {
-   selectedDate = date;
-
-   renderCalendar();
-   renderSelectedDate();
-  };
-
-  grid.append(button);
- }
-}
-
-function renderSelectedDate() {
- releasePreviewUrls();
-
- const area = $("selectedDayArea");
-
- area.replaceChildren();
-
- if (!selectedDate) {
-  area.append(
-   textElement(
-    "p",
-    "empty-day",
-    "Select a date to revisit your journal."
-   )
-  );
-
-  return;
- }
-
- const entries = historyEntries
-  .filter(entry => entry.date === selectedDate)
-  .sort((a, b) =>
-   (b.createdAt || "").localeCompare(
-    a.createdAt || ""
-   )
-  );
-
- area.append(
-  textElement(
-   "div",
-   "selected-date-title",
-   formatDate(selectedDate, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-   })
-  )
- );
-
- if (!entries.length) {
-  area.append(
-   textElement(
-    "div",
-    "section empty-day",
-    "No journal entry for this day yet."
-   )
-  );
-
-  return;
- }
-
- if (entries.length > 1) {
-  area.append(
-   textElement(
-    "p",
-    "entry-counter",
-    `${entries.length} entries on this day`
-   )
-  );
- }
-
- entries.forEach(entry => {
-  area.append(buildEntryPreview(entry));
- });
 }
 
 /* SAVED ENTRY PREVIEW */
@@ -5041,7 +4758,7 @@ function savedEntryText(tag,cls,value){
 function returnFromSavedEntry(){
  stopReadingJournalEntry();clearSavedEntryPhotoUrls();
  if(journalLibraryReturnPage){const page=journalLibraryReturnPage;journalLibraryReturnPage=null;if(page==="journal-book")openJournalBook();else openStarredMoments();return;}
- showPage("previous-entries");renderCalendar();renderSelectedDate();
+ openJournalBook();
 }
 function editFromSavedEntry(){
  if(!savedEntryId)return;
@@ -5140,7 +4857,7 @@ function editSavedEntry(id) {
  ) {
   entryOrigin = "exercise";
  } else {
-  entryOrigin = "previous-entries";
+  entryOrigin = "journal-book";
  }
 
  resetEntry();
@@ -5153,7 +4870,7 @@ function editSavedEntry(id) {
    ? "Back to Emotions"
    : entryOrigin === "exercise"
     ? "Back to Activity"
-    : "Back to Calendar";
+    : "Back to Journal";
 
  $("entryLabel").textContent = "Saved Entry";
 
@@ -7056,7 +6773,7 @@ async function performDeleteCurrentEntry(){
  if(!editingId)return;
  const id=editingId,origin=entryOrigin;
  try{await removeEntry(id);clearPhotoPreviews();editingId=null;originalSnapshot=null;$("deleteEntryButton").style.display="none";
-  if(timelines[origin])await returnToTimeline(origin);else await openHistory();
+  if(timelines[origin])await returnToTimeline(origin);else await openJournalBook();
  }catch(error){console.error(error);$("saveStatus").textContent="Unable to delete entry: "+(error.message||"storage error")}
 }
 async function blobAsDataUrl(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob)})}
