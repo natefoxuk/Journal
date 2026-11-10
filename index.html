@@ -1793,6 +1793,17 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 .journal-find-empty{padding:7px 3px!important;margin:0!important;font-size:13px!important}
 @media(max-height:720px){.journal-find-panel{max-height:88dvh!important}.journal-find-day{min-height:32px!important}.journal-find-section{padding:9px;margin-top:8px}}
 
+
+/* Find an Entry: delicate rose scroll track and alternating result cards. */
+.journal-find-shell{position:relative;width:min(100%,460px);max-height:min(84dvh,760px)}
+.journal-find-shell .journal-find-panel{width:100%!important;max-height:min(84dvh,760px)!important;scrollbar-width:none!important;-ms-overflow-style:none}
+.journal-find-shell .journal-find-panel::-webkit-scrollbar{display:none}
+.journal-find-scroll-track{position:absolute;right:5px;top:22px;bottom:22px;width:3px;border-radius:99px;background:#dfbccb70;pointer-events:none;z-index:3;opacity:0;transition:opacity .2s}
+.journal-find-scroll-track.is-scrollable{opacity:1}
+.journal-find-scroll-ball{position:absolute;left:50%;top:0;width:9px;height:18px;min-height:18px;border-radius:99px;background:#aa6686;box-shadow:0 1px 4px #8c526c44;transform:translateX(-50%);will-change:top}
+.journal-find-result:nth-child(even){background:#eed2df!important;border-color:#dbb4c7!important}
+.journal-find-result:nth-child(odd){background:#fff5f7!important}
+@media(max-height:720px){.journal-find-shell,.journal-find-shell .journal-find-panel{max-height:88dvh!important}}
 </style>
 </head>
 
@@ -7288,6 +7299,22 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+
+function updateJournalFindScrollBall(){
+ const panel=document.querySelector('.journal-find-shell .journal-find-panel');
+ const track=document.getElementById('journalFindScrollTrack');
+ const ball=document.getElementById('journalFindScrollBall');
+ if(!panel||!track||!ball)return;
+ const overflow=panel.scrollHeight-panel.clientHeight;
+ track.classList.toggle('is-scrollable',overflow>2);
+ if(overflow<=2)return;
+ const trackHeight=track.clientHeight;
+ const thumbHeight=Math.max(18,Math.min(34,trackHeight*panel.clientHeight/panel.scrollHeight));
+ ball.style.height=thumbHeight+'px';
+ ball.style.top=(panel.scrollTop/overflow*Math.max(0,trackHeight-thumbHeight))+'px';
+}
+window.addEventListener('resize',()=>requestAnimationFrame(updateJournalFindScrollBall));
+
 /* Journal book calendar and search, independent of Previous Entries. */
 let journalFindEntries=[],journalFindYear=2026,journalFindMonth=0,journalFindSelected=null;
 async function openJournalFind(){
@@ -7299,6 +7326,7 @@ async function openJournalFind(){
  journalFindEntries=await allEntries();
  overlay.classList.add('visible');overlay.setAttribute('aria-hidden','false');
  renderJournalFindCalendar();renderJournalFindResults();
+ requestAnimationFrame(updateJournalFindScrollBall);
 }
 function closeJournalFind(){const el=document.getElementById('journalFindOverlay');el.classList.remove('visible');el.setAttribute('aria-hidden','true')}
 function moveJournalFindMonth(step){const d=new Date(journalFindYear,journalFindMonth+step,1);journalFindYear=d.getFullYear();journalFindMonth=d.getMonth();journalFindSelected=null;renderJournalFindCalendar();renderJournalFindResults()}
@@ -7321,6 +7349,7 @@ function renderJournalFindCalendar(){
 }
 function journalFindQueryChanged(){journalFindSelected=null;renderJournalFindCalendar();renderJournalFindResults()}
 function renderJournalFindResults(){
+ requestAnimationFrame(updateJournalFindScrollBall);
  const host=document.getElementById('journalFindResults');host.replaceChildren();
  const query=document.getElementById('journalFindInput').value.trim().toLocaleLowerCase();
  let matches=[];
@@ -7339,6 +7368,7 @@ function renderJournalFindResults(){
   };
   card.append(date,details,open);host.append(card);
  }
+ requestAnimationFrame(updateJournalFindScrollBall);
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('journalFindOverlay')?.classList.contains('visible'))closeJournalFind()});
 
@@ -7346,7 +7376,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElement
 
 
 <div id="journalFindOverlay" class="journal-find-overlay" role="dialog" aria-modal="true" aria-labelledby="journalFindTitle" aria-hidden="true" onclick="if(event.target===this)closeJournalFind()">
- <div class="journal-find-panel">
+ <div class="journal-find-shell">
+ <div class="journal-find-panel" onscroll="updateJournalFindScrollBall()">
   <div class="journal-find-header"><h2 id="journalFindTitle">Find an Entry</h2><button class="journal-find-close" type="button" onclick="closeJournalFind()" aria-label="Close search">×</button></div>
   <section class="journal-find-section journal-find-calendar-section" aria-label="Browse by date">
    <div class="journal-find-section-heading">Browse by date</div>
@@ -7362,6 +7393,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElement
    <div class="journal-find-section-heading">Entries</div>
    <div id="journalFindResults" class="journal-find-results" aria-live="polite"></div>
   </section>
+ </div>
+ <div class="journal-find-scroll-track" id="journalFindScrollTrack" aria-hidden="true"><span class="journal-find-scroll-ball" id="journalFindScrollBall"></span></div>
  </div>
 </div>
 
