@@ -1738,6 +1738,38 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
   text-align:center;
   white-space:nowrap;
 }
+
+
+/* Book search: absolute positioning keeps the established reader layout intact. */
+#journal-book .journal-reader-page-heading{position:relative}
+#journal-book .journal-find-trigger{position:absolute;right:0;top:0;z-index:2;width:32px;height:32px;display:grid;place-items:center;border:0;background:transparent;color:#946d7f;border-radius:50%;cursor:pointer;padding:0}
+#journal-book .journal-find-trigger:focus-visible{outline:2px solid #b77f9a;outline-offset:2px}
+#journal-book #journalFlipStage.flipping .journal-find-trigger{display:none!important}
+.journal-find-overlay{position:fixed;inset:0;z-index:100000;background:rgba(66,38,54,.46);display:none;align-items:center;justify-content:center;padding:14px;box-sizing:border-box}
+.journal-find-overlay.visible{display:flex}
+.journal-find-panel{background:#fffaf7;color:#785b6a;border:1px solid #ead6dc;border-radius:22px;box-shadow:0 18px 65px #53354c50;width:min(100%,540px);max-height:calc(100dvh - 28px);overflow:auto;padding:18px;box-sizing:border-box;overscroll-behavior:contain}
+.journal-find-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.journal-find-header h2{font:normal 27px Georgia,serif;color:#855d70;margin:0}
+.journal-find-close{border:0;background:#f6e8eb;color:#785b6a;border-radius:50%;width:38px;height:38px;font-size:25px;cursor:pointer}
+.journal-find-month{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px}
+.journal-find-month strong{font:normal 20px Georgia,serif}
+.journal-find-month button{border:1px solid #e7cdd7;border-radius:12px;background:#fff;color:#805b70;font-size:25px;width:37px;height:37px;cursor:pointer}
+.journal-find-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.journal-find-weekday{text-align:center;font-size:12px;color:#99798b;padding:4px 0}
+.journal-find-day{min-width:0;min-height:48px;border:1px solid #e9d6dc;border-radius:10px;background:#fff9f9;color:#805f70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;cursor:pointer}
+.journal-find-day:disabled{opacity:.45;cursor:default}
+.journal-find-day.selected{background:#e8c9d6;border-color:#bd8da2}
+.journal-find-day .mark{font-size:10px;line-height:10px;color:#c994a9;height:10px}
+.journal-find-day .mark.star{color:#c29a46}
+.journal-find-key{display:flex;gap:14px;justify-content:center;font-size:12px;margin:11px 0 20px}
+.journal-find-search-label{display:block;font-weight:600;margin-bottom:7px}
+#journalFindInput{width:100%;box-sizing:border-box;border:1px solid #dfc4cf;border-radius:12px;background:#fff;padding:12px 14px;font:inherit;color:#705263;outline-offset:2px}
+.journal-find-results{display:grid;gap:10px;margin-top:15px}
+.journal-find-result{padding:13px;border:1px solid #ead6dc;background:#fff5f7;border-radius:13px}
+.journal-find-result strong{display:block;color:#805d71;margin-bottom:6px}
+.journal-find-result p{margin:0 0 10px;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.journal-find-result button{border:1px solid #dcb8c8;border-radius:9px;background:white;color:#805d71;padding:9px 12px;cursor:pointer;font:inherit;font-size:13px}
+.journal-find-empty{font-size:14px;text-align:center;padding:12px}
 </style>
 </head>
 
@@ -1815,7 +1847,7 @@ body[data-contrast="true"] .saved-entry-choice,body[data-contrast="true"] .saved
 <main id="journal-book" class="page">
  <div class="entry-navigation"><button class="back-button" onclick="closeJournalBook()">Back to Collection</button><span class="entry-label">My Journal</span></div>
  <div class="journal-book-reading-area"><div id="journalCoverStage" class="journal-book-cover-stage"><button id="journalCoverButton" class="journal-book-cover-button" type="button" onclick="unfoldJournalBook()" aria-label="Open your journal: tap or swipe the cover to the left"><span class="journal-cover-art large" aria-hidden="true"><span class="journal-cover-flower">🌸</span><span class="journal-cover-name">Journal</span><span class="journal-cover-small">A little space just for me</span><span class="journal-cover-open-hint">‹ Swipe left to open</span></span><span class="journal-cover-reverse" aria-hidden="true"></span></button></div>
- <div id="journalReader" class="journal-reader"><div class="journal-reader-paper-wrap" id="journalFlipStage"><article id="journalReaderPaper" class="journal-reader-paper" aria-live="polite"><div class="journal-reader-page-heading"><div class="journal-reader-title-row"><span id="journalReaderMonth" class="journal-reader-month"></span><h2 class="journal-reader-title">Journal Entry</h2><span aria-hidden="true"></span></div><div id="journalDateStrip" class="journal-date-strip" aria-label="Swipe through journal dates"></div><p class="journal-reader-swipe-note">Swipe to turn page · Swipe dates to explore</p></div></article><div id="journalFlipSheet" class="journal-flip-sheet" aria-hidden="true"><div id="journalFlipFront" class="journal-flip-face journal-flip-front"></div><div id="journalFlipBack" class="journal-flip-face journal-flip-back"></div></div><div id="journalFlipShade" class="journal-flip-shade"></div></div><p class="journal-reader-hint">Swipe the page to turn · Swipe the dates to explore</p></div></div>
+ <div id="journalReader" class="journal-reader"><div class="journal-reader-paper-wrap" id="journalFlipStage"><article id="journalReaderPaper" class="journal-reader-paper" aria-live="polite"><div class="journal-reader-page-heading"><div class="journal-reader-title-row"><span id="journalReaderMonth" class="journal-reader-month"></span><h2 class="journal-reader-title">Journal Entry</h2><span aria-hidden="true"></span></div><button type="button" class="journal-find-trigger" onclick="openJournalFind()" aria-label="Find an entry" title="Find an entry"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m16 16 5 5"/></svg></button><div id="journalDateStrip" class="journal-date-strip" aria-label="Swipe through journal dates"></div><p class="journal-reader-swipe-note">Swipe to turn page · Swipe dates to explore</p></div></article><div id="journalFlipSheet" class="journal-flip-sheet" aria-hidden="true"><div id="journalFlipFront" class="journal-flip-face journal-flip-front"></div><div id="journalFlipBack" class="journal-flip-face journal-flip-back"></div></div><div id="journalFlipShade" class="journal-flip-shade"></div></div><p class="journal-reader-hint">Swipe the page to turn · Swipe the dates to explore</p></div></div>
 </main>
 <main id="starred-moments" class="page">
  <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Collection</button><span class="entry-label">My Starred Moments</span></div>
@@ -7231,7 +7263,75 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
+/* Journal book calendar and search, independent of Previous Entries. */
+let journalFindEntries=[],journalFindYear=2026,journalFindMonth=0,journalFindSelected=null;
+async function openJournalFind(){
+ if(journalBookAnimating)return;
+ const overlay=document.getElementById('journalFindOverlay');
+ const d=dateFromKey(journalBookSelected);
+ journalFindYear=d.getFullYear();journalFindMonth=d.getMonth();journalFindSelected=null;
+ document.getElementById('journalFindInput').value='';
+ journalFindEntries=await allEntries();
+ overlay.classList.add('visible');overlay.setAttribute('aria-hidden','false');
+ renderJournalFindCalendar();renderJournalFindResults();
+}
+function closeJournalFind(){const el=document.getElementById('journalFindOverlay');el.classList.remove('visible');el.setAttribute('aria-hidden','true')}
+function moveJournalFindMonth(step){const d=new Date(journalFindYear,journalFindMonth+step,1);journalFindYear=d.getFullYear();journalFindMonth=d.getMonth();journalFindSelected=null;renderJournalFindCalendar();renderJournalFindResults()}
+function renderJournalFindCalendar(){
+ const grid=document.getElementById('journalFindCalendar');grid.replaceChildren();
+ document.getElementById('journalFindMonth').textContent=new Date(journalFindYear,journalFindMonth,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+ for(const name of ['M','T','W','T','F','S','S']){const el=document.createElement('span');el.className='journal-find-weekday';el.textContent=name;grid.append(el)}
+ const offset=(new Date(journalFindYear,journalFindMonth,1).getDay()+6)%7;
+ for(let i=0;i<offset;i++)grid.append(document.createElement('span'));
+ const days=new Date(journalFindYear,journalFindMonth+1,0).getDate();
+ for(let n=1;n<=days;n++){
+  const key=dateToKey(new Date(journalFindYear,journalFindMonth,n));
+  const entries=journalFindEntries.filter(e=>e.date===key);
+  const btn=document.createElement('button');btn.type='button';btn.className='journal-find-day'+(key===journalFindSelected?' selected':'');btn.disabled=!entries.length;
+  const number=document.createElement('span');number.textContent=n;
+  const mark=document.createElement('span');mark.className='mark'+(entries.some(e=>e.isSpecialDay)?' star':'');mark.textContent=entries.some(e=>e.isSpecialDay)?'★':entries.length?'●':'';
+  btn.append(number,mark);btn.setAttribute('aria-label',formatDate(key,{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(entries.length?' journal entry':' no entry'));
+  btn.onclick=()=>{journalFindSelected=key;document.getElementById('journalFindInput').value='';renderJournalFindCalendar();renderJournalFindResults()};grid.append(btn);
+ }
+}
+function journalFindQueryChanged(){journalFindSelected=null;renderJournalFindCalendar();renderJournalFindResults()}
+function renderJournalFindResults(){
+ const host=document.getElementById('journalFindResults');host.replaceChildren();
+ const query=document.getElementById('journalFindInput').value.trim().toLocaleLowerCase();
+ let matches=[];
+ if(journalFindSelected)matches=journalFindEntries.filter(e=>e.date===journalFindSelected);
+ else if(query)matches=journalFindEntries.filter(e=>[e.thoughts,e.specialDayReason,getEntryMood(e),getEntryActivity(e),formatDate(e.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'})].some(v=>String(v||'').toLocaleLowerCase().includes(query)));
+ else {const msg=document.createElement('p');msg.className='journal-find-empty';msg.textContent='Select a date with an entry or search your memories.';host.append(msg);return}
+ matches.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ if(!matches.length){const msg=document.createElement('p');msg.className='journal-find-empty';msg.textContent='No matching entries found.';host.append(msg);return}
+ for(const entry of matches){
+  const card=document.createElement('article');card.className='journal-find-result';
+  const date=document.createElement('strong');date.textContent=(entry.isSpecialDay?'★ ':'')+formatDate(entry.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const details=document.createElement('p');details.textContent=[getEntryMood(entry),getEntryActivity(entry)].filter(Boolean).join(' · ')+(entry.thoughts?'\n'+entry.thoughts.slice(0,180)+(entry.thoughts.length>180?'…':''):'');
+  const open=document.createElement('button');open.type='button';open.textContent='Open in Journal ›';open.onclick=()=>{
+   closeJournalFind();journalFlipReset();journalBookSelected=entry.date;renderJournalBookPage();renderJournalDateStrip();
+   requestAnimationFrame(()=>requestAnimationFrame(positionJournalDateStrip));
+  };
+  card.append(date,details,open);host.append(card);
+ }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('journalFindOverlay')?.classList.contains('visible'))closeJournalFind()});
+
 </script>
+
+
+<div id="journalFindOverlay" class="journal-find-overlay" role="dialog" aria-modal="true" aria-labelledby="journalFindTitle" aria-hidden="true" onclick="if(event.target===this)closeJournalFind()">
+ <div class="journal-find-panel">
+  <div class="journal-find-header"><h2 id="journalFindTitle">Find an Entry</h2><button class="journal-find-close" type="button" onclick="closeJournalFind()" aria-label="Close search">×</button></div>
+  <div class="journal-find-month"><button type="button" onclick="moveJournalFindMonth(-1)" aria-label="Previous month">‹</button><strong id="journalFindMonth"></strong><button type="button" onclick="moveJournalFindMonth(1)" aria-label="Next month">›</button></div>
+  <div id="journalFindCalendar" class="journal-find-grid" aria-label="Journal entry calendar"></div>
+  <div class="journal-find-key"><span>● Journal entry</span><span>★ Special moment</span></div>
+  <label class="journal-find-search-label" for="journalFindInput">Search journal entries</label>
+  <input id="journalFindInput" type="search" placeholder="Search words or memories…" autocomplete="off" oninput="journalFindQueryChanged()"/>
+  <div id="journalFindResults" class="journal-find-results" aria-live="polite"></div>
+ </div>
+</div>
 
 </body>
 </html>
