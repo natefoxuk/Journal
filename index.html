@@ -3743,7 +3743,7 @@ function renderJournalBookPage(){
   if(journalA11y.readAloud&&entry.thoughts?.trim())paper.append(makeSavedEntrySpeechButton("book-thoughts-"+i,entry.thoughts,"🔊 Read My Entry Aloud"));
   if(entry.isSpecialDay){const special=make("section","journal-reader-special");special.append(make("strong","","★ A Special Moment"),make("p","",entry.specialDayReason?.trim()||"A day worth remembering"));paper.append(special);if(journalA11y.readAloud&&entry.specialDayReason?.trim())paper.append(makeSavedEntrySpeechButton("book-star-"+i,entry.specialDayReason,"🔊 Read My Special Moment Aloud"))}
   const photos=(entry.photos||[]).filter(f=>f instanceof Blob);if(photos.length){const photoSection=make("section","journal-reader-photo-section");photoSection.append(make("strong","","📷 Photos & Memories"));const strip=make("div","journal-reader-photos");photos.forEach((file,index)=>{const url=URL.createObjectURL(file);journalBookPhotoUrls.push(url);const img=document.createElement("img");img.src=url;img.alt="Journal photo "+(index+1);img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);img.dataset.caption=(entry.photoCaptions||[])[index]||"";img.dataset.journalDate=entry.date;makeJournalPhotoZoomable(img);strip.append(img)});photoSection.append(strip);paper.append(photoSection)}
-  const edit=make("button","journal-reader-edit","Open full entry / Edit ›");edit.type="button";edit.onclick=()=>{journalLibraryReturnPage="journal-book";openSavedEntry(entry.id)};paper.append(edit);
+  const edit=make("button","journal-reader-edit","✎ Edit");edit.type="button";edit.onclick=()=>{journalLibraryReturnPage="journal-book";openSavedEntry(entry.id).then(()=>editFromSavedEntry())};paper.append(edit);
  });
 }
 (function initJournalBookSwipe(){
