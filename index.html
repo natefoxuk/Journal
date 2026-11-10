@@ -1180,7 +1180,7 @@ textarea {
 .journal-password-eye{border:0;background:#fce8ef;border-radius:9px;min-width:42px;height:38px;color:#795767;font-size:19px}
 .journal-password-error{min-height:18px;color:#a04465;font-size:12px;text-align:left;margin:5px 0 12px}
 
-/* THEMED PHOTOS & MEMORIES GALLERY */
+/* THEMED PHOTO MEMORIES GALLERY */
 .photo-item img,.thumbnail-strip img{cursor:zoom-in}
 .photo-item img:focus-visible,.thumbnail-strip img:focus-visible{outline:3px solid #ae7795;outline-offset:3px}
 #journalPhotoZoom[hidden]{display:none!important}
@@ -2463,7 +2463,7 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
  <div class="section">
 
   <p class="section-title">
-   📷 Photos &amp; Memories
+   📷 Photo Memories
   </p>
 
   <label class="photo-button"
@@ -2678,7 +2678,7 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
   <div class="journal-guide-scroll" id="journalGuideScroll" tabindex="0">
    <p class="journal-guide-intro">🌸 Welcome to your little space, just for you. There is no right or wrong way to journal. Write a little or a lot, whenever it feels helpful. Every page is part of your journey.</p>
    <section class="journal-guide-section"><h3>✍️ Creating a New Entry</h3><p>From the main menu, choose <strong>New Entry</strong>. Take your time to write about your day, your thoughts, or anything on your mind.</p><ul><li>Choose the emotions that describe how you're feeling.</li><li>Record any activities you'd like to remember.</li><li>Add photographs to keep those moments close.</li><li>Tap the star (☆) to mark a meaningful day. You can also write what made that day special, and revisit it in your journal later.</li><li>Save your entry when you're ready. You can revisit it later.</li></ul></section>
-   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu and select a date. Tap <strong>Open Full Entry</strong> to read your memory on a dedicated journal page, including your emotion, activity, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to change the entry using the familiar form; saving returns to the reading page.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photos &amp; Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
+   <section class="journal-guide-section"><h3>📖 Revisiting Previous Entries</h3><p>Choose <strong>Previous Entries</strong> from the main menu and select a date. Tap <strong>Open Full Entry</strong> to read your memory on a dedicated journal page, including your emotion, activity, written thoughts, special moment and photographs. Tap <strong>Edit</strong> to change the entry using the familiar form; saving returns to the reading page.</p><p>When you add a photo, you can optionally write a short caption. Tap a photograph to open <strong>Photo Memories</strong>, where the entry date appears above your photographs. Swipe left or right to explore more photographs from that entry. A caption appears beneath each photo, or you can tap the pencil to add or edit one. Tap the enlarged photo to return.</p></section>
    <section class="journal-guide-section"><h3>💗 Exploring My Emotions</h3><p>Choose <strong>Emotions</strong> to reflect on how you've been feeling over time. Explore the available emotions and view the graphs. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. You can then open an entry to revisit the moments behind it.</p><p>There is no need to judge how you feel. Your emotions are simply part of your story.</p></section>
    <section class="journal-guide-section"><h3>🌿 Exploring My Activity</h3><p>Choose <strong>Activity</strong> to revisit the activities you've recorded. Your charts can help you spot patterns. <strong>Tap a circular data point on the graph</strong> to display the journal entry or entries for that point underneath the graph. Open an entry to see what was happening on those days.</p></section>
    <section class="journal-guide-section"><h3>🌸 Making Journal Your Own</h3><p>Open <strong>Settings → Personalize My Journal → Emotions &amp; Activity Personalization</strong> to add your own choices, each with a single emoji. Hide choices you don't use, or remove ones you've added yourself.</p><p>Your past entries remain intact when you hide a choice. Hidden choices disappear from insights until you show them again.</p></section>
@@ -2822,11 +2822,11 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 </div>
 
 <!-- Themed photograph gallery: tap the photograph to close; swipe for other entry photos -->
-<div id="journalPhotoZoom" hidden role="dialog" aria-modal="true" aria-label="Journal Photos and Memories" tabindex="-1" onclick="if(event.target===this)closeJournalPhotoZoom()">
+<div id="journalPhotoZoom" hidden role="dialog" aria-modal="true" aria-label="Journal Photo Memories" tabindex="-1" onclick="if(event.target===this)closeJournalPhotoZoom()">
  <div class="journal-gallery-card">
   <h2 class="journal-gallery-title">Journal</h2>
   <p id="journalGalleryEntryDate" class="journal-gallery-entry-date" hidden></p>
-  <p class="journal-gallery-subtitle">Photos &amp; Memories</p>
+  <p class="journal-gallery-subtitle">Photo Memories</p>
   <div id="journalGalleryPhotoFrame" class="journal-gallery-photo-frame">
    <img id="journalPhotoZoomImage" class="journal-gallery-photo" alt="Journal photograph" draggable="false" onclick="journalGalleryImageClick(event)">
   </div>
@@ -3328,7 +3328,7 @@ function journalGalleryImageClick(event){
 function makeJournalPhotoZoomable(image){
  image.tabIndex=0;
  image.setAttribute("role","button");
- image.setAttribute("aria-label","Open photograph in Photos and Memories gallery");
+ image.setAttribute("aria-label","Open photograph in Photo Memories gallery");
  image.addEventListener("click",()=>openJournalPhotoZoom(image));
  image.addEventListener("keydown",event=>{
   if(event.key==="Enter"||event.key===" "){
@@ -3771,7 +3771,7 @@ function renderJournalBookPage(){
   paper.append(make("p","journal-reader-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
   if(journalA11y.readAloud&&entry.thoughts?.trim())paper.append(makeSavedEntrySpeechButton("book-thoughts-"+i,entry.thoughts,"🔊 Read My Entry Aloud"));
   if(entry.isSpecialDay){const special=make("section","journal-reader-special");special.append(make("strong","","★ A Special Moment"),make("p","",entry.specialDayReason?.trim()||"A day worth remembering"));paper.append(special);if(journalA11y.readAloud&&entry.specialDayReason?.trim())paper.append(makeSavedEntrySpeechButton("book-star-"+i,entry.specialDayReason,"🔊 Read My Special Moment Aloud"))}
-  const photos=(entry.photos||[]).filter(f=>f instanceof Blob);if(photos.length){const photoSection=make("section","journal-reader-photo-section");photoSection.append(make("strong","","📷 Photos & Memories"));const strip=make("div","journal-reader-photos");photos.forEach((file,index)=>{const url=URL.createObjectURL(file);journalBookPhotoUrls.push(url);const img=document.createElement("img");img.src=url;img.alt="Journal photo "+(index+1);img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);img.dataset.caption=(entry.photoCaptions||[])[index]||"";img.dataset.journalDate=entry.date;makeJournalPhotoZoomable(img);strip.append(img)});photoSection.append(strip);paper.append(photoSection)}
+  const photos=(entry.photos||[]).filter(f=>f instanceof Blob);if(photos.length){const photoSection=make("section","journal-reader-photo-section");photoSection.append(make("strong","","📷 Photo Memories"));const strip=make("div","journal-reader-photos");photos.forEach((file,index)=>{const url=URL.createObjectURL(file);journalBookPhotoUrls.push(url);const img=document.createElement("img");img.src=url;img.alt="Journal photo "+(index+1);img.dataset.entryId=entry.id;img.dataset.photoIndex=String(index);img.dataset.caption=(entry.photoCaptions||[])[index]||"";img.dataset.journalDate=entry.date;makeJournalPhotoZoomable(img);strip.append(img)});photoSection.append(strip);paper.append(photoSection)}
   const edit=make("button","journal-reader-edit","✎ Edit");edit.type="button";edit.onclick=()=>editJournalBookEntry(entry.id);paper.append(edit);
  });
 }
@@ -4965,7 +4965,7 @@ function buildEntryPreview(entry) {
   textElement(
    "h3",
    "",
-   "📷 Photos & Memories"
+   "📷 Photo Memories"
   )
  );
 
@@ -5088,7 +5088,7 @@ async function openSavedEntry(id){
  const validPhotos=(entry.photos||[]).filter(file=>file instanceof Blob);
  if(validPhotos.length){
   const section=savedEntryText("section","saved-entry-photos","");
-  section.append(savedEntryText("h2","","Photos & Memories"));
+  section.append(savedEntryText("h2","","Photo Memories"));
   const strip=savedEntryText("div","thumbnail-strip","");
   validPhotos.forEach((file,index)=>{
    const url=URL.createObjectURL(file);savedEntryPhotoUrls.push(url);
