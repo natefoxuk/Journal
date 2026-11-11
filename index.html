@@ -3696,19 +3696,32 @@ function journalFlipDraw(progress,direction){
  const sheet=$("journalFlipSheet"),shade=$("journalFlipShade");
  sheet.style.transformOrigin="left center";
  // The spine stays on the left for both directions.
- // Previous pages unfold from the left towards the right.
+ // A right swipe reverses the exact same left-spine rotation.
  sheet.style.transform=`rotateY(${direction==="next"?-progress*179:-(1-progress)*179}deg)`;
  shade.style.opacity=String(Math.sin(progress*Math.PI)*.6);
 }
 function journalFlipPrepare(target,direction){
  journalFlipPreviousDate=journalBookSelected;
  const paper=$("journalReaderPaper"),stage=$("journalFlipStage"),front=$("journalFlipFront"),back=$("journalFlipBack");
- // Clone the outgoing page before replacing the stationary layer with the incoming page.
- front.replaceChildren(...Array.from(paper.childNodes,child=>child.cloneNode(true)));
+ // Forward: the current page folds away, revealing the next page beneath it.
+ // Backward: the previous page returns using that SAME fold in reverse.
+ // Its front must therefore show the previous page, while the current page
+ // stays still underneath. The book's left-hand spine never changes.
+ if(direction==="prev"){
+  journalBookSelected=target;
+  renderJournalBookPage();
+  front.replaceChildren(...Array.from(paper.childNodes,child=>child.cloneNode(true)));
+  journalBookSelected=journalFlipPreviousDate;
+  renderJournalBookPage();
+ }else{
+  front.replaceChildren(...Array.from(paper.childNodes,child=>child.cloneNode(true)));
+  journalBookSelected=target;
+  renderJournalBookPage();
+ }
  // A static seven-tile snapshot is used for the turning sheet.
  // Cloning a long horizontally scrollable strip makes browsers reflow it
  // during 3D transforms, causing different dates to appear mid-turn.
- const sourceStrip=paper.querySelector("#journalDateStrip");
+ const sourceStrip=direction==="prev" ? front.querySelector("#journalDateStrip") : paper.querySelector("#journalDateStrip");
  const outgoingStrip=front.querySelector("#journalDateStrip");
  if(sourceStrip&&outgoingStrip){
   const visibleCenter=sourceStrip.scrollLeft+sourceStrip.clientWidth/2;
@@ -3727,18 +3740,6 @@ function journalFlipPrepare(target,direction){
  }
  back.replaceChildren();
  const watermark=document.createElement("div");watermark.style.cssText="position:absolute;inset:35% 10%;text-align:center;font:italic 26px Georgia,serif;color:#d8b5bb;opacity:.55";watermark.textContent="Journal";back.append(watermark);
- if(direction==="prev"){
-  // On a backwards turn the sheet is the page returning from the left.
-  // Keep the current page underneath until the returning page settles.
-  journalBookSelected=target;
-  renderJournalBookPage();
-  const incomingNodes=Array.from(paper.childNodes,child=>child.cloneNode(true));
-  back.replaceChildren(...incomingNodes);
-  journalBookSelected=journalFlipGesture?.original||journalFlipPreviousDate;
-  renderJournalBookPage();
- }else{
-  journalBookSelected=target;renderJournalBookPage();
- }
  // Prepare the visible page's dates before the animation begins.
  renderJournalDateStrip();
  requestAnimationFrame(positionJournalDateStrip);
