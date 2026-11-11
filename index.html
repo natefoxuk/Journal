@@ -1898,6 +1898,22 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
   border-radius:16px;
 }
 
+
+/* Soft blush header on every open journal page and on both sides of the
+   animated turning sheet. The existing divider remains below the blush. */
+#journal-book .journal-reader-page-heading{
+  background:#f8e4e9;
+  border-bottom:1px solid #e8c5d0;
+  border-radius:12px 12px 0 0;
+  padding:12px 10px 9px;
+}
+#journal-book #journalFlipStage.flipping .journal-reader-page-heading{
+  background:#f8e4e9;
+  border-bottom:1px solid #e8c5d0;
+  border-radius:12px 12px 0 0;
+  padding:8px 10px 12px;
+}
+
 </style>
 </head>
 
