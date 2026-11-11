@@ -1,9 +1,9 @@
 
-/* Journal offline support — version 13.
+/* Journal offline support — version 14.
    Navigation uses the saved app shell first to avoid waiting for a stalled network.
    Entries and photos stored by the app are not modified by this worker. */
 
-const CACHE_NAME = 'journal-app-v13';
+const CACHE_NAME = 'journal-app-v14';
 
 const APP_SHELL = ['./index.html'];
 
@@ -30,6 +30,7 @@ self.addEventListener('install', event => {
       OPTIONAL_FILES.map(async path => {
         try {
           const response = await fetch(path);
+
           if (response.ok) {
             await cache.put(path, response);
           }
