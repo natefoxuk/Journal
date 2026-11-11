@@ -3685,7 +3685,7 @@ function renderJournalDateStrip(){
  };
 
 }
-let journalFlipGesture=null,journalFlipFrame=null;
+let journalFlipGesture=null,journalFlipFrame=null,journalFlipPreviousDate=null;
 function journalFlipReset(){
  const stage=$("journalFlipStage"),sheet=$("journalFlipSheet");stage.classList.remove("flipping");
  sheet.style.transition="none";sheet.style.transform="";sheet.style.transformOrigin="";
@@ -3694,11 +3694,14 @@ function journalFlipReset(){
 }
 function journalFlipDraw(progress,direction){
  const sheet=$("journalFlipSheet"),shade=$("journalFlipShade");
- sheet.style.transformOrigin=direction==="next"?"left center":"right center";
- sheet.style.transform=`rotateY(${(direction==="next"?-1:1)*progress*179}deg)`;
+ sheet.style.transformOrigin="left center";
+ // The spine stays on the left for both directions.
+ // Previous pages unfold from the left towards the right.
+ sheet.style.transform=`rotateY(${direction==="next"?-progress*179:-(1-progress)*179}deg)`;
  shade.style.opacity=String(Math.sin(progress*Math.PI)*.6);
 }
 function journalFlipPrepare(target,direction){
+ journalFlipPreviousDate=journalBookSelected;
  const paper=$("journalReaderPaper"),stage=$("journalFlipStage"),front=$("journalFlipFront"),back=$("journalFlipBack");
  // Clone the outgoing page before replacing the stationary layer with the incoming page.
  front.replaceChildren(...Array.from(paper.childNodes,child=>child.cloneNode(true)));
@@ -3724,8 +3727,19 @@ function journalFlipPrepare(target,direction){
  }
  back.replaceChildren();
  const watermark=document.createElement("div");watermark.style.cssText="position:absolute;inset:35% 10%;text-align:center;font:italic 26px Georgia,serif;color:#d8b5bb;opacity:.55";watermark.textContent="Journal";back.append(watermark);
- journalBookSelected=target;renderJournalBookPage();
- // Prepare the incoming page's dates before it is revealed, not after the flip.
+ if(direction==="prev"){
+  // On a backwards turn the sheet is the page returning from the left.
+  // Keep the current page underneath until the returning page settles.
+  journalBookSelected=target;
+  renderJournalBookPage();
+  const incomingNodes=Array.from(paper.childNodes,child=>child.cloneNode(true));
+  back.replaceChildren(...incomingNodes);
+  journalBookSelected=journalFlipGesture?.original||journalFlipPreviousDate;
+  renderJournalBookPage();
+ }else{
+  journalBookSelected=target;renderJournalBookPage();
+ }
+ // Prepare the visible page's dates before the animation begins.
  renderJournalDateStrip();
  requestAnimationFrame(positionJournalDateStrip);
  stage.classList.add("flipping");$("journalFlipSheet").style.transition="none";
@@ -3738,7 +3752,8 @@ function journalFlipFinish(commit,direction,target,progress=0){
  $("journalFlipShade").style.transition=`opacity ${duration}ms ease`;
  requestAnimationFrame(()=>journalFlipDraw(remaining,direction));
  window.setTimeout(()=>{
-  if(!commit){journalBookSelected=journalFlipGesture?.original||journalBookSelected;renderJournalBookPage()}
+  if(direction==="prev" && commit){journalBookSelected=target;renderJournalBookPage()}
+  else if(!commit){journalBookSelected=journalFlipPreviousDate;renderJournalBookPage()}
   journalFlipReset();renderJournalDateStrip();requestAnimationFrame(positionJournalDateStrip);
  },duration+45);
 }
