@@ -1869,6 +1869,23 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 #journal-book .journal-cover-personal-name:empty{display:none}
 .journal-cover-name-setting{display:block;width:100%;box-sizing:border-box;padding:12px 14px;
  border:1px solid #dfbdcc;border-radius:12px;background:#fff;color:#76445b;font-size:16px}
+
+
+/* Full-height journal page turns: let the animated sheet escape the reader's
+   clipping rectangle, exactly as the hardback cover already does.
+   Only active turns are affected; ordinary page scrolling stays contained. */
+#journal-book .journal-book-reading-area:has(#journalFlipStage.flipping){
+  z-index:20;
+  overflow:visible;
+}
+#journal-book #journalFlipStage.flipping{
+  overflow:visible!important;
+  border-radius:0;
+}
+#journal-book #journalFlipStage.flipping .journal-flip-sheet{
+  overflow:visible;
+}
+
 </style>
 </head>
 
