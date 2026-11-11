@@ -1886,6 +1886,18 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
   overflow:visible;
 }
 
+
+/* Round the actual turning paper, not the animation stage: preserve the
+   unrestricted full-height turn while softening the visible page corners. */
+#journal-book .journal-flip-face{
+  border-radius:16px;
+  overflow:hidden;
+  -webkit-mask-image:-webkit-radial-gradient(white,black);
+}
+#journal-book .journal-flip-sheet{
+  border-radius:16px;
+}
+
 </style>
 </head>
 
