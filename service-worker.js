@@ -1,9 +1,10 @@
 
-/* Journal offline support — version 7.
-   Navigation uses the saved app shell first to avoid waiting for a stalled network.
-   Entries and photos stored by the app are not modified by this worker. */
+/* Journal offline support — version 8.
+   Navigation uses the saved app shell first.
+   Journal entries and photos are not modified.
+*/
 
-const CACHE_NAME = 'journal-app-v7';
+const CACHE_NAME = 'journal-app-v8';
 
 const APP_SHELL = [
   './index.html'
@@ -20,15 +21,14 @@ const OPTIONAL_FILES = [
   )
 ];
 
-// Install the service worker and cache the Journal page.
+// Install the updated Journal.
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
 
-    // Only the main page is required for installation.
     await cache.addAll(APP_SHELL);
 
-    // Optional images cannot prevent installation.
+    // Missing artwork cannot prevent installation.
     await Promise.allSettled(
       OPTIONAL_FILES.map(async path => {
         try {
@@ -38,7 +38,7 @@ self.addEventListener('install', event => {
             await cache.put(path, response);
           }
         } catch (_) {
-          // Optional asset unavailable.
+          // Optional file unavailable.
         }
       })
     );
@@ -47,7 +47,7 @@ self.addEventListener('install', event => {
   })());
 });
 
-// Activate the new worker and remove old app caches.
+// Activate the update and remove old app caches.
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const names = await caches.keys();
@@ -72,14 +72,12 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(event.request.url);
 
-  // Only handle requests from Journal's own website.
   if (url.origin !== self.location.origin) return;
 
-  // Open the saved Journal page immediately when available.
+  // Open the cached Journal immediately.
   if (event.request.mode === 'navigate') {
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
-
       const cached = await cache.match('./index.html');
 
       if (cached) {
@@ -105,10 +103,9 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Load cached images and other files where possible.
+  // Use saved artwork and other static files.
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
-
     const cached = await cache.match(event.request);
 
     if (cached) {
