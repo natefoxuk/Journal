@@ -1,8 +1,8 @@
-/* Journal offline support — version 15.
+/* Journal offline support — version 16.
    Navigation uses the saved app shell first to avoid waiting for a stalled network.
    Entries and photos stored by the app are not modified by this worker. */
 
-const CACHE_NAME = 'journal-app-v15';
+const CACHE_NAME = 'journal-app-v16';
 
 const APP_SHELL = ['./index.html'];
 
