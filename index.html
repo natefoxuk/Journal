@@ -1917,6 +1917,14 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 /* Align Find icon with the month label inside the blush heading. */
 #journal-book .journal-reader-page-heading .journal-find-trigger{top:4px!important;right:10px!important}
 
+
+#dailySettings{margin-bottom:22px}
+#dailySettings .daily-personal-fields{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+#dailySettings .daily-personal-fields input{appearance:none;border:0;box-shadow:none;background:transparent;border-radius:0;color:inherit;font:inherit;padding:7px 0;margin:0;min-width:0;outline-offset:2px}
+#dailySettings .daily-personal-emoji{width:1.5em;flex:0 0 1.5em;text-align:center}
+#dailySettings .daily-personal-label{width:0;flex:1}
+#dailySettings .safe-secondary{flex-shrink:0}
+#dailySettings input:focus-visible{outline:1px solid #a16e86;border-radius:4px}
 </style>
 <style>
 #new-entry .entry-navigation{position:relative;padding-bottom:30px}.daily-calendar-shortcut{position:absolute;right:16px;top:28px;border:0;background:transparent;font-size:20px;cursor:pointer}.daily-boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(75px,1fr));gap:7px;margin-bottom:18px}.daily-box{min-width:0;border:1px solid #e8c4d0;border-radius:12px;padding:8px 4px;text-align:center;background:#fff4f6;color:#794c5d}.daily-box input{width:100%;min-width:0;font-size:13px;padding:5px;box-sizing:border-box}.daily-setting{display:grid;grid-template-columns:45px 1fr auto;gap:6px;align-items:center;margin:8px 0}.daily-setting input{min-width:0;width:100%}.journal-reader-choices{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}.journal-reader-choice{min-width:0!important;padding:6px!important;overflow-wrap:anywhere}.journal-reader-choice strong{font-size:12px!important}.daily-calendar{border:1px solid #e8c4d0;border-radius:20px;background:#fff5f7;color:#794c5d;width:min(90vw,360px);padding:16px}.daily-calendar::backdrop{background:#432b3266}.daily-calendar header{display:flex;justify-content:space-between;align-items:center}.daily-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin:12px 0;touch-action:pan-y}.daily-calendar-grid button{border:1px solid #ecd2da;background:white;color:#794c5d;border-radius:8px;padding:8px 0}.daily-calendar-grid button.recorded{background:#dca5b5;color:#492b36}
@@ -2625,7 +2633,7 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
    <button type="button" class="settings-accordion-trigger" id="settingsTrigger5" aria-expanded="false" aria-controls="settingsContent5" onclick="toggleSettingsSection(5)"><span>Emotions &amp; Activity Personalization</span></button>
    <div class="settings-accordion-content" id="settingsContent5" role="region" aria-labelledby="settingsTrigger5" hidden>
     <p>Make Journal your own. Hide choices you don't use, add new ones, or remove custom choices. Hiding preserves past selections, while removing a custom choice removes it from your insights without deleting your entries.</p>
-    <h3>My Day boxes</h3><div id="dailySettings"></div>
+    <h3>🌸 My Day</h3><div id="dailySettings"></div>
     <h3>💗 My Emotions</h3><div id="manageEmotions"></div>
     <div class="choice-add"><input id="newEmotionEmoji" aria-label="Emotion emoji" maxlength="16" oninput="limitChoiceEmoji(this)" placeholder="💗"><input id="newEmotionName" aria-label="New emotion name" maxlength="35" placeholder="New emotion"><button class="safe-secondary" onclick="addPersonalChoice('emotions')">Add</button></div>
     <h3>🌿 My Activity</h3><div id="manageActivities"></div>
@@ -4037,7 +4045,21 @@ function getKnownActivity(entry) {
 let dailyValues=[],dailyMonth=new Date(),dailyEntries=[],dailyTouch=0;
 function getDailyConfig(){try{const c=JSON.parse(localStorage.getItem("journal-daily-config"));if(Array.isArray(c)&&c.length===4)return c}catch(e){}return [{label:"Work",emoji:"💼",visible:true},{label:"Day Off",emoji:"🏡",visible:true},{label:"Holiday",emoji:"🏖️",visible:true},{label:"Other",emoji:"✨",visible:false}]}
 function renderDailyBoxes(){const root=$("dailyBoxes");root.replaceChildren();const config=getDailyConfig();const visible=config.map((c,i)=>({c,i,old:dailyValues.find(x=>x?.slot===i&&x.value)})).filter(({c,old})=>c.visible||old);root.hidden=!visible.length;root.style.gridTemplateColumns=`repeat(${Math.max(1,visible.length)},minmax(0,1fr))`;root.classList.toggle("has-selection",dailyValues.some(x=>x?.value));for(const {c,i,old} of visible){const choice=old||c;const box=document.createElement("button");box.type="button";box.className="mood daily-choice"+(old?" selected":"");box.setAttribute("aria-pressed",String(!!old));const emoji=document.createElement("span");emoji.className="mood-emoji";emoji.textContent=choice.emoji;const label=document.createElement("span");label.className="mood-name";label.textContent=choice.label;box.append(emoji,label);box.onclick=()=>{dailyValues=old?[]:[{slot:i,label:choice.label,emoji:choice.emoji,value:choice.label}];renderDailyBoxes()};root.append(box)}}
-function renderDailySettings(){const root=$("dailySettings");root.replaceChildren();const config=getDailyConfig();config.forEach((c,i)=>{const row=document.createElement("div");row.className="daily-setting";const emoji=document.createElement("input"),label=document.createElement("input"),visible=document.createElement("input");emoji.value=c.emoji;emoji.maxLength=16;emoji.setAttribute("aria-label","Box "+(i+1)+" emoji");label.value=c.label;label.maxLength=35;label.setAttribute("aria-label","Box "+(i+1)+" label");visible.type="checkbox";visible.checked=c.visible;visible.setAttribute("aria-label","Show box "+(i+1));for(const el of [emoji,label,visible])el.onchange=()=>{config[i]={emoji:emoji.value||"♡",label:label.value.trim()||"My Day",visible:visible.checked};localStorage.setItem("journal-daily-config",JSON.stringify(config))};row.append(emoji,label,visible);root.append(row)})}
+function renderDailySettings(){
+ const root=$("dailySettings");root.replaceChildren();const config=getDailyConfig();
+ config.forEach((c,i)=>{
+  const row=document.createElement("div");row.className="choice-manager-row daily-personal-row";
+  const fields=document.createElement("div");fields.className="daily-personal-fields";
+  const emoji=document.createElement("input"),label=document.createElement("input"),button=document.createElement("button");
+  emoji.value=c.emoji;emoji.maxLength=16;emoji.className="daily-personal-emoji";emoji.setAttribute("aria-label","Box "+(i+1)+" emoji");
+  label.value=c.label;label.maxLength=35;label.className="daily-personal-label";label.setAttribute("aria-label","Box "+(i+1)+" label");
+  button.type="button";button.className="safe-secondary";
+  const updateButton=()=>{button.textContent=c.visible?"Hide":"Show";button.setAttribute("aria-label",(c.visible?"Hide ":"Show ")+c.label)};
+  const save=()=>{c.emoji=emoji.value.trim()||"♡";c.label=label.value.trim()||"My Day";emoji.value=c.emoji;label.value=c.label;localStorage.setItem("journal-daily-config",JSON.stringify(config));updateButton()};
+  emoji.onchange=save;label.onchange=save;button.onclick=()=>{c.visible=!c.visible;save()};updateButton();
+  fields.append(emoji,label);row.append(fields,button);root.append(row);
+ });
+}
 async function openDailyCalendar(){try{dailyEntries=await allEntries();dailyMonth=dateFromKey($("journalDate").value||todayLocal());renderDailyCalendar();$("dailyCalendar").showModal()}catch(e){showJournalNotice("Unable to open calendar.")}}
 function moveDailyMonth(n){dailyMonth=new Date(dailyMonth.getFullYear(),dailyMonth.getMonth()+n,1);renderDailyCalendar()}
 function renderDailyCalendar(){
