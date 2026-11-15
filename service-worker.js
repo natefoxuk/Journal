@@ -1,8 +1,8 @@
-/* Journal offline support — version 19.
+/* Journal offline support — version 20.
    Navigation uses the saved app shell first to avoid waiting for a stalled network.
    Entries and photos stored by the app are not modified by this worker. */
 
-const CACHE_NAME = 'journal-app-v19';
+const CACHE_NAME = 'journal-app-v20';
 
 const APP_SHELL = ['./index.html'];
 
@@ -21,7 +21,6 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
 
-    // Request a fresh copy of the application.
     await cache.addAll(
       APP_SHELL.map(path =>
         new Request(path, { cache: "reload" })

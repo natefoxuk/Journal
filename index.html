@@ -1925,6 +1925,15 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
 #dailySettings .daily-personal-label{width:0;flex:1}
 #dailySettings .safe-secondary{flex-shrink:0}
 #dailySettings input:focus-visible{outline:1px solid #a16e86;border-radius:4px}
+
+#journalStarredEntries .journal-library-card:nth-child(odd){background:#fff5f7}
+#journalStarredEntries .journal-library-card:nth-child(even){background:#eed2df;border-color:#dbb4c7}
+#starred-moments .entry-navigation{align-items:flex-start}
+#starred-moments .back-button{white-space:nowrap;flex-shrink:0;font-size:clamp(11px,3.6vw,16px);padding:12px 9px}
+.starred-entry-label{display:flex;flex-direction:column;align-items:center;margin-left:auto;min-width:0;gap:3px}
+.starred-entry-label .entry-label{text-align:right;white-space:normal;font-size:clamp(9px,2.9vw,12px)}
+.starred-search-trigger{background:transparent;border:0;color:#946d7f;padding:2px 8px;display:grid;place-items:center;cursor:pointer}
+#journalFindCalendar{touch-action:pan-y}
 </style>
 <style>
 #new-entry .entry-navigation{position:relative;padding-bottom:30px}.daily-calendar-shortcut{position:absolute;right:16px;top:28px;border:0;background:transparent;font-size:20px;cursor:pointer}.daily-boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(75px,1fr));gap:7px;margin-bottom:18px}.daily-box{min-width:0;border:1px solid #e8c4d0;border-radius:12px;padding:8px 4px;text-align:center;background:#fff4f6;color:#794c5d}.daily-box input{width:100%;min-width:0;font-size:13px;padding:5px;box-sizing:border-box}.daily-setting{display:grid;grid-template-columns:45px 1fr auto;gap:6px;align-items:center;margin:8px 0}.daily-setting input{min-width:0;width:100%}.journal-reader-choices{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}.journal-reader-choice{min-width:0!important;padding:6px!important;overflow-wrap:anywhere}.journal-reader-choice strong{font-size:12px!important}.daily-calendar{border:1px solid #e8c4d0;border-radius:20px;background:#fff5f7;color:#794c5d;width:min(90vw,360px);padding:16px}.daily-calendar::backdrop{background:#432b3266}.daily-calendar header{display:flex;justify-content:space-between;align-items:center}.daily-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin:12px 0;touch-action:pan-y}.daily-calendar-grid button{border:1px solid #ecd2da;background:white;color:#794c5d;border-radius:8px;padding:8px 0}.daily-calendar-grid button.recorded{background:#dca5b5;color:#492b36}
@@ -2011,7 +2020,7 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.page::-webkit-scrol
  <div id="journalReader" class="journal-reader"><div class="journal-reader-paper-wrap" id="journalFlipStage"><article id="journalReaderPaper" class="journal-reader-paper" aria-live="polite"><div class="journal-reader-page-heading"><div class="journal-reader-title-row"><span id="journalReaderMonth" class="journal-reader-month"></span><h2 class="journal-reader-title">Journal Entry</h2><span aria-hidden="true"></span></div><button type="button" class="journal-find-trigger" onclick="openJournalFind()" aria-label="Find an entry" title="Find an entry"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m16 16 5 5"/></svg></button><div id="journalDateStrip" class="journal-date-strip" aria-label="Swipe through journal dates"></div><p class="journal-reader-swipe-note">Swipe to turn page · Swipe dates to explore</p></div></article><div id="journalFlipSheet" class="journal-flip-sheet" aria-hidden="true"><div id="journalFlipFront" class="journal-flip-face journal-flip-front"></div><div id="journalFlipBack" class="journal-flip-face journal-flip-back"></div></div><div id="journalFlipShade" class="journal-flip-shade"></div></div><p class="journal-reader-hint">Swipe the page to turn · Swipe the dates to explore</p></div></div>
 </main>
 <main id="starred-moments" class="page">
- <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Collection</button><span class="entry-label">My Starred Moments</span></div>
+ <div class="entry-navigation"><button class="back-button" onclick="openJournalLibrary()">Back to Collection</button><div class="starred-entry-label"><span class="entry-label">My Starred Moments</span><button class="starred-search-trigger" type="button" aria-label="Find a starred moment" onclick="openJournalFind(true)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button></div></div>
  <div class="journal-library-wrap"><h1 class="journal-library-title">★ My Starred Moments</h1><p class="journal-library-subtitle">The memories that shine a little brighter</p><div id="journalStarredEntries" class="journal-library-list"></div></div>
 </main>
 
@@ -7321,18 +7330,28 @@ window.addEventListener('resize',()=>requestAnimationFrame(updateJournalFindScro
 
 /* Journal book calendar and search, independent of Previous Entries. */
 let journalFindEntries=[],journalFindYear=2026,journalFindMonth=0,journalFindSelected=null;
-async function openJournalFind(){
+let journalFindStarredOnly=false;
+async function openJournalFind(starredOnly=false){
  if(journalBookAnimating)return;
  const overlay=document.getElementById('journalFindOverlay');
- const d=dateFromKey(journalBookSelected);
+ const d=starredOnly?new Date():dateFromKey(journalBookSelected);
  journalFindYear=d.getFullYear();journalFindMonth=d.getMonth();journalFindSelected=null;
  document.getElementById('journalFindInput').value='';
- journalFindEntries=await allEntries();
+ journalFindStarredOnly=starredOnly===true;
+ journalFindEntries=(await allEntries()).filter(e=>!journalFindStarredOnly||e.isSpecialDay);
+ $('journalFindTitle').textContent=journalFindStarredOnly?'Find a Starred Moment':'Find an Entry';
+ overlay.querySelector('.journal-find-search-label').textContent=journalFindStarredOnly?'Search starred moments':'Search journal entries';
+ overlay.querySelector('.journal-find-results-section .journal-find-section-heading').textContent=journalFindStarredOnly?'Starred moments':'Entries';
+ overlay.querySelector('.journal-find-key').innerHTML=journalFindStarredOnly?'<span>★ Starred moment</span>':'<span>● Journal entry</span><span>★ Special moment</span>';
+ overlay.querySelector('.journal-find-panel').scrollTop=0;
  overlay.classList.add('visible');overlay.setAttribute('aria-hidden','false');
  renderJournalFindCalendar();renderJournalFindResults();
  requestAnimationFrame(updateJournalFindScrollBall);
 }
 function closeJournalFind(){const el=document.getElementById('journalFindOverlay');el.classList.remove('visible');el.setAttribute('aria-hidden','true')}
+let journalFindTouch=null;
+function journalFindTouchStart(e){const t=e.changedTouches[0];journalFindTouch={x:t.clientX,y:t.clientY};}
+function journalFindTouchEnd(e){if(!journalFindTouch)return;const t=e.changedTouches[0],dx=t.clientX-journalFindTouch.x,dy=t.clientY-journalFindTouch.y;journalFindTouch=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3){if(e.cancelable)e.preventDefault();moveJournalFindMonth(dx<0?1:-1)}}
 function moveJournalFindMonth(step){const d=new Date(journalFindYear,journalFindMonth+step,1);journalFindYear=d.getFullYear();journalFindMonth=d.getMonth();journalFindSelected=null;renderJournalFindCalendar();renderJournalFindResults()}
 function renderJournalFindCalendar(){
  const grid=document.getElementById('journalFindCalendar');grid.replaceChildren();
@@ -7359,15 +7378,15 @@ function renderJournalFindResults(){
  let matches=[];
  if(journalFindSelected)matches=journalFindEntries.filter(e=>e.date===journalFindSelected);
  else if(query)matches=journalFindEntries.filter(e=>[e.thoughts,e.specialDayReason,getEntryMood(e),getEntryActivity(e),formatDate(e.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'})].some(v=>String(v||'').toLocaleLowerCase().includes(query)));
- else {const msg=document.createElement('p');msg.className='journal-find-empty';msg.textContent='Select a date with an entry or search your memories.';host.append(msg);return}
+ else {const msg=document.createElement('p');msg.className='journal-find-empty';msg.textContent=journalFindStarredOnly?'Select a starred date or search your special memories.':'Select a date with an entry or search your memories.';host.append(msg);return}
  matches.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
  if(!matches.length){const msg=document.createElement('p');msg.className='journal-find-empty';msg.textContent='No matching entries found.';host.append(msg);return}
  for(const entry of matches){
   const card=document.createElement('article');card.className='journal-find-result';
   const date=document.createElement('strong');date.textContent=(entry.isSpecialDay?'★ ':'')+formatDate(entry.date,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const details=document.createElement('p');details.textContent=[getEntryMood(entry),getEntryActivity(entry)].filter(Boolean).join(' · ')+(entry.thoughts?'\n'+entry.thoughts.slice(0,180)+(entry.thoughts.length>180?'…':''):'');
+  const details=document.createElement('p');details.textContent=journalFindStarredOnly?(entry.specialDayReason?.trim()||'A special day'):[getEntryMood(entry),getEntryActivity(entry)].filter(Boolean).join(' · ')+(entry.thoughts?'\n'+entry.thoughts.slice(0,180)+(entry.thoughts.length>180?'…':''):'');
   const open=document.createElement('button');open.type='button';open.textContent='Open in Journal ›';open.onclick=()=>{
-   closeJournalFind();journalFlipReset();journalBookSelected=entry.date;renderJournalBookPage();renderJournalDateStrip();
+   closeJournalFind();if(journalFindStarredOnly){returnToJournalBookEntry(entry.id);return;}journalFlipReset();journalBookSelected=entry.date;renderJournalBookPage();renderJournalDateStrip();
    requestAnimationFrame(()=>requestAnimationFrame(positionJournalDateStrip));
   };
   card.append(date,details,open);host.append(card);
@@ -7386,7 +7405,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElement
   <section class="journal-find-section journal-find-calendar-section" aria-label="Browse by date">
    <div class="journal-find-section-heading">Browse by date</div>
    <div class="journal-find-month"><button type="button" onclick="moveJournalFindMonth(-1)" aria-label="Previous month">‹</button><strong id="journalFindMonth"></strong><button type="button" onclick="moveJournalFindMonth(1)" aria-label="Next month">›</button></div>
-   <div id="journalFindCalendar" class="journal-find-grid" aria-label="Journal entry calendar"></div>
+   <div id="journalFindCalendar" class="journal-find-grid" aria-label="Journal entry calendar" ontouchstart="journalFindTouchStart(event)" ontouchend="journalFindTouchEnd(event)"></div>
    <div class="journal-find-key"><span>● Journal entry</span><span>★ Special moment</span></div>
   </section>
   <section class="journal-find-section journal-find-search-section" aria-label="Search memories">
