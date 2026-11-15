@@ -3842,7 +3842,7 @@ function renderJournalBookPage(){
  entries.forEach((entry,i)=>{
   if(i)paper.append(document.createElement("hr"));
   const choices=make("div","journal-reader-choices");const moodName=getEntryMood(entry)||"Not recorded",mood=moods.find(m=>m[1]===moodName),activityName=getEntryActivity(entry)||"Not recorded",activity=getKnownActivity(entry);
-  const day=(entry.dailyValues||[]).filter(x=>x?.value);const items=[...day.slice(0,1).map(x=>[x.emoji,x.label,"My Day"]),[mood?.[0]||"♡",moodName,"Emotion"],[activity?.emoji||"🌿",activityName,"Activity"]];choices.style.setProperty("grid-template-columns",`repeat(${items.length},minmax(0,1fr))`,"important");for(const [emoji,name,label] of items){const box=make("div","journal-reader-choice");box.append(make("span","emoji",emoji),make("strong","",name),make("small","",label));choices.append(box)}paper.append(choices);
+  const day=(entry.dailyValues||[]).filter(x=>x?.value);const items=[...day.slice(0,1).map(x=>[singleDailyEmoji(x.emoji)||"✨",x.label,"My Day"]),[mood?.[0]||"♡",moodName,"Emotion"],[activity?.emoji||"🌿",activityName,"Activity"]];choices.style.setProperty("grid-template-columns",`repeat(${items.length},minmax(0,1fr))`,"important");for(const [emoji,name,label] of items){const box=make("div","journal-reader-choice");box.append(make("span","emoji",emoji),make("strong","",name),make("small","",label));choices.append(box)}paper.append(choices);
   paper.append(make("p","journal-reader-thoughts",entry.thoughts?.trim()||"No written thoughts for this entry."));
   if(journalA11y.readAloud&&entry.thoughts?.trim())paper.append(makeSavedEntrySpeechButton("book-thoughts-"+i,entry.thoughts,"🔊 Read My Entry Aloud"));
   if(entry.isSpecialDay){const special=make("section","journal-reader-special");special.append(make("strong","","★ A Special Moment"),make("p","",entry.specialDayReason?.trim()||"A day worth remembering"));paper.append(special);if(journalA11y.readAloud&&entry.specialDayReason?.trim())paper.append(makeSavedEntrySpeechButton("book-star-"+i,entry.specialDayReason,"🔊 Read My Special Moment Aloud"))}
@@ -4043,20 +4043,21 @@ function getKnownActivity(entry) {
 
 
 let dailyValues=[],dailyMonth=new Date(),dailyEntries=[],dailyTouch=0;
-function getDailyConfig(){try{const c=JSON.parse(localStorage.getItem("journal-daily-config"));if(Array.isArray(c)&&c.length===4)return c}catch(e){}return [{label:"Work",emoji:"💼",visible:true},{label:"Day Off",emoji:"🏡",visible:true},{label:"Holiday",emoji:"🏖️",visible:true},{label:"Other",emoji:"✨",visible:false}]}
-function renderDailyBoxes(){const root=$("dailyBoxes");root.replaceChildren();const config=getDailyConfig();const visible=config.map((c,i)=>({c,i,old:dailyValues.find(x=>x?.slot===i&&x.value)})).filter(({c,old})=>c.visible||old);root.hidden=!visible.length;root.style.gridTemplateColumns=`repeat(${Math.max(1,visible.length)},minmax(0,1fr))`;root.classList.toggle("has-selection",dailyValues.some(x=>x?.value));for(const {c,i,old} of visible){const choice=old||c;const box=document.createElement("button");box.type="button";box.className="mood daily-choice"+(old?" selected":"");box.setAttribute("aria-pressed",String(!!old));const emoji=document.createElement("span");emoji.className="mood-emoji";emoji.textContent=choice.emoji;const label=document.createElement("span");label.className="mood-name";label.textContent=choice.label;box.append(emoji,label);box.onclick=()=>{dailyValues=old?[]:[{slot:i,label:choice.label,emoji:choice.emoji,value:choice.label}];renderDailyBoxes()};root.append(box)}}
+function singleDailyEmoji(value){return emojiGraphemes(value).find(x=>isEmojiGrapheme(x)||/^\p{Regional_Indicator}{2}$/u.test(x))||""}
+function getDailyConfig(){try{const c=JSON.parse(localStorage.getItem("journal-daily-config"));if(Array.isArray(c)&&c.length===4)return c.map(x=>({...x,emoji:singleDailyEmoji(x.emoji)||"✨"}))}catch(e){}return [{label:"Work",emoji:"💼",visible:true},{label:"Day Off",emoji:"🏡",visible:true},{label:"Holiday",emoji:"🏖️",visible:true},{label:"Other",emoji:"✨",visible:false}]}
+function renderDailyBoxes(){const root=$("dailyBoxes");root.replaceChildren();const config=getDailyConfig();const visible=config.map((c,i)=>({c,i,old:dailyValues.find(x=>x?.slot===i&&x.value)})).filter(({c,old})=>c.visible||old);root.hidden=!visible.length;root.style.gridTemplateColumns=`repeat(${Math.max(1,visible.length)},minmax(0,1fr))`;root.classList.toggle("has-selection",dailyValues.some(x=>x?.value));for(const {c,i,old} of visible){const choice=old||c;const box=document.createElement("button");box.type="button";box.className="mood daily-choice"+(old?" selected":"");box.setAttribute("aria-pressed",String(!!old));const emoji=document.createElement("span");emoji.className="mood-emoji";emoji.textContent=singleDailyEmoji(choice.emoji)||"✨";const label=document.createElement("span");label.className="mood-name";label.textContent=choice.label;box.append(emoji,label);box.onclick=()=>{dailyValues=old?[]:[{slot:i,label:choice.label,emoji:singleDailyEmoji(choice.emoji)||"✨",value:choice.label}];renderDailyBoxes()};root.append(box)}}
 function renderDailySettings(){
  const root=$("dailySettings");root.replaceChildren();const config=getDailyConfig();
  config.forEach((c,i)=>{
   const row=document.createElement("div");row.className="choice-manager-row daily-personal-row";
   const fields=document.createElement("div");fields.className="daily-personal-fields";
   const emoji=document.createElement("input"),label=document.createElement("input"),button=document.createElement("button");
-  emoji.value=c.emoji;emoji.maxLength=16;emoji.className="daily-personal-emoji";emoji.setAttribute("aria-label","Box "+(i+1)+" emoji");
+  emoji.value=c.emoji;emoji.className="daily-personal-emoji";emoji.setAttribute("aria-label","Box "+(i+1)+" emoji");
   label.value=c.label;label.maxLength=35;label.className="daily-personal-label";label.setAttribute("aria-label","Box "+(i+1)+" label");
   button.type="button";button.className="safe-secondary";
   const updateButton=()=>{button.textContent=c.visible?"Hide":"Show";button.setAttribute("aria-label",(c.visible?"Hide ":"Show ")+c.label)};
-  const save=()=>{c.emoji=emoji.value.trim()||"♡";c.label=label.value.trim()||"My Day";emoji.value=c.emoji;label.value=c.label;localStorage.setItem("journal-daily-config",JSON.stringify(config));updateButton()};
-  emoji.onchange=save;label.onchange=save;button.onclick=()=>{c.visible=!c.visible;save()};updateButton();
+  const save=()=>{c.emoji=singleDailyEmoji(emoji.value)||"✨";c.label=label.value.trim()||"My Day";emoji.value=c.emoji;label.value=c.label;localStorage.setItem("journal-daily-config",JSON.stringify(config));updateButton()};
+  emoji.oninput=()=>{emoji.value=singleDailyEmoji(emoji.value)};emoji.onchange=save;label.onchange=save;button.onclick=()=>{c.visible=!c.visible;save()};updateButton();
   fields.append(emoji,label);row.append(fields,button);root.append(row);
  });
 }
